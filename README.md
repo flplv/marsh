@@ -1,7 +1,8 @@
 marsh
 =====
 
-Pure C Graphic Library Platform Independent
+Pure C Graphic Library 
+Platform Independent
 
 
 You need to build cpputest (not install) in order to build and run
