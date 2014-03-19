@@ -26,7 +26,7 @@
 #include "dimension.h"
 #include "widget.h"
 #include "widget_interface.h"
-#include "object_stack.h"
+#include "widget_stack.h"
 #include "draw_manager.h"
 #include "signalslot2.h"
 #include "interact.h"
@@ -37,7 +37,7 @@ struct s_container_instance
 	my_log_t * log;
 	widget_t *glyph;
 	widget_interface_t *self_reference;
-	object_stack_t *stack;
+	widget_stack_t *stack;
 	draw_manager_t *dm;
 	slot2_t *press;
 	slot2_t *release;
@@ -64,7 +64,7 @@ static void press(container_t *obj, size_t x, size_t y)
 	PTR_CHECK(obj, "container");
 	INSTANCE_CHECK(obj, SIGNATURE_CONTAINER, "container");
 
-	obj_to_click = object_stack_get_object_on_top(obj->stack, x, y);
+	obj_to_click = widget_stack_get_object_on_top(obj->stack, x, y);
 	if (obj_to_click)
 		interaction_engine_press(widget_get_interaction_engine(obj_to_click), x, y);
 }
@@ -76,7 +76,7 @@ static void release(container_t *obj, size_t x, size_t y)
 	PTR_CHECK(obj, "container");
 	INSTANCE_CHECK(obj, SIGNATURE_CONTAINER, "container");
 
-	obj_to_click = object_stack_get_object_on_top(obj->stack, x, y);
+	obj_to_click = widget_stack_get_object_on_top(obj->stack, x, y);
 	if (obj_to_click)
 		interaction_engine_release(widget_get_interaction_engine(obj_to_click), x, y);
 }
@@ -90,7 +90,7 @@ container_t* container_create()
 	obj->log = my_log_create("Container", MESSAGE);
 	obj->self_reference = widget_interface_create(obj, abstract_draw, abstract_destroy);
 	obj->glyph = widget_create(obj->self_reference);
-	obj->stack = object_stack_create();
+	obj->stack = widget_stack_create();
 	obj->dm = draw_manager_create();
 	draw_manager_assossiate_drawing_stack(obj->dm, obj->stack);
 
@@ -120,11 +120,11 @@ static void destroy_all_objects_in_stack(container_t* obj)
 	PTR_CHECK(obj, "container");
 	INSTANCE_CHECK(obj, SIGNATURE_CONTAINER, "container");
 
-	size = object_stack_size(obj->stack);
+	size = widget_stack_size(obj->stack);
 
 	while(size--)
 	{
-		object_to_be_deleted = object_stack_get_object(obj->stack, size);
+		object_to_be_deleted = widget_stack_get_object(obj->stack, size);
 		widget_destroy_owner(object_to_be_deleted);
 	}
 }
@@ -134,13 +134,13 @@ static void update_dimensions(container_t *obj)
 	uint32_t size;
 	widget_t *obj_owned;
 
-	size = object_stack_size(obj->stack);
+	size = widget_stack_size(obj->stack);
 
 	dimension_clear(widget_get_dimension(obj->glyph));
 
 	while(size--)
 	{
-		obj_owned = object_stack_get_object(obj->stack, size);
+		obj_owned = widget_stack_get_object(obj->stack, size);
 		dimension_merge(
 				widget_get_dimension(obj->glyph),
 				widget_get_dimension(obj_owned));
@@ -159,7 +159,7 @@ void container_destroy(container_t* const obj)
 	widget_destroy(obj->glyph);
 	widget_interface_destroy(obj->self_reference);
 	draw_manager_destroy(obj->dm);
-	object_stack_destroy(obj->stack);
+	widget_stack_destroy(obj->stack);
 	slot2_destroy(obj->press);
 	slot2_destroy(obj->release);
 
@@ -172,7 +172,7 @@ void container_add(container_t* obj, widget_t* graphic_to_be_added)
 	PTR_CHECK(obj, "container");
 	INSTANCE_CHECK(obj, SIGNATURE_CONTAINER, "container");
 
-	object_stack_add(obj->stack, graphic_to_be_added);
+	widget_stack_add(obj->stack, graphic_to_be_added);
 	update_dimensions(obj);
 }
 

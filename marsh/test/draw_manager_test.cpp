@@ -26,7 +26,7 @@ extern "C" {
 #include "widget_interface.h"
 #include "widget_private.h"
 #include "rectangle.h"
-#include "object_stack.h"
+#include "widget_stack.h"
 #include "draw_manager.h"
 
 #include "dimension.c"
@@ -68,7 +68,7 @@ TEST_GROUP(drawManager)
 	draw_manager_t * cut;
 	widget_interface_t *owner1, *owner2, *owner3;
 	widget_t *obj1, *obj2, *obj3;
-	object_stack_t * stack;
+	widget_stack_t * stack;
 
 	void setup()
 	{
@@ -80,7 +80,7 @@ TEST_GROUP(drawManager)
 		obj2 = widget_create(owner2);
 		obj3 = widget_create(owner3);
 
-		stack = object_stack_create();
+		stack = widget_stack_create();
 		cut = draw_manager_create();
 
 		dimension_set_size(&obj1->dim, 100, 100);
@@ -95,15 +95,15 @@ TEST_GROUP(drawManager)
 		dimension_set_start_position(&obj3->dim, 300, 300);
 		dimension_set_rest_if_possible(&obj3->dim);
 
-		object_stack_add(stack, obj1);
-		object_stack_add(stack, obj2);
-		object_stack_add(stack, obj3);
+		widget_stack_add(stack, obj1);
+		widget_stack_add(stack, obj2);
+		widget_stack_add(stack, obj3);
 	}
 
 	void teardown()
 	{
 		draw_manager_destroy(cut);
-		object_stack_destroy(stack);
+		widget_stack_destroy(stack);
 		widget_destroy(obj3);
 		widget_destroy(obj2);
 		widget_destroy(obj1);

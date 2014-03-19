@@ -24,58 +24,58 @@
 #include "helper/checks.h"
 #include "helper/stack.h"
 
-#include "object_stack.h"
+#include "widget_stack.h"
 #include "widget.h"
 #include "dimension.h"
 
-struct s_object_stack
+struct s_widget_stack
 {
 	my_log_t * log;
 	my_stack_t *stack;
 	MODULE_PRIVATE_DATA_DECLARATION;
 };
 
-#define SIGNATURE_OBJECT_STACK (ADDRESS_TO_SIGNATURE_CAST)&object_stack_create
+#define SIGNATURE_OBJECT_STACK (ADDRESS_TO_SIGNATURE_CAST)&widget_stack_create
 
-object_stack_t * object_stack_create(void)
+widget_stack_t * widget_stack_create(void)
 {
-	object_stack_t * instance;
+	widget_stack_t * instance;
 
-	instance = (object_stack_t *)calloc(1, sizeof(object_stack_t));
+	instance = (widget_stack_t *)calloc(1, sizeof(widget_stack_t));
 	MEMORY_ALLOC_CHECK(instance);
 
 	INSTANCE_SET(instance, SIGNATURE_OBJECT_STACK);
 
-	instance->log = my_log_create("objectStack", ERROR);
+	instance->log = my_log_create("widgetStack", ERROR);
 	instance->stack = stack_create(sizeof (widget_t *));
 
 	return instance;
 }
 
-void object_stack_destroy(object_stack_t * const instance)
+void widget_stack_destroy(widget_stack_t * const instance)
 {
-	PTR_CHECK(instance, "objectStack");
-	INSTANCE_CHECK(instance, SIGNATURE_OBJECT_STACK, "objectStack");
+	PTR_CHECK(instance, "widgetStack");
+	INSTANCE_CHECK(instance, SIGNATURE_OBJECT_STACK, "widgetStack");
 
 	stack_destroy(instance->stack);
 	my_log_destroy(instance->log);
 	free(instance);
 }
 
-void object_stack_add(object_stack_t * instance, widget_t *graphic_obj)
+void widget_stack_add(widget_stack_t * instance, widget_t *graphic_obj)
 {
-	PTR_CHECK(instance, "objectStack");
-	INSTANCE_CHECK(instance, SIGNATURE_OBJECT_STACK, "objectStack");
+	PTR_CHECK(instance, "widgetStack");
+	INSTANCE_CHECK(instance, SIGNATURE_OBJECT_STACK, "widgetStack");
 
 	stack_add(instance->stack, (BUFFER_PTR_RDOLY)&graphic_obj);
 }
 
-widget_t * object_stack_get_object(object_stack_t * instance, uint32_t index)
+widget_t * widget_stack_get_object(widget_stack_t * instance, uint32_t index)
 {
 	widget_t * return_object;
 
-	PTR_CHECK_RETURN (instance, "objectStack", NULL);
-	INSTANCE_CHECK_RETURN(instance, SIGNATURE_OBJECT_STACK, "objectStack", NULL);
+	PTR_CHECK_RETURN (instance, "widgetStack", NULL);
+	INSTANCE_CHECK_RETURN(instance, SIGNATURE_OBJECT_STACK, "widgetStack", NULL);
 
 	if (index >= stack_size(instance->stack))
 		return NULL;
@@ -85,14 +85,14 @@ widget_t * object_stack_get_object(object_stack_t * instance, uint32_t index)
 	return return_object;
 }
 
-widget_t * object_stack_get_top_object(object_stack_t * instance, dim_t x, dim_t y)
+widget_t * widget_stack_get_top_object(widget_stack_t * instance, dim_t x, dim_t y)
 {
 	uint32_t stack_iterator;
 	widget_t * object;
 	pos_t position;
 
-	PTR_CHECK_RETURN (instance, "objectStack", NULL);
-	INSTANCE_CHECK_RETURN(instance, SIGNATURE_OBJECT_STACK, "objectStack", NULL);
+	PTR_CHECK_RETURN (instance, "widgetStack", NULL);
+	INSTANCE_CHECK_RETURN(instance, SIGNATURE_OBJECT_STACK, "widgetStack", NULL);
 
 	stack_iterator = stack_size(instance->stack);
 
@@ -109,13 +109,13 @@ widget_t * object_stack_get_top_object(object_stack_t * instance, dim_t x, dim_t
 	return NULL;
 }
 
-uint32_t object_stack_get_object_index(object_stack_t * instance, const widget_t * object)
+uint32_t widget_stack_get_object_index(widget_stack_t * instance, const widget_t * object)
 {
 	uint32_t stack_iterator;
 	widget_t * stack_object;
 
-	PTR_CHECK_RETURN (instance, "objectStack", OBJECTSTACK_INVALID_INDEX);
-	INSTANCE_CHECK_RETURN(instance, SIGNATURE_OBJECT_STACK, "objectStack", OBJECTSTACK_INVALID_INDEX);
+	PTR_CHECK_RETURN (instance, "widgetStack", WIDGET_STACK_INVALID_INDEX);
+	INSTANCE_CHECK_RETURN(instance, SIGNATURE_OBJECT_STACK, "widgetStack", WIDGET_STACK_INVALID_INDEX);
 
 	stack_iterator = stack_size(instance->stack);
 
@@ -126,25 +126,25 @@ uint32_t object_stack_get_object_index(object_stack_t * instance, const widget_t
 				return stack_iterator;
 	}
 
-	my_log(WARNING, __FILE__, __LINE__, "object_stack_get_object_index: object was not found", instance->log);
-	return OBJECTSTACK_INVALID_INDEX;
+	my_log(WARNING, __FILE__, __LINE__, "widget_stack_get_object_index: object was not found", instance->log);
+	return WIDGET_STACK_INVALID_INDEX;
 }
 
-uint32_t object_stack_size(object_stack_t * instance)
+uint32_t widget_stack_size(widget_stack_t * instance)
 {
-	PTR_CHECK_RETURN (instance, "objectStack", OBJECTSTACK_INVALID_INDEX);
-	INSTANCE_CHECK_RETURN(instance, SIGNATURE_OBJECT_STACK, "objectStack", OBJECTSTACK_INVALID_INDEX);
+	PTR_CHECK_RETURN (instance, "widgetStack", WIDGET_STACK_INVALID_INDEX);
+	INSTANCE_CHECK_RETURN(instance, SIGNATURE_OBJECT_STACK, "widgetStack", WIDGET_STACK_INVALID_INDEX);
 
 	return stack_size(instance->stack);
 }
 
-widget_t *object_stack_get_object_on_top(object_stack_t* instance, dim_t x, dim_t y)
+widget_t *widget_stack_get_object_on_top(widget_stack_t* instance, dim_t x, dim_t y)
 {
 	uint32_t stack_iterator;
 	widget_t *object;
 
-	PTR_CHECK_RETURN (instance, "objectStack", NULL);
-	INSTANCE_CHECK_RETURN(instance, SIGNATURE_OBJECT_STACK, "objectStack", NULL);
+	PTR_CHECK_RETURN (instance, "widgetStack", NULL);
+	INSTANCE_CHECK_RETURN(instance, SIGNATURE_OBJECT_STACK, "widgetStack", NULL);
 
 	stack_iterator = stack_size(instance->stack);
 

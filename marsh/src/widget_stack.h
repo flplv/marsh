@@ -19,25 +19,25 @@
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef OBJECTSTACK_H_
-#define OBJECTSTACK_H_
+#ifndef WIDGET_STACK_H_
+#define WIDGET_STACK_H_
 
 
 #include "widget.h"
 
-typedef struct s_object_stack object_stack_t;
+typedef struct s_widget_stack widget_stack_t;
 
-object_stack_t *object_stack_create(void);
-void object_stack_destroy(object_stack_t * const);
+widget_stack_t *widget_stack_create(void);
+void widget_stack_destroy(widget_stack_t * const);
 
-void object_stack_add(object_stack_t *, widget_t *);
-uint32_t object_stack_size(object_stack_t *);
+void widget_stack_add(widget_stack_t *, widget_t *);
+uint32_t widget_stack_size(widget_stack_t *);
 
-widget_t * object_stack_get_object(object_stack_t *, uint32_t);
+widget_t * widget_stack_get_object(widget_stack_t *, uint32_t);
 
-#define OBJECTSTACK_INVALID_INDEX -1
-uint32_t object_stack_get_object_index(object_stack_t *, const widget_t * const);
+#define WIDGET_STACK_INVALID_INDEX -1
+uint32_t widget_stack_get_object_index(widget_stack_t *, const widget_t * const);
 
-widget_t *object_stack_get_object_on_top(object_stack_t *, dim_t x, dim_t y);
+widget_t *widget_stack_get_object_on_top(widget_stack_t *, dim_t x, dim_t y);
 
 #endif /* OBJECTSTACK_H_ */

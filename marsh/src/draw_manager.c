@@ -25,14 +25,14 @@
 
 
 #include "draw_manager.h"
-#include "object_stack.h"
+#include "widget_stack.h"
 
 
 struct s_draw_manager_instance
 {
 	MODULE_PRIVATE_DATA_DECLARATION;
 	my_log_t *log;
-	object_stack_t *assossiated_stack;
+	widget_stack_t *assossiated_stack;
 };
 
 #define SIGNATURE_DRAW_MANAGER (ADDRESS_TO_SIGNATURE_CAST)&draw_manager_create
@@ -81,7 +81,7 @@ void draw_manager_destroy(draw_manager_t * const instance)
 		free(instance);
 }
 
-void draw_manager_assossiate_drawing_stack(draw_manager_t * instance, object_stack_t * stack_instance_ptr)
+void draw_manager_assossiate_drawing_stack(draw_manager_t * instance, widget_stack_t * stack_instance_ptr)
 {
 	PTR_CHECK(instance, "drawManager");
 	INSTANCE_CHECK(instance, SIGNATURE_DRAW_MANAGER, "drawManager");
@@ -93,7 +93,7 @@ static void draw_objects(draw_manager_t* instance, int8_t start_offset, int8_t e
 {
 	while (start_offset <= end_offset)
 	{
-		widget_draw(object_stack_get_object(instance->assossiated_stack, start_offset));
+		widget_draw(widget_stack_get_object(instance->assossiated_stack, start_offset));
 		start_offset++;
 	}
 }
@@ -108,11 +108,11 @@ void draw_manager_draw(draw_manager_t * instance, widget_t * start_object)
 	if (!check_stack(instance))
 			return;
 
-	start_offset = object_stack_get_object_index(instance->assossiated_stack, start_object);
-	if (start_offset == OBJECTSTACK_INVALID_INDEX)
+	start_offset = widget_stack_get_object_index(instance->assossiated_stack, start_object);
+	if (start_offset == WIDGET_STACK_INVALID_INDEX)
 		return;
 
-	end_offset = object_stack_size(instance->assossiated_stack) - 1;
+	end_offset = widget_stack_size(instance->assossiated_stack) - 1;
 
 	draw_objects(instance, start_offset, end_offset);
 }
@@ -127,7 +127,7 @@ void draw_manager_draw_all(draw_manager_t * instance)
 	if (!check_stack(instance))
 			return;
 
-	end_offset = object_stack_size(instance->assossiated_stack) - 1;
+	end_offset = widget_stack_size(instance->assossiated_stack) - 1;
 
 	draw_objects(instance, 0, end_offset);
 }

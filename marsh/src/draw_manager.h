@@ -23,13 +23,13 @@
 #define DRAWMANAGER_H_
 
 #include "widget.h"
-#include "object_stack.h"
+#include "widget_stack.h"
 
 typedef struct s_draw_manager_instance draw_manager_t;
 
 draw_manager_t * draw_manager_create(void);
 void draw_manager_destroy(draw_manager_t * const);
-void draw_manager_assossiate_drawing_stack(draw_manager_t *, object_stack_t *);
+void draw_manager_assossiate_drawing_stack(draw_manager_t *, widget_stack_t *);
 void draw_manager_draw(draw_manager_t *, widget_t *);
 void draw_manager_draw_all(draw_manager_t *);
 #endif /* DRAWMANAGER_H_ */
