@@ -51,7 +51,8 @@ TEST(stack, addAndRead)
 	for (int var = 0; var < 10; ++var) {
 		clone_stack[var].a = var;
 		clone_stack[var].b = var%2;
-		CHECK_EQUAL(var, stack_add(cut, (BUFFER_PTR_RDOLY)&clone_stack[var]));
+		const int res = stack_add(cut, (BUFFER_PTR_RDOLY)&clone_stack[var]);
+		CHECK_EQUAL(var, res);
 	}
 
 	struct s_item read_item;
