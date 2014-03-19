@@ -28,7 +28,7 @@
 #include "interact.h"
 #include "dimension.h"
 
-struct s_widget_owner
+struct s_widget_interface
 {
 	void * owner_instance;
 	void (*draw)(void *);
@@ -38,7 +38,7 @@ struct s_widget_owner
 
 struct s_widget {
 	dimension_t dim;
-	widget_owner_t *owner;
+	widget_interface_t *owner;
 	interaction_engine_t *interaction;
 	MODULE_PRIVATE_DATA_DECLARATION;
 };

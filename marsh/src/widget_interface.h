@@ -19,13 +19,12 @@
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef WIDGETREFERENCE_H_
-#define WIDGETREFERENCE_H_
+#ifndef WIDGET_INTERFACE_H_
+#define WIDGET_INTERFACE_H_
 
 #include "types.h"
 
-widget_owner_t * widget_owner_create(void *owner, void (*draw_func)(void *), void (*destroy_func)(void *));
-void widget_owner_destroy(widget_owner_t * const obj);
+widget_interface_t * widget_interface_create(void *owner, void (*draw_func)(void *), void (*destroy_func)(void *));
+void widget_interface_destroy(widget_interface_t * const obj);
 
-
-#endif /* WIDGETREFERENCE_H_ */
+#endif /* WIDGET_INTERFACE_H_ */

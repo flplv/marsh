@@ -26,7 +26,7 @@
 #include "dimension.h"
 #include "canvas.h"
 #include "widget.h"
-#include "widget_owner.h"
+#include "widget_interface.h"
 #include "image.h"
 #include "bitmap_data/bitmap_data.h"
 
@@ -37,7 +37,7 @@ struct s_image_instance
 
 	my_log_t * log;
 	widget_t *glyph;
-	widget_owner_t *self_reference;
+	widget_interface_t *self_reference;
 
 	MODULE_PRIVATE_DATA_DECLARATION;
 };
@@ -87,7 +87,7 @@ image_t * image_create()
 	INSTANCE_SET(obj, SIGNATURE_IMAGE);
 
 	obj->log = my_log_create("Icon", MESSAGE);
-	obj->self_reference = widget_owner_create(obj, (void(*)(void *))draw, (void(*)(void *))image_destroy);
+	obj->self_reference = widget_interface_create(obj, (void(*)(void *))draw, (void(*)(void *))image_destroy);
 	obj->glyph = widget_create(obj->self_reference);
 	obj->bitmap = NULL;
 
@@ -101,7 +101,7 @@ void image_destroy(image_t * const obj)
 
 	my_log_destroy(obj->log);
 	widget_destroy(obj->glyph);
-	widget_owner_destroy(obj->self_reference);
+	widget_interface_destroy(obj->self_reference);
 
 	INSTANCE_CLEAR(obj);
 	free(obj);

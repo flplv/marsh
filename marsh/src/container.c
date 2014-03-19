@@ -25,7 +25,7 @@
 #include "container.h"
 #include "dimension.h"
 #include "widget.h"
-#include "widget_owner.h"
+#include "widget_interface.h"
 #include "object_stack.h"
 #include "draw_manager.h"
 #include "signalslot2.h"
@@ -36,7 +36,7 @@ struct s_container_instance
 {
 	my_log_t * log;
 	widget_t *glyph;
-	widget_owner_t *self_reference;
+	widget_interface_t *self_reference;
 	object_stack_t *stack;
 	draw_manager_t *dm;
 	slot2_t *press;
@@ -88,7 +88,7 @@ container_t* container_create()
 
 	INSTANCE_SET(obj, SIGNATURE_CONTAINER);
 	obj->log = my_log_create("Container", MESSAGE);
-	obj->self_reference = widget_owner_create(obj, abstract_draw, abstract_destroy);
+	obj->self_reference = widget_interface_create(obj, abstract_draw, abstract_destroy);
 	obj->glyph = widget_create(obj->self_reference);
 	obj->stack = object_stack_create();
 	obj->dm = draw_manager_create();
@@ -157,7 +157,7 @@ void container_destroy(container_t* const obj)
 
 	my_log_destroy(obj->log);
 	widget_destroy(obj->glyph);
-	widget_owner_destroy(obj->self_reference);
+	widget_interface_destroy(obj->self_reference);
 	draw_manager_destroy(obj->dm);
 	object_stack_destroy(obj->stack);
 	slot2_destroy(obj->press);

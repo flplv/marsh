@@ -24,7 +24,7 @@
 
 #include "types.h"
 
-widget_t * widget_create(widget_owner_t *);
+widget_t * widget_create(widget_interface_t *);
 void widget_destroy(widget_t * const obj);
 
 interaction_engine_t *widget_get_interaction_engine(widget_t*);

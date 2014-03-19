@@ -96,7 +96,7 @@ enum e_text_justification
 typedef struct s_text text_t;
 
 typedef struct s_widget widget_t;
-typedef struct s_widget_owner widget_owner_t;
+typedef struct s_widget_interface widget_interface_t;
 typedef struct s_button_engine button_engine_t;
 
 #define BUFFER_PTR_RDOLY const uint8_t *

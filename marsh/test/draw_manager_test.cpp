@@ -23,7 +23,7 @@ extern "C" {
 #include "framebuffer.h"
 #include "dimension.h"
 #include "widget.h"
-#include "widget_owner.h"
+#include "widget_interface.h"
 #include "widget_private.h"
 #include "rectangle.h"
 #include "object_stack.h"
@@ -66,16 +66,16 @@ TEST_GROUP(drawManager)
 	}
 
 	draw_manager_t * cut;
-	widget_owner_t *owner1, *owner2, *owner3;
+	widget_interface_t *owner1, *owner2, *owner3;
 	widget_t *obj1, *obj2, *obj3;
 	object_stack_t * stack;
 
 	void setup()
 	{
 		framebuffer_create();
-		owner1 = widget_owner_create(this, draw1mock, destroy1mock);
-		owner2 = widget_owner_create(this, draw2mock, destroy2mock);
-		owner3 = widget_owner_create(this, draw3mock, destroy3mock);
+		owner1 = widget_interface_create(this, draw1mock, destroy1mock);
+		owner2 = widget_interface_create(this, draw2mock, destroy2mock);
+		owner3 = widget_interface_create(this, draw3mock, destroy3mock);
 		obj1 = widget_create(owner1);
 		obj2 = widget_create(owner2);
 		obj3 = widget_create(owner3);
@@ -107,9 +107,9 @@ TEST_GROUP(drawManager)
 		widget_destroy(obj3);
 		widget_destroy(obj2);
 		widget_destroy(obj1);
-		widget_owner_destroy(owner1);
-		widget_owner_destroy(owner2);
-		widget_owner_destroy(owner3);
+		widget_interface_destroy(owner1);
+		widget_interface_destroy(owner2);
+		widget_interface_destroy(owner3);
 		framebuffer_destroy();
 	}
 };

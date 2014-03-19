@@ -28,7 +28,7 @@
 #include "color.h"
 #include "dimension.h"
 #include "widget.h"
-#include "widget_owner.h"
+#include "widget_interface.h"
 #include "signalslot.h"
 #include "canvas.h"
 #include "framebuffer.h"
@@ -43,7 +43,7 @@ struct s_text
 	BOOL ref_is_set;
 
 	slot_t *string_update_slot;
-	widget_owner_t *self_reference;
+	widget_interface_t *self_reference;
 	widget_t *glyph;
 
 	MODULE_PRIVATE_DATA_DECLARATION;
@@ -169,7 +169,7 @@ text_t* text_create()
 	slot_set(obj->string_update_slot, (slot_func)string_changed, (slot_arg)obj);
 	slot_connect(obj->string_update_slot, my_string_get_update_signal(obj->string));
 
-	obj->self_reference = widget_owner_create(obj, (void(*)(void *))text_draw, (void(*)(void *))text_destroy);
+	obj->self_reference = widget_interface_create(obj, (void(*)(void *))text_draw, (void(*)(void *))text_destroy);
 	obj->glyph = widget_create(obj->self_reference);
 
 	obj->just = TEXT_LEFT_JUST;
@@ -185,7 +185,7 @@ void text_destroy(text_t* obj)
 	INSTANCE_CHECK(obj, SIGNATURE_TEXT, "text");
 
 	widget_destroy(obj->glyph);
-	widget_owner_destroy(obj->self_reference);
+	widget_interface_destroy(obj->self_reference);
 
 	slot_destroy(obj->string_update_slot);
 	my_string_destroy(obj->string);

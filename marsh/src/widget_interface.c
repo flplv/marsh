@@ -21,17 +21,15 @@
 
 #include "helper/checks.h"
 
-
-
 #include "widget.h"
 #include "widget_private.h"
-#include "widget_owner.h"
+#include "widget_interface.h"
 
-widget_owner_t * widget_owner_create(void *owner, void (*draw_func)(void *), void (*destroy_func)(void *))
+widget_interface_t * widget_interface_create(void *owner, void (*draw_func)(void *), void (*destroy_func)(void *))
 {
-	widget_owner_t * obj = (widget_owner_t *)malloc(sizeof(struct s_widget_owner));
+	widget_interface_t * obj = (widget_interface_t *)malloc(sizeof(struct s_widget_interface));
 	MEMORY_ALLOC_CHECK(obj);
-	INSTANCE_SET(obj, (ADDRESS_TO_SIGNATURE_CAST)&widget_owner_create);
+	INSTANCE_SET(obj, (ADDRESS_TO_SIGNATURE_CAST)&widget_interface_create);
 
 	obj->owner_instance = owner;
 	obj->draw = draw_func;
@@ -40,10 +38,10 @@ widget_owner_t * widget_owner_create(void *owner, void (*draw_func)(void *), voi
 	return obj;
 }
 
-void widget_owner_destroy(widget_owner_t * const obj)
+void widget_interface_destroy(widget_interface_t * const obj)
 {
-	PTR_CHECK(obj, "widgetOwnerCallback");
-	INSTANCE_CHECK(obj, (ADDRESS_TO_SIGNATURE_CAST)&widget_owner_create, "widgetOwnerCallback");
+	PTR_CHECK(obj, "widget_interface");
+	INSTANCE_CHECK(obj, (ADDRESS_TO_SIGNATURE_CAST)&widget_interface_create, "widget_interface");
 	INSTANCE_CLEAR(obj);
 	free(obj);
 }

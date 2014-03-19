@@ -26,7 +26,7 @@
 #include "dimension.h"
 #include "canvas.h"
 #include "widget.h"
-#include "widget_owner.h"
+#include "widget_interface.h"
 #include "rectangle.h"
 
 
@@ -41,7 +41,7 @@ struct s_rectangle_instance
 	dim_t corner_radius;
 	my_log_t * log;
 	widget_t *glyph;
-	widget_owner_t *self_reference;
+	widget_interface_t *self_reference;
 };
 
 #define SIGNATURE_RECTANGLE (ADDRESS_TO_SIGNATURE_CAST)&rectangle_create
@@ -134,7 +134,7 @@ rectangle_t * rectangle_create()
 	INSTANCE_SET(obj, SIGNATURE_RECTANGLE);
 
 	obj->log = my_log_create("Rectangle", MESSAGE);
-	obj->self_reference = widget_owner_create(obj, (void(*)(void *))draw, abstract_destroy);
+	obj->self_reference = widget_interface_create(obj, (void(*)(void *))draw, abstract_destroy);
 	obj->glyph = widget_create(obj->self_reference);
 	obj->fill_color = color(0,0,0);
 	obj->is_filled = FALSE;
@@ -153,7 +153,7 @@ void rectangle_destroy(rectangle_t * const obj)
 
 	my_log_destroy(obj->log);
 	widget_destroy(obj->glyph);
-	widget_owner_destroy(obj->self_reference);
+	widget_interface_destroy(obj->self_reference);
 
 	INSTANCE_CLEAR(obj);
 	free(obj);

@@ -22,7 +22,7 @@
 #include "helper/checks.h"
 #include "button_engine.h"
 #include "widget.h"
-#include "widget_owner.h"
+#include "widget_interface.h"
 #include "dimension.h"
 #include "signalslot2.h"
 #include "interact.h"
@@ -31,7 +31,7 @@
 struct s_button_engine
 {
 	widget_t *glyph;
-	widget_owner_t *self_reference;
+	widget_interface_t *self_reference;
 
 	slot2_t *press;
 	slot2_t *release;
@@ -140,7 +140,7 @@ button_engine_t* button_engine_create()
 	MEMORY_ALLOC_CHECK(obj);
 	INSTANCE_SET(obj, SIGNATURE_BUTTON);
 
-	obj->self_reference = widget_owner_create(obj, (void(*)(void*))draw, (void(*)(void*))button_engine_destroy);
+	obj->self_reference = widget_interface_create(obj, (void(*)(void*))draw, (void(*)(void*))button_engine_destroy);
 	obj->glyph = widget_create(obj->self_reference);
 
 	obj->press = slot2_create();
@@ -165,7 +165,7 @@ void button_engine_destroy(button_engine_t *obj)
 	INSTANCE_CHECK(obj, SIGNATURE_BUTTON, "buttonEngine");
 
 	widget_destroy(obj->glyph);
-	widget_owner_destroy(obj->self_reference);
+	widget_interface_destroy(obj->self_reference);
 	slot2_destroy(obj->press);
 	slot2_destroy(obj->release);
 

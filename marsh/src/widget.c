@@ -31,7 +31,7 @@
 
 #define SIGNATURE_WIDGET (ADDRESS_TO_SIGNATURE_CAST)&widget_create
 
-widget_t * widget_create(widget_owner_t * owner)
+widget_t * widget_create(widget_interface_t * owner)
 {
 	widget_t * obj = (widget_t *)calloc(1, sizeof(struct s_widget));
 	MEMORY_ALLOC_CHECK(obj);

@@ -23,7 +23,7 @@ extern "C" {
 #include "color.h"
 #include "color_private.h"
 #include "widget.h"
-#include "widget_owner.h"
+#include "widget_interface.h"
 #include "widget_private.h"
 }
 
@@ -40,12 +40,12 @@ static void call(void *){
 TEST_GROUP(Widget)
 {
 	widget_t * cut;
-	widget_owner_t * owner;
+	widget_interface_t * owner;
 
 	void setup()
 	{
 		marshmallow_terminal_output = output_intercepter;
-		owner = widget_owner_create(NULL, NULL, NULL);
+		owner = widget_interface_create(NULL, NULL, NULL);
 		cut = widget_create(owner);
 		called = false;
 	}
@@ -53,7 +53,7 @@ TEST_GROUP(Widget)
 	void teardown()
 	{
 		widget_destroy(cut);
-		widget_owner_destroy(owner);
+		widget_interface_destroy(owner);
 		marshmallow_terminal_output = _stdout_output_impl;
 	}
 };
@@ -73,20 +73,20 @@ TEST(Widget, instance)
 	STRCMP_CONTAINS("widget", intercepted_output[2]);
 	STRCMP_CONTAINS("Invalid Instance", intercepted_output[0]);
 
-	widget_owner_destroy(owner);
-	widget_owner_destroy(owner);
-	STRCMP_CONTAINS("widgetOwnerCallback", intercepted_output[2]);
+	widget_interface_destroy(owner);
+	widget_interface_destroy(owner);
+	STRCMP_CONTAINS("widget_interface", intercepted_output[2]);
 	STRCMP_CONTAINS("Invalid Instance", intercepted_output[0]);
 }
 
 TEST(Widget, destroy)
 {
 	widget_t * cut2;
-	widget_owner_t * owner2;
-	owner2 = widget_owner_create(this, (void(*)(void*))2, call);
+	widget_interface_t * owner2;
+	owner2 = widget_interface_create(this, (void(*)(void*))2, call);
 	cut2 = widget_create(owner2);
 	widget_destroy_owner(cut2);
 	widget_destroy(cut2);
-	widget_owner_destroy(owner2);
+	widget_interface_destroy(owner2);
 	CHECK_TRUE(called);
 }
