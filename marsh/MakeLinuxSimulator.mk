@@ -1,3 +1,9 @@
+ifeq (1,${V})
+	SILENT =
+else
+	SILENT = @  
+endif
+
 CC=g++
 STRIP=strip
 
@@ -36,16 +42,16 @@ all: $(PROJECT)
 $(PROJECT): buildrepo printversions $(OBJS)
 	@echo
 	@echo Linking $(PROJECT)
-	@$(CC) $(OBJS) $(LDFLAGS) -o $@
+	$(SILENT)$(CC) $(OBJS) $(LDFLAGS) -o $@
 	@chmod +x $(PROJECT)
 
 $(OBJDIR)/%.o: %.cpp
 	@echo Compiling $(notdir $<)
-	@$(CC) $(CFLAGS) -c $< -o $@
+	$(SILENT)$(CC) $(CFLAGS) -c $< -o $@
 	
 $(OBJDIR)/%.o: %.c
 	@echo Compiling $(notdir $<)
-	@$(CC) $(CFLAGS) -c $< -o $@
+	$(SILENT)$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	rm $(PROJECT) $(OBJDIR) -Rf

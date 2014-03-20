@@ -1,6 +1,10 @@
 #Set this to @ to keep the makefile quiet
-SILENCE = @
- 
+ifeq (1,${V})
+	SILENCE =
+else
+	SILENCE = @  
+endif
+
 #---- Outputs ----#
 COMPONENT_NAME = marsh
 TARGET_LIB = \
