@@ -1,17 +1,29 @@
-# Object files
+# Build output
 *.o
-
-# Libraries
 *.lib
 *.a
-
-# Shared objects (inc. Windows DLLs)
 *.dll
 *.so
 *.so.*
 *.dylib
-
-# Executables
+objs
 *.exe
 *.out
 *.app
+marsh_simu
+marsh_tests
+cpputest-3.5
+
+# Temporary files
+*~
+*.md.html
+
+# Eclipse files
+.metadata
+.settings
+.csettings
+.project
+.cproject
+
+
+
