@@ -37,14 +37,14 @@ struct s_draw_manager_instance
 
 #define SIGNATURE_DRAW_MANAGER (ADDRESS_TO_SIGNATURE_CAST)&draw_manager_create
 
-static BOOL check_stack(draw_manager_t * instance)
+static bool check_stack(draw_manager_t * instance)
 {
 	if (!instance->assossiated_stack) {
 		global_my_log(ERROR, __FILE__, __LINE__, "draw_manager_assossiateDrawingStack not called.", "drawManager");
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 
 draw_manager_t * draw_manager_create(void)

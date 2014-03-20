@@ -25,7 +25,7 @@
 #include "types.h"
 
 
-BOOL dimension_good(const dimension_t *tgt);
+bool dimension_good(const dimension_t *tgt);
 void dimension_clear(dimension_t* tgt);
 
 void dimension_merge(dimension_t *tgt, const dimension_t *from);
@@ -35,7 +35,7 @@ void dimension_set_end_position(dimension_t *tgt, dim_t end_x, dim_t end_y);
 void dimension_set_size(dimension_t *tgt, dim_t width, dim_t height);
 void dimension_set_rest_if_possible(dimension_t * tgt);
 
-BOOL dimension_contains(const dimension_t *, dim_t x, dim_t y);
+bool dimension_contains(const dimension_t *, dim_t x, dim_t y);
 
 void pos_clear(pos_t *tgt);
 void area_clear(area_t *tgt);

@@ -130,12 +130,12 @@ static __inline void circle_loop(pixel_t* to, const pixel_t color, enum circle_a
 	int32_t d1 = 3 - (2 * radius);
 	int32_t x = 0;
 	int32_t y = radius;
-	BOOL rov = TRUE;
+	bool rov = true;
 	while (rov)
 	{
 		if (x >= y)
 		{
-			rov = FALSE;
+			rov = false;
 		}
 		if (d1 < 0)
 		{
@@ -156,12 +156,12 @@ static __inline void solid_circle_loop(pixel_t* to, const pixel_t color, enum ci
 	int32_t d1 = 3 - (2 * radius);
 	int32_t x = 0;
 	int32_t y = radius;
-	BOOL rov = TRUE;
+	bool rov = true;
 	while (rov)
 	{
 		if (x >= y)
 		{
-			rov = FALSE;
+			rov = false;
 		}
 		if (d1 < 0)
 		{
@@ -351,7 +351,7 @@ void canvas_set_color(canvas_t* canv, pixel_t pixel_color)
 	canv->color = pixel_color;
 }
 
-static BOOL bitmap_bit(BUFFER_PTR_RDOLY bitmap, uint32_t bit_offset)
+static bool bitmap_bit(BUFFER_PTR_RDOLY bitmap, uint32_t bit_offset)
 {
 	uint32_t byte_offset = 0;
 
@@ -362,9 +362,9 @@ static BOOL bitmap_bit(BUFFER_PTR_RDOLY bitmap, uint32_t bit_offset)
 	}
 
 	if (bitmap[byte_offset] & (1<<(7-bit_offset)))
-		return TRUE;
+		return true;
 
-	return FALSE;
+	return false;
 }
 
 static uint8_t bitmap_byte(BUFFER_PTR_RDOLY bitmap, uint32_t byte_offset)

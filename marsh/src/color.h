@@ -24,8 +24,8 @@
 
 #include "types.h"
 
-BOOL color_check(color_t);
-BOOL color_check_html_code(const char * html_color_code);
+bool color_check(color_t);
+bool color_check_html_code(const char * html_color_code);
 
 color_t color(uint8_t red, uint8_t green, uint8_t blue);
 color_t color_html(const char *);

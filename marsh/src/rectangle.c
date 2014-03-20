@@ -34,10 +34,10 @@ struct s_rectangle_instance
 {
 	MODULE_PRIVATE_DATA_DECLARATION;
 	color_t fill_color;
-	BOOL is_filled;
+	bool is_filled;
 	color_t border_color;
 	dim_t border_tickness;
-	BOOL has_border;
+	bool has_border;
 	dim_t corner_radius;
 	my_log_t * log;
 	widget_t *glyph;
@@ -46,26 +46,26 @@ struct s_rectangle_instance
 
 #define SIGNATURE_RECTANGLE (ADDRESS_TO_SIGNATURE_CAST)&rectangle_create
 
-static BOOL bad_corner_radius(rectangle_t * obj)
+static bool bad_corner_radius(rectangle_t * obj)
 {
 	dim_t least_dim  = get_smaller( widget_get_dimension(obj->glyph)->size.width,
 			widget_get_dimension(obj->glyph)->size.height);
 
 	if ( obj->corner_radius > (least_dim/2))
-		return TRUE;
+		return true;
 
-	return FALSE;
+	return false;
 }
 
-static BOOL ready_to_draw(rectangle_t * obj)
+static bool ready_to_draw(rectangle_t * obj)
 {
 	if (!dimension_good(widget_get_dimension(obj->glyph)))
-		return FALSE;
+		return false;
 
 	if (!obj->is_filled && !obj->has_border)
-		return FALSE;
+		return false;
 
-	return TRUE;
+	return true;
 }
 
 static void abstract_destroy(void * obj)
@@ -137,10 +137,10 @@ rectangle_t * rectangle_create()
 	obj->self_reference = widget_interface_create(obj, (void(*)(void *))draw, abstract_destroy);
 	obj->glyph = widget_create(obj->self_reference);
 	obj->fill_color = color(0,0,0);
-	obj->is_filled = FALSE;
+	obj->is_filled = false;
 	obj->border_color = color(0,0,0);
 	obj->border_tickness = 1;
-	obj->has_border = FALSE;
+	obj->has_border = false;
 	obj->corner_radius = 0;
 
 	return obj;
@@ -183,7 +183,7 @@ void rectangle_set_fill_color_html(rectangle_t * const obj, const char *html_col
 	INSTANCE_CHECK(obj, SIGNATURE_RECTANGLE, "rectangle");
 
 	obj->fill_color = color_html(html_color_code);
-	obj->is_filled = TRUE;
+	obj->is_filled = true;
 }
 
 widget_t *rectangle_get_widget(rectangle_t * const obj)
@@ -200,7 +200,7 @@ void rectangle_set_border_tickness(rectangle_t * const obj, dim_t tickness)
 	INSTANCE_CHECK(obj, SIGNATURE_RECTANGLE, "rectangle");
 
 	obj->border_tickness = tickness;
-	obj->has_border = TRUE;
+	obj->has_border = true;
 }
 
 void rectangle_set_border_color_html(rectangle_t * const obj, const char* html_color_code)
@@ -209,7 +209,7 @@ void rectangle_set_border_color_html(rectangle_t * const obj, const char* html_c
 	INSTANCE_CHECK(obj, SIGNATURE_RECTANGLE, "rectangle");
 
 	obj->border_color = color_html(html_color_code);
-	obj->has_border = TRUE;
+	obj->has_border = true;
 }
 
 void rectangle_set_rounded_corner_radius(rectangle_t * const obj, dim_t radius)

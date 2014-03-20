@@ -31,7 +31,7 @@ struct s_bitmap
 	const void *bitmap;
 	const uint32_t width;  // width of char 'c' = width[index['c']];
 	const uint32_t height;
-	const BOOL single_channel;
+	const bool single_channel;
 	enum e_bitmap_buffer_data_width bitmap_data_width;
 };
 

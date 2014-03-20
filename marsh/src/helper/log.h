@@ -39,7 +39,7 @@ void my_log_destroy(my_log_t * const obj);
 void my_log(enum e_log_lvl, const char *file, int line, const char *, my_log_t *);
 void my_log_continue(const char *, my_log_t *);
 void my_log_continue_new_line(const char *, my_log_t *);
-BOOL my_log_assert(BOOL test, enum e_log_lvl lvl, const char *file, int line, const char * text, my_log_t * const);
+bool my_log_assert(bool test, enum e_log_lvl lvl, const char *file, int line, const char * text, my_log_t * const);
 
 void global_my_log(enum e_log_lvl lvl, const char *file, int line, const char * text, const char * owner);
 

@@ -40,7 +40,7 @@ struct s_text
 	color_t color;
 	enum e_text_justification just;
 	dim_t ref_x, ref_y;
-	BOOL ref_is_set;
+	bool ref_is_set;
 
 	slot_t *string_update_slot;
 	widget_interface_t *self_reference;
@@ -51,28 +51,28 @@ struct s_text
 
 #define SIGNATURE_TEXT (ADDRESS_TO_SIGNATURE_CAST)&text_create
 
-static BOOL string_is_set(text_t* obj)
+static bool string_is_set(text_t* obj)
 {
 	if (my_string_len(obj->string))
-		return TRUE;
+		return true;
 
-	return FALSE;
+	return false;
 }
 
-static BOOL font_is_set(text_t* obj)
+static bool font_is_set(text_t* obj)
 {
 	if(!obj->font)
-		return FALSE;
+		return false;
 
-	return TRUE;
+	return true;
 }
 
-static BOOL ref_pos_is_set(text_t* obj)
+static bool ref_pos_is_set(text_t* obj)
 {
 	if(!obj->ref_is_set)
-		return FALSE;
+		return false;
 
-	return TRUE;
+	return true;
 }
 
 static void update_position_and_size(text_t *obj)
@@ -124,16 +124,16 @@ static void string_changed(text_t* obj)
 	update_position_and_size(obj);
 }
 
-static BOOL ready_to_draw(text_t * obj)
+static bool ready_to_draw(text_t * obj)
 {
 	if (!color_check(obj->color))
-		return FALSE;
+		return false;
 	if (!dimension_good(widget_get_dimension(obj->glyph)))
-		return FALSE;
+		return false;
 	if (my_string_len(obj->string) == 0)
-		return FALSE;
+		return false;
 
-	return TRUE;
+	return true;
 }
 
 static void text_draw(text_t * obj)
@@ -217,7 +217,7 @@ void text_set_reference_position(text_t* obj, dim_t x, dim_t y)
 	PTR_CHECK(obj, "text");
 	INSTANCE_CHECK(obj, SIGNATURE_TEXT, "text");
 
-	obj->ref_is_set = TRUE;
+	obj->ref_is_set = true;
 	obj->ref_x = x;
 	obj->ref_y = y;
 

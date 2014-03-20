@@ -45,15 +45,15 @@ struct s_icon_instance
 
 #define SIGNATURE_ICON (ADDRESS_TO_SIGNATURE_CAST)&icon_create
 
-static BOOL ready_to_draw(icon_t * obj)
+static bool ready_to_draw(icon_t * obj)
 {
 	if (!dimension_good(widget_get_dimension(obj->glyph)))
-		return FALSE;
+		return false;
 
 	if (obj->bitmap == NULL)
-		return FALSE;
+		return false;
 
-	return TRUE;
+	return true;
 }
 
 static void draw(icon_t * obj)
@@ -119,15 +119,15 @@ static void set_size(icon_t * obj, dim_t width, dim_t height)
 	dimension_set_rest_if_possible(widget_get_dimension(obj->glyph));
 }
 
-static BOOL is_bitmap_icon(bitmap_t* bitmap)
+static bool is_bitmap_icon(bitmap_t* bitmap)
 {
 	if (!bitmap->single_channel)
-		return FALSE;
+		return false;
 
 	if (bitmap->bitmap_data_width != BITMAP_BUFFER_8BPP && bitmap->bitmap_data_width != BITMAP_BUFFER_1BPP)
-		return FALSE;
+		return false;
 
-	return TRUE;
+	return true;
 }
 
 void icon_set_bitmap(icon_t * obj, bitmap_t * bitmap)

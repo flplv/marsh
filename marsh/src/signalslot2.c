@@ -34,7 +34,7 @@ struct s_slot2
 {
 	slot2_func func;
 	slot_arg arg0;
-	BOOL set;
+	bool set;
 	MODULE_PRIVATE_DATA_DECLARATION;
 };
 
@@ -84,13 +84,13 @@ void signal2_emit(signal2_t *obj, size_t x, size_t y)
 
 }
 
-static BOOL signal2_is_connected(signal2_t *obj, slot2_t *slot2)
+static bool signal2_is_connected(signal2_t *obj, slot2_t *slot2)
 {
 	uint32_t n_of_slot2s;
 	slot2_t *slot2_to_be_checked = NULL;
 
-	PTR_CHECK_RETURN(obj, "signal2", FALSE);
-	INSTANCE_CHECK_RETURN(obj, SIG_MOD_SIG, "signal2", FALSE);
+	PTR_CHECK_RETURN(obj, "signal2", false);
+	INSTANCE_CHECK_RETURN(obj, SIG_MOD_SIG, "signal2", false);
 
 	n_of_slot2s = stack_size(obj->slot2s_stack);
 
@@ -98,10 +98,10 @@ static BOOL signal2_is_connected(signal2_t *obj, slot2_t *slot2)
 	{
 		stack_get(obj->slot2s_stack, (BUFFER_PTR)&slot2_to_be_checked, n_of_slot2s);
 		if(slot2 == slot2_to_be_checked)
-			return TRUE;
+			return true;
 	}
 
-	return FALSE;
+	return false;
 }
 
 static void signal2_connect(signal2_t *obj, slot2_t *slot2)
@@ -145,7 +145,7 @@ void slot2_set(slot2_t *obj, slot2_func function, slot_arg arg)
 
 	obj->func = function;
 	obj->arg0 = arg;
-	obj->set = TRUE;
+	obj->set = true;
 }
 
 void slot2_connect(slot2_t *obj, signal2_t* signal2)

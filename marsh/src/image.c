@@ -44,15 +44,15 @@ struct s_image_instance
 
 #define SIGNATURE_IMAGE (ADDRESS_TO_SIGNATURE_CAST)&image_create
 
-static BOOL ready_to_draw(image_t * obj)
+static bool ready_to_draw(image_t * obj)
 {
 	if (!dimension_good(widget_get_dimension(obj->glyph)))
-		return FALSE;
+		return false;
 
 	if (obj->bitmap == NULL)
-		return FALSE;
+		return false;
 
-	return TRUE;
+	return true;
 }
 
 static void draw(image_t * obj)
@@ -116,12 +116,12 @@ static void set_size(image_t * obj, dim_t width, dim_t height)
 	dimension_set_rest_if_possible(widget_get_dimension(obj->glyph));
 }
 
-static BOOL is_bitmap_image(bitmap_t* bitmap)
+static bool is_bitmap_image(bitmap_t* bitmap)
 {
 	if (bitmap->single_channel)
-		return FALSE;
+		return false;
 
-	return TRUE;
+	return true;
 }
 
 void image_set_bitmap(image_t * obj, bitmap_t * bitmap)

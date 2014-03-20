@@ -54,25 +54,25 @@ void area_set(area_t* tgt, dim_t wid, dim_t hei)
 	tgt->height = hei;
 }
 
-static BOOL configured(const dimension_t* tgt)
+static bool configured(const dimension_t* tgt)
 {
-	BOOL bad = FALSE;
+	bool bad = false;
 
-	if (tgt->size_set == FALSE)
-		bad = TRUE;
+	if (tgt->size_set == false)
+		bad = true;
 
-	if (tgt->pos_start_set == FALSE)
-		bad = TRUE;
+	if (tgt->pos_start_set == false)
+		bad = true;
 
-	if (tgt->pos_end_set == FALSE)
-		bad = TRUE;
+	if (tgt->pos_end_set == false)
+		bad = true;
 
 	if (bad)
 	{
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 
 void dimension_set_rest_if_possible(dimension_t * tgt)
@@ -85,13 +85,13 @@ void dimension_set_rest_if_possible(dimension_t * tgt)
 		{
 			tgt->pos.end.x = tgt->pos.start.x + tgt->size.width - 1;
 			tgt->pos.end.y = tgt->pos.start.y + tgt->size.height - 1;
-			tgt->pos_end_set = TRUE;
+			tgt->pos_end_set = true;
 		}
 		else if (tgt->pos_end_set)
 		{
 			tgt->pos.start.x = tgt->pos.end.x - tgt->size.width + 1;
 			tgt->pos.start.y = tgt->pos.end.y - tgt->size.height + 1;
-			tgt->pos_start_set = TRUE;
+			tgt->pos_start_set = true;
 		}
 	}
 	else
@@ -103,33 +103,33 @@ void dimension_set_rest_if_possible(dimension_t * tgt)
 
 		tgt->size.width  = tgt->pos.end.x - tgt->pos.end.x + 1;
 		tgt->size.height = tgt->pos.end.y - tgt->pos.end.y + 1;
-		tgt->size_set = TRUE;
+		tgt->size_set = true;
 	}
 }
 
-BOOL dimension_good(const dimension_t *tgt)
+bool dimension_good(const dimension_t *tgt)
 {
-	BOOL bad = FALSE;
+	bool bad = false;
 
 	PTR_CHECK_RETURN (tgt, "dimension", bad);
 
 	if (!configured(tgt)) {
-		return FALSE;
+		return false;
 	}
 
 	if (tgt->pos.start.x < 0)
-		bad = TRUE;
+		bad = true;
 	if (tgt->pos.start.y < 0)
-		bad = TRUE;
+		bad = true;
 	if (tgt->size.width < 0)
-		bad = TRUE;
+		bad = true;
 	if (tgt->size.height < 0)
-		bad = TRUE;
+		bad = true;
 
 	if (bad)
-		return FALSE;
+		return false;
 
-	return TRUE;
+	return true;
 }
 
 void dimension_merge(dimension_t* tgt, const dimension_t* from)
@@ -148,7 +148,7 @@ void dimension_merge(dimension_t* tgt, const dimension_t* from)
 		tgt->pos.start.y = get_smaller(tgt->pos.start.y, from->pos.start.y);
 		tgt->pos.end.x = get_bigger(tgt->pos.end.x, from->pos.end.x);
 		tgt->pos.end.y = get_bigger(tgt->pos.end.y, from->pos.end.y);
-		tgt->size_set = FALSE;
+		tgt->size_set = false;
 		dimension_set_rest_if_possible(tgt);
 	}
 	else
@@ -163,7 +163,7 @@ void dimension_set_start_position(dimension_t* tgt, dim_t start_x, dim_t start_y
 
 	tgt->pos.start.x = start_x;
 	tgt->pos.start.y = start_y;
-	tgt->pos_start_set = TRUE;
+	tgt->pos_start_set = true;
 }
 
 void dimension_set_end_position(dimension_t* tgt, dim_t end_x, dim_t end_y)
@@ -172,7 +172,7 @@ void dimension_set_end_position(dimension_t* tgt, dim_t end_x, dim_t end_y)
 
 	tgt->pos.end.x = end_x;
 	tgt->pos.end.y = end_y;
-	tgt->pos_end_set = TRUE;
+	tgt->pos_end_set = true;
 }
 
 void dimension_set_size(dimension_t* tgt, dim_t width, dim_t height)
@@ -181,29 +181,29 @@ void dimension_set_size(dimension_t* tgt, dim_t width, dim_t height)
 
 	tgt->size.height = height;
 	tgt->size.width = width;
-	tgt->size_set = TRUE;
+	tgt->size_set = true;
 }
 
-BOOL dimension_contains(const dimension_t* dim, dim_t x, dim_t y)
+bool dimension_contains(const dimension_t* dim, dim_t x, dim_t y)
 {
 	if (!dimension_good(dim)) {
 		global_my_log(ERROR, __FILE__, __LINE__, "\"dim\" Badly configured", "dimension");
-		return FALSE;
+		return false;
 	}
 
 	if (x < dim->pos.start.x)
-		return FALSE;
+		return false;
 
 	if (y < dim->pos.start.y)
-		return FALSE;
+		return false;
 
 	if (x > dim->pos.end.x)
-		return FALSE;
+		return false;
 
 	if (y > dim->pos.end.y)
-		return FALSE;
+		return false;
 
-	return TRUE;
+	return true;
 }
 
 void dimension_clear(dimension_t* tgt)

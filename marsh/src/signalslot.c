@@ -34,7 +34,7 @@ struct s_slot
 {
 	slot_func func;
 	slot_arg arg0;
-	BOOL set;
+	bool set;
 	MODULE_PRIVATE_DATA_DECLARATION;
 };
 
@@ -84,13 +84,13 @@ void signal_emit(signal_t *obj)
 
 }
 
-static BOOL signal_is_connected(signal_t *obj, slot_t *slot)
+static bool signal_is_connected(signal_t *obj, slot_t *slot)
 {
 	uint32_t n_of_slots;
 	slot_t *slot_to_be_checked = NULL;
 
-	PTR_CHECK_RETURN(obj, "signal", FALSE);
-	INSTANCE_CHECK_RETURN(obj, SIG_MOD_SIG, "signal", FALSE);
+	PTR_CHECK_RETURN(obj, "signal", false);
+	INSTANCE_CHECK_RETURN(obj, SIG_MOD_SIG, "signal", false);
 
 	n_of_slots = stack_size(obj->slots_stack);
 
@@ -98,10 +98,10 @@ static BOOL signal_is_connected(signal_t *obj, slot_t *slot)
 	{
 		stack_get(obj->slots_stack, (BUFFER_PTR)&slot_to_be_checked, n_of_slots);
 		if(slot == slot_to_be_checked)
-			return TRUE;
+			return true;
 	}
 
-	return FALSE;
+	return false;
 }
 
 static void signal_connect(signal_t *obj, slot_t *slot)
@@ -145,7 +145,7 @@ void slot_set(slot_t *obj, slot_func function, slot_arg arg)
 
 	obj->func = function;
 	obj->arg0 = arg;
-	obj->set = TRUE;
+	obj->set = true;
 }
 
 void slot_connect(slot_t *obj, signal_t* signal)

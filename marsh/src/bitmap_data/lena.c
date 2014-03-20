@@ -287,7 +287,7 @@ const struct s_bitmap _lena =
 	_lena_data,
 	256,
 	256,
-	FALSE,
+	false,
 	BITMAP_BUFFER_16BPP,
 };
 

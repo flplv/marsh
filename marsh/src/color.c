@@ -35,29 +35,29 @@ color_t color_null(void)
 	return *(color_t *)&invalid_color;
 }
 
-BOOL color_check_html_code(const char * html_color_code)
+bool color_check_html_code(const char * html_color_code)
 {
 	uint32_t size = strlen(html_color_code);
 
 	if(size != 7)
-		return FALSE;
+		return false;
 	if(html_color_code[0] != '#')
-		return FALSE;
+		return false;
 
 	while(--size)
 	{
 		if (!charactere_is_hex(html_color_code[size]))
-			return FALSE;
+			return false;
 	}
 
-	return TRUE;
+	return true;
 }
 
-static BOOL _color_check(const color_t color)
+static bool _color_check(const color_t color)
 {
 	if (((struct s_color*)&color)->flag == VALID_COLOR_FLAG)
-		return TRUE;
-	return FALSE;
+		return true;
+	return false;
 }
 
 color_t color(uint8_t red, uint8_t green, uint8_t blue)
@@ -137,7 +137,7 @@ color_t color_from_pixel(const pixel_t pixel_color)
 	return ret_color;
 }
 
-BOOL color_check(color_t color)
+bool color_check(color_t color)
 {
 	return _color_check(color);
 }

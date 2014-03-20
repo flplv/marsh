@@ -31,19 +31,7 @@
 extern int (*marshmallow_terminal_output)(const char * str);
 
 #include <stdint.h>
-
-#ifndef FALSE
-#define FALSE 0
-#endif
-#ifndef TRUE
-#define TRUE 1
-#endif
-#ifndef BOOL
-#define BOOL uint32_t
-#endif
-#ifndef __SIZE_TYPE__
-typedef unsigned int size_t;
-#endif
+#include <stdbool.h>
 
 typedef int32_t dim_t;
 typedef uint16_t pixel_t;

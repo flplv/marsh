@@ -30,12 +30,12 @@
 
 static pixel_t* pFb;
 
-static BOOL _fb_not_initd(void)
+static bool _fb_not_initd(void)
 {
 	if (!pFb)
-		return TRUE;
+		return true;
 	else
-		return FALSE;
+		return false;
 }
 
 void framebuffer_create()

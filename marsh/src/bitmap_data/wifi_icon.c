@@ -69,7 +69,7 @@ static const struct s_bitmap _wifi_icon =
 	_wifi_icon_data,
 	50,
 	39,
-	TRUE,
+	true,
 	BITMAP_BUFFER_8BPP,
 };
 

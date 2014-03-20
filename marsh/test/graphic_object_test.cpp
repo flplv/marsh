@@ -60,9 +60,9 @@ TEST_GROUP(Widget)
 
 TEST(Widget, instance)
 {
-	CHECK_EQUAL(cut->dim.size_set, FALSE);
-	CHECK_EQUAL(cut->dim.pos_start_set, FALSE);
-	CHECK_EQUAL(cut->dim.pos_end_set, FALSE);
+	CHECK_EQUAL(cut->dim.size_set, false);
+	CHECK_EQUAL(cut->dim.pos_start_set, false);
+	CHECK_EQUAL(cut->dim.pos_end_set, false);
 
 	CHECK_EQUAL((void*)0, cut->owner->owner_instance);
 	CHECK_EQUAL((void(*)(void*))0, cut->owner->draw);

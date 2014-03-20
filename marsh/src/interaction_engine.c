@@ -34,8 +34,8 @@ struct s_interaction_engine {
 	signal2_t *release_sig;
 	dimension_t *dimension;
 
-	BOOL is_interactable;
-	BOOL pressing;
+	bool is_interactable;
+	bool pressing;
 
 	MODULE_PRIVATE_DATA_DECLARATION;
 };
@@ -54,7 +54,7 @@ interaction_engine_t* interaction_engine_create(dimension_t * owner_dimension)
 	obj->press_sig = signal2_create();
 	obj->release_sig = signal2_create();
 	obj->dimension = owner_dimension;
-	obj->is_interactable = TRUE;
+	obj->is_interactable = true;
 
 	return obj;
 }
@@ -104,7 +104,7 @@ void interaction_engine_press(interaction_engine_t *obj, dim_t x, dim_t y)
 	if (obj->is_interactable)
 	{
 		set_prio_release(obj);
-		obj->pressing = TRUE;
+		obj->pressing = true;
 	}
 
 	signal2_emit(obj->press_sig, x, y);
@@ -122,7 +122,7 @@ void interaction_engine_release(interaction_engine_t *obj, dim_t x, dim_t y)
 			if (dimension_contains(obj->dimension, x, y))
 				interaction_engine_click(obj);
 		}
-		obj->pressing = FALSE;
+		obj->pressing = false;
 	}
 
 
@@ -158,5 +158,5 @@ void interaction_engine_disable_interaction_logic(interaction_engine_t* obj)
 	PTR_CHECK(obj, "interactionInterface");
 	INSTANCE_CHECK(obj, SIGNATURE_INTERACTION_INTERFACE, "interactionInterface");
 
-	obj->is_interactable = FALSE;
+	obj->is_interactable = false;
 }

@@ -119,18 +119,18 @@ void my_log_continue_new_line(const char * text, my_log_t * const owner)
 	owner->stream_output(text);
 }
 
-BOOL my_log_assert(BOOL test, enum e_log_lvl lvl, const char *file, int line, const char * text, my_log_t * const owner)
+bool my_log_assert(bool test, enum e_log_lvl lvl, const char *file, int line, const char * text, my_log_t * const owner)
 {
 	if (!owner)
-		return FALSE;
+		return false;
 
 	if (!test)
 	{
 		my_log(lvl, file, line, "Assertion Failed: ", owner);
 		my_log_continue(text, owner);
-		return TRUE;
+		return true;
 	}
-	return FALSE;
+	return false;
 }
 
 void global_my_log(enum e_log_lvl lvl, const char *file, int line, const char * text, const char * owner)

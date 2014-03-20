@@ -67,13 +67,13 @@ static void draw(button_engine_t * obj)
 	widget_draw(*obj->current_state);
 }
 
-static BOOL valid_interaction(button_engine_t * obj, size_t x, size_t y)
+static bool valid_interaction(button_engine_t * obj, size_t x, size_t y)
 {
 	if (dimension_contains(
 			widget_get_dimension(*obj->current_state), x, y))
-		return TRUE;
+		return true;
 
-	return FALSE;
+	return false;
 }
 
 static void action_press(button_engine_t * obj, size_t x, size_t y)
