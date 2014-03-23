@@ -26,8 +26,8 @@
 
 typedef struct s_container_instance container_t;
 
-container_t *container_create(void);
-void container_destroy(container_t * const);
+container_t *container_new(void);
+void container_delete(container_t * const);
 
 void container_add(container_t *, widget_t *);
 widget_t *container_get_widget(container_t * const obj);

@@ -37,12 +37,12 @@ TEST_GROUP(stack)
 
 	void setup()
 	{
-		cut = stack_create(sizeof(struct s_item));
+		cut = stack_new(sizeof(struct s_item));
 	}
 
 	void teardown()
 	{
-		stack_destroy(cut);
+		stack_delete(cut);
 	}
 };
 

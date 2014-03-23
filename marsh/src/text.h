@@ -26,8 +26,8 @@
 #include "font_data/fonts.h"
 #include "helper/my_string.h"
 
-text_t* text_create(void);
-void text_destroy(text_t *);
+text_t* text_new(void);
+void text_delete(text_t *);
 
 my_string_t* text_get_string(text_t* obj);
 

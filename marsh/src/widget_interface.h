@@ -24,7 +24,7 @@
 
 #include "types.h"
 
-widget_interface_t * widget_interface_create(void *owner, void (*draw_func)(void *), void (*destroy_func)(void *));
-void widget_interface_destroy(widget_interface_t * const obj);
+widget_interface_t * widget_interface_new(void *owner, void (*draw_func)(void *), void (*destroy_func)(void *));
+void widget_interface_delete(widget_interface_t * const obj);
 
 #endif /* WIDGET_INTERFACE_H_ */

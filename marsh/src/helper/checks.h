@@ -49,33 +49,4 @@
 		return __ret__; \
 	}
 
-#define	SIGNATURE_NULL ((void(*)(void))-1)
-
-#define MODULE_PRIVATE_DATA_DECLARATION void(*__sig_)(void)
-#define ADDRESS_TO_SIGNATURE_CAST void(*)(void)
-
-#define INSTANCE_SET(__instance, __signature) __instance->__sig_ = __signature
-#define INSTANCE_GET(__instance) __instance->__sig_
-#define INSTANCE_CLEAR(__instance) __instance->__sig_ = SIGNATURE_NULL
-
-#define INSTANCE_CHECK(__instance, __signature, __module__)\
-	if (__instance->__sig_ != __signature) \
-	{ \
-		global_my_log(ERROR, __FILE__, __LINE__, "Invalid Instance", __module__); \
-		return; \
-	}
-
-#define INSTANCE_CHECK_SILENT(__instance, __signature, __module__)\
-	if (__instance->__sig_ != __signature) \
-	{ \
-		return; \
-	}
-
-#define INSTANCE_CHECK_RETURN(__instance, __signature, __module__, __RETURN)\
-	if (__instance->__sig_ != __signature) \
-	{ \
-		global_my_log(ERROR, __FILE__, __LINE__, "Invalid Instance", __module__); \
-		return __RETURN; \
-	}
-
 #endif /* OBJCHECK_H_ */

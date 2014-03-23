@@ -45,11 +45,7 @@ struct s_text
 	slot_t *string_update_slot;
 	widget_interface_t *self_reference;
 	widget_t *glyph;
-
-	MODULE_PRIVATE_DATA_DECLARATION;
 };
-
-#define SIGNATURE_TEXT (ADDRESS_TO_SIGNATURE_CAST)&text_create
 
 static bool string_is_set(text_t* obj)
 {
@@ -145,7 +141,7 @@ static void text_draw(text_t * obj)
 		return;
 	}
 
-	canv = canvas_create(widget_get_dimension(obj->glyph));
+	canv = canvas_new(widget_get_dimension(obj->glyph));
 	canvas_set_color(canv, color_to_pixel(obj->color));
 	if (obj->just == TEXT_LEFT_JUST)
 		font_draw_left_just(obj->font, obj->string, canv);
@@ -153,24 +149,23 @@ static void text_draw(text_t * obj)
 		font_draw_center_just(obj->font, obj->string, canv);
 	else if (obj->just == TEXT_RIGHT_JUST)
 		font_draw_right_just(obj->font, obj->string, canv);
-	canvas_destroy(canv);
+	canvas_delete(canv);
 }
-text_t* text_create()
+text_t* text_new()
 {
 	text_t * obj;
 
 	obj = (text_t *)calloc(1, sizeof(text_t));
 	MEMORY_ALLOC_CHECK(obj);
-	INSTANCE_SET(obj, SIGNATURE_TEXT);
 
-	obj->string = my_string_create();
+	obj->string = my_string_new();
 
-	obj->string_update_slot = slot_create();
+	obj->string_update_slot = slot_new();
 	slot_set(obj->string_update_slot, (slot_func)string_changed, (slot_arg)obj);
 	slot_connect(obj->string_update_slot, my_string_get_update_signal(obj->string));
 
-	obj->self_reference = widget_interface_create(obj, (void(*)(void *))text_draw, (void(*)(void *))text_destroy);
-	obj->glyph = widget_create(obj->self_reference);
+	obj->self_reference = widget_interface_new(obj, (void(*)(void *))text_draw, (void(*)(void *))text_delete);
+	obj->glyph = widget_new(obj->self_reference);
 
 	obj->just = TEXT_LEFT_JUST;
 
@@ -179,25 +174,22 @@ text_t* text_create()
 	return obj;
 }
 
-void text_destroy(text_t* obj)
+void text_delete(text_t* obj)
 {
 	PTR_CHECK(obj, "text");
-	INSTANCE_CHECK(obj, SIGNATURE_TEXT, "text");
 
-	widget_destroy(obj->glyph);
-	widget_interface_destroy(obj->self_reference);
+	widget_delete(obj->glyph);
+	widget_interface_delete(obj->self_reference);
 
-	slot_destroy(obj->string_update_slot);
-	my_string_destroy(obj->string);
+	slot_delete(obj->string_update_slot);
+	my_string_delete(obj->string);
 
-	INSTANCE_CLEAR(obj);
 	free(obj);
 }
 
 my_string_t* text_get_string(text_t* obj)
 {
 	PTR_CHECK_RETURN(obj, "text", NULL);
-	INSTANCE_CHECK_RETURN(obj, SIGNATURE_TEXT, "text", NULL);
 
 	return obj->string;
 }
@@ -206,7 +198,6 @@ my_string_t* text_get_string(text_t* obj)
 void text_set_font(text_t* obj, font_t *font)
 {
 	PTR_CHECK(obj, "text");
-	INSTANCE_CHECK(obj, SIGNATURE_TEXT, "text");
 
 	obj->font = font;
 	update_position_and_size(obj);
@@ -215,7 +206,6 @@ void text_set_font(text_t* obj, font_t *font)
 void text_set_reference_position(text_t* obj, dim_t x, dim_t y)
 {
 	PTR_CHECK(obj, "text");
-	INSTANCE_CHECK(obj, SIGNATURE_TEXT, "text");
 
 	obj->ref_is_set = true;
 	obj->ref_x = x;
@@ -227,7 +217,6 @@ void text_set_reference_position(text_t* obj, dim_t x, dim_t y)
 void text_set_color_html(text_t* obj, const char* html_color_code)
 {
 	PTR_CHECK(obj, "text");
-	INSTANCE_CHECK(obj, SIGNATURE_TEXT, "text");
 
 	obj->color = color_html(html_color_code);
 }
@@ -235,7 +224,6 @@ void text_set_color_html(text_t* obj, const char* html_color_code)
 void text_set_justification(text_t * obj, enum e_text_justification just)
 {
 	PTR_CHECK(obj, "text");
-	INSTANCE_CHECK(obj, SIGNATURE_TEXT, "text");
 
 	obj->just = just;
 	update_position_and_size(obj);
@@ -244,7 +232,6 @@ void text_set_justification(text_t * obj, enum e_text_justification just)
 widget_t* text_get_widget(text_t* const obj)
 {
 	PTR_CHECK_RETURN(obj, "text", NULL);
-	INSTANCE_CHECK_RETURN(obj, SIGNATURE_TEXT, "text", NULL);
 
 	return obj->glyph;
 }

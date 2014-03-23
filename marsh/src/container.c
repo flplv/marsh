@@ -42,19 +42,16 @@ struct s_container_instance
 	slot2_t *press;
 	slot2_t *release;
 	slot_t *update_dim;
-	MODULE_PRIVATE_DATA_DECLARATION;
 };
-
-#define SIGNATURE_CONTAINER (ADDRESS_TO_SIGNATURE_CAST)&container_create
 
 static void abstract_draw(void *obj)
 {
 	container_draw((container_t *)obj);
 }
 
-static void abstract_destroy(void * obj)
+static void abstract_delete(void * obj)
 {
-	container_destroy((container_t *)obj);
+	container_delete((container_t *)obj);
 }
 
 static void press(container_t *obj, size_t x, size_t y)
@@ -62,7 +59,6 @@ static void press(container_t *obj, size_t x, size_t y)
 	widget_t *obj_to_click;
 
 	PTR_CHECK(obj, "container");
-	INSTANCE_CHECK(obj, SIGNATURE_CONTAINER, "container");
 
 	obj_to_click = widget_stack_get_object_on_top(obj->stack, x, y);
 	if (obj_to_click)
@@ -74,28 +70,26 @@ static void release(container_t *obj, size_t x, size_t y)
 	widget_t *obj_to_click;
 
 	PTR_CHECK(obj, "container");
-	INSTANCE_CHECK(obj, SIGNATURE_CONTAINER, "container");
 
 	obj_to_click = widget_stack_get_object_on_top(obj->stack, x, y);
 	if (obj_to_click)
 		interaction_engine_release(widget_get_interaction_engine(obj_to_click), x, y);
 }
 
-container_t* container_create()
+container_t* container_new()
 {
 	container_t * obj = (container_t *) malloc(sizeof(struct s_container_instance));
 	MEMORY_ALLOC_CHECK(obj);
 
-	INSTANCE_SET(obj, SIGNATURE_CONTAINER);
-	obj->log = my_log_create("Container", MESSAGE);
-	obj->self_reference = widget_interface_create(obj, abstract_draw, abstract_destroy);
-	obj->glyph = widget_create(obj->self_reference);
-	obj->stack = widget_stack_create();
-	obj->dm = draw_manager_create();
+	obj->log = my_log_new("Container", MESSAGE);
+	obj->self_reference = widget_interface_new(obj, abstract_draw, abstract_delete);
+	obj->glyph = widget_new(obj->self_reference);
+	obj->stack = widget_stack_new();
+	obj->dm = draw_manager_new();
 	draw_manager_assossiate_drawing_stack(obj->dm, obj->stack);
 
-	obj->press = slot2_create();
-	obj->release = slot2_create();
+	obj->press = slot2_new();
+	obj->release = slot2_new();
 
 	slot2_set(obj->press, (slot2_func)press, obj);
 	slot2_set(obj->release, (slot2_func)release, obj);
@@ -118,14 +112,13 @@ static void destroy_all_objects_in_stack(container_t* obj)
 	uint32_t size;
 
 	PTR_CHECK(obj, "container");
-	INSTANCE_CHECK(obj, SIGNATURE_CONTAINER, "container");
 
 	size = widget_stack_size(obj->stack);
 
 	while(size--)
 	{
 		object_to_be_deleted = widget_stack_get_object(obj->stack, size);
-		widget_destroy_owner(object_to_be_deleted);
+		widget_delete_interface(object_to_be_deleted);
 	}
 }
 
@@ -148,29 +141,26 @@ static void update_dimensions(container_t *obj)
 }
 
 
-void container_destroy(container_t* const obj)
+void container_delete(container_t* const obj)
 {
 	PTR_CHECK(obj, "container");
-	INSTANCE_CHECK(obj, SIGNATURE_CONTAINER, "container");
 
 	destroy_all_objects_in_stack(obj);
 
-	my_log_destroy(obj->log);
-	widget_destroy(obj->glyph);
-	widget_interface_destroy(obj->self_reference);
-	draw_manager_destroy(obj->dm);
-	widget_stack_destroy(obj->stack);
-	slot2_destroy(obj->press);
-	slot2_destroy(obj->release);
+	my_log_delete(obj->log);
+	widget_delete(obj->glyph);
+	widget_interface_delete(obj->self_reference);
+	draw_manager_delete(obj->dm);
+	widget_stack_delete(obj->stack);
+	slot2_delete(obj->press);
+	slot2_delete(obj->release);
 
-	INSTANCE_CLEAR(obj);
 	free(obj);
 }
 
 void container_add(container_t* obj, widget_t* graphic_to_be_added)
 {
 	PTR_CHECK(obj, "container");
-	INSTANCE_CHECK(obj, SIGNATURE_CONTAINER, "container");
 
 	widget_stack_add(obj->stack, graphic_to_be_added);
 	update_dimensions(obj);
@@ -179,7 +169,6 @@ void container_add(container_t* obj, widget_t* graphic_to_be_added)
 widget_t *container_get_widget(container_t * const obj)
 {
 	PTR_CHECK_RETURN (obj, "container", NULL);
-	INSTANCE_CHECK_RETURN(obj, SIGNATURE_CONTAINER, "container", NULL);
 
 	return obj->glyph;
 }
@@ -187,7 +176,6 @@ widget_t *container_get_widget(container_t * const obj)
 void container_draw(container_t* obj)
 {
 	PTR_CHECK(obj, "container");
-	INSTANCE_CHECK(obj, SIGNATURE_CONTAINER, "container");
 
 	draw_manager_draw_all(obj->dm);
 }

@@ -37,6 +37,9 @@ void dimension_set_rest_if_possible(dimension_t * tgt);
 
 bool dimension_contains(const dimension_t *, dim_t x, dim_t y);
 
+pos_t dimension_get_position(const dimension_t * obj);
+area_t dimension_get_size(const dimension_t * obj);
+
 void pos_clear(pos_t *tgt);
 void area_clear(area_t *tgt);
 

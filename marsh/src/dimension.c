@@ -186,6 +186,8 @@ void dimension_set_size(dimension_t* tgt, dim_t width, dim_t height)
 
 bool dimension_contains(const dimension_t* dim, dim_t x, dim_t y)
 {
+	PTR_CHECK_RETURN(dim, "dimension", false);
+
 	if (!dimension_good(dim)) {
 		global_my_log(ERROR, __FILE__, __LINE__, "\"dim\" Badly configured", "dimension");
 		return false;
@@ -208,5 +210,33 @@ bool dimension_contains(const dimension_t* dim, dim_t x, dim_t y)
 
 void dimension_clear(dimension_t* tgt)
 {
+	PTR_CHECK(tgt, "dimension");
+
 	memset(tgt, 0x00, sizeof(dimension_t));
+}
+
+pos_t dimension_get_position(const dimension_t * obj)
+{
+	pos_t bad_ret;
+	pos_clear(&bad_ret);
+
+	PTR_CHECK_RETURN (obj, "dimension", bad_ret);
+
+	if (!dimension_good(obj))
+		return bad_ret;
+
+	return obj->pos;
+}
+
+area_t dimension_get_size(const dimension_t * obj)
+{
+	area_t bad_ret;
+	area_clear(&bad_ret);
+
+	PTR_CHECK_RETURN (obj, "dimension", bad_ret);
+
+	if (!dimension_good(obj))
+		return bad_ret;
+
+	return obj->size;
 }

@@ -24,8 +24,8 @@
 
 #include "types.h"
 
-button_engine_t *button_engine_create(void);
-void button_engine_destroy(button_engine_t *);
+button_engine_t *button_engine_new(void);
+void button_engine_delete(button_engine_t *);
 
 widget_t *button_engine_get_widget(button_engine_t *);
 

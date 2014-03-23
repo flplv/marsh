@@ -33,14 +33,12 @@ struct s_widget_interface
 	void * owner_instance;
 	void (*draw)(void *);
 	void (*destroy)(void *);
-	MODULE_PRIVATE_DATA_DECLARATION;
 };
 
 struct s_widget {
 	dimension_t dim;
-	widget_interface_t *owner;
+	widget_interface_t *interface;
 	interaction_engine_t *interaction;
-	MODULE_PRIVATE_DATA_DECLARATION;
 };
 
 #endif /* WIDGETPRIVATE_H_ */

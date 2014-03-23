@@ -34,13 +34,13 @@ TEST_GROUP(log)
 	my_log_t * cut;
 	void setup()
 	{
-		cut = my_log_create("TEST", MESSAGE);
+		cut = my_log_new("TEST", MESSAGE);
 		cut->stream_output = output_intercepter;
 	}
 
 	void teardown()
 	{
-		my_log_destroy(cut);
+		my_log_delete(cut);
 	}
 };
 

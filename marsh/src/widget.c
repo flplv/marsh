@@ -29,91 +29,53 @@
 #include "interact.h"
 #include "interaction_engine.h"
 
-#define SIGNATURE_WIDGET (ADDRESS_TO_SIGNATURE_CAST)&widget_create
-
-widget_t * widget_create(widget_interface_t * owner)
+widget_t * widget_new(widget_interface_t * interface)
 {
 	widget_t * obj = (widget_t *)calloc(1, sizeof(struct s_widget));
 	MEMORY_ALLOC_CHECK(obj);
 
-	INSTANCE_SET(obj, SIGNATURE_WIDGET);
-
 	dimension_clear(&obj->dim);
-	obj->owner = owner;
+	obj->interface = interface;
 
-	obj->interaction = interaction_engine_create(&obj->dim);
+	obj->interaction = interaction_engine_new(&obj->dim);
 
 	return obj;
 }
 
-void widget_destroy(widget_t * const obj)
+void widget_delete(widget_t * obj)
 {
 	PTR_CHECK(obj, "widget");
-	INSTANCE_CHECK(obj, SIGNATURE_WIDGET, "widget");
-	interaction_engine_destroy(obj->interaction);
-	INSTANCE_CLEAR(obj);
+	interaction_engine_delete(obj->interaction);
 	free(obj);
 }
 
-void widget_destroy_owner(widget_t * obj)
+void widget_delete_interface(widget_t * obj)
 {
 	PTR_CHECK(obj, "widget");
-	INSTANCE_CHECK(obj, SIGNATURE_WIDGET, "widget");
 
-	if (obj->owner->destroy && obj->owner->owner_instance)
+	if (obj->interface->destroy && obj->interface->owner_instance)
 	{
-		obj->owner->destroy(obj->owner->owner_instance);
+		obj->interface->destroy(obj->interface->owner_instance);
 	}
 }
 
-void widget_draw(widget_t * obj)
+void widget_draw(const widget_t * obj)
 {
 	PTR_CHECK(obj, "widget");
-	INSTANCE_CHECK(obj, SIGNATURE_WIDGET, "widget");
 
-	obj->owner->draw(obj->owner->owner_instance);
+	obj->interface->draw(obj->interface->owner_instance);
 }
 
 dimension_t *widget_get_dimension(widget_t *obj)
 {
 	PTR_CHECK_RETURN (obj, "widget", NULL);
-	INSTANCE_CHECK_RETURN(obj, SIGNATURE_WIDGET, "widget", NULL);
 
 	return &obj->dim;
-}
-
-pos_t widget_get_position(widget_t * obj)
-{
-	pos_t bad_ret;
-	pos_clear(&bad_ret);
-
-	PTR_CHECK_RETURN (obj, "widget", bad_ret);
-	INSTANCE_CHECK_RETURN(obj, SIGNATURE_WIDGET, "widget", bad_ret);
-
-	if (!dimension_good(&obj->dim))
-		return bad_ret;
-
-	return obj->dim.pos;
-}
-
-area_t widget_get_size(widget_t * obj)
-{
-	area_t bad_ret;
-	area_clear(&bad_ret);
-
-	PTR_CHECK_RETURN (obj, "widget", bad_ret);
-	INSTANCE_CHECK_RETURN(obj, SIGNATURE_WIDGET, "widget", bad_ret);
-
-	if (!dimension_good(&obj->dim))
-		return bad_ret;
-
-	return obj->dim.size;
 }
 
 interaction_engine_t* widget_get_interaction_engine(widget_t *obj)
 {
 	PTR_CHECK_RETURN (obj, "widget", NULL);
-	INSTANCE_CHECK_RETURN(obj, SIGNATURE_WIDGET, "widget", NULL);
 
 	return obj->interaction;
 }

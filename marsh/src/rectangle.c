@@ -32,7 +32,6 @@
 
 struct s_rectangle_instance
 {
-	MODULE_PRIVATE_DATA_DECLARATION;
 	color_t fill_color;
 	bool is_filled;
 	color_t border_color;
@@ -43,8 +42,6 @@ struct s_rectangle_instance
 	widget_t *glyph;
 	widget_interface_t *self_reference;
 };
-
-#define SIGNATURE_RECTANGLE (ADDRESS_TO_SIGNATURE_CAST)&rectangle_create
 
 static bool bad_corner_radius(rectangle_t * obj)
 {
@@ -68,14 +65,14 @@ static bool ready_to_draw(rectangle_t * obj)
 	return true;
 }
 
-static void abstract_destroy(void * obj)
+static void abstract_delete(void * obj)
 {
-	rectangle_destroy((rectangle_t *)obj);
+	rectangle_delete((rectangle_t *)obj);
 }
 
 static void decode_and_draw(rectangle_t* obj)
 {
-	canvas_t *canv = canvas_create(widget_get_dimension(obj->glyph));
+	canvas_t *canv = canvas_new(widget_get_dimension(obj->glyph));
 
 	if (obj->corner_radius)
 	{
@@ -100,7 +97,7 @@ static void decode_and_draw(rectangle_t* obj)
 		}
 	}
 
-	canvas_destroy(canv);
+	canvas_delete(canv);
 }
 
 static void draw(rectangle_t * obj)
@@ -108,7 +105,6 @@ static void draw(rectangle_t * obj)
 	dim_t least_dim;;
 
 	PTR_CHECK(obj, "rectangle");
-	INSTANCE_CHECK(obj, SIGNATURE_RECTANGLE, "rectangle");
 
 	if (!ready_to_draw(obj))
 	{
@@ -127,15 +123,14 @@ static void draw(rectangle_t * obj)
 	decode_and_draw(obj);
 }
 
-rectangle_t * rectangle_create()
+rectangle_t * rectangle_new()
 {
 	rectangle_t * obj = (rectangle_t *) calloc(1, sizeof(struct s_rectangle_instance));
 	MEMORY_ALLOC_CHECK(obj);
-	INSTANCE_SET(obj, SIGNATURE_RECTANGLE);
 
-	obj->log = my_log_create("Rectangle", MESSAGE);
-	obj->self_reference = widget_interface_create(obj, (void(*)(void *))draw, abstract_destroy);
-	obj->glyph = widget_create(obj->self_reference);
+	obj->log = my_log_new("Rectangle", MESSAGE);
+	obj->self_reference = widget_interface_new(obj, (void(*)(void *))draw, abstract_delete);
+	obj->glyph = widget_new(obj->self_reference);
 	obj->fill_color = color(0,0,0);
 	obj->is_filled = false;
 	obj->border_color = color(0,0,0);
@@ -146,23 +141,20 @@ rectangle_t * rectangle_create()
 	return obj;
 }
 
-void rectangle_destroy(rectangle_t * const obj)
+void rectangle_delete(rectangle_t * const obj)
 {
 	PTR_CHECK(obj, "rectangle");
-	INSTANCE_CHECK(obj, SIGNATURE_RECTANGLE, "rectangle");
 
-	my_log_destroy(obj->log);
-	widget_destroy(obj->glyph);
-	widget_interface_destroy(obj->self_reference);
+	my_log_delete(obj->log);
+	widget_delete(obj->glyph);
+	widget_interface_delete(obj->self_reference);
 
-	INSTANCE_CLEAR(obj);
 	free(obj);
 }
 
 void rectangle_set_size(rectangle_t * const obj, dim_t width, dim_t height)
 {
 	PTR_CHECK(obj, "rectangle");
-	INSTANCE_CHECK(obj, SIGNATURE_RECTANGLE, "rectangle");
 
 	dimension_set_size(widget_get_dimension(obj->glyph), width, height);
 	dimension_set_rest_if_possible(widget_get_dimension(obj->glyph));
@@ -171,7 +163,6 @@ void rectangle_set_size(rectangle_t * const obj, dim_t width, dim_t height)
 void rectangle_set_position(rectangle_t * const obj, dim_t x, dim_t y)
 {
 	PTR_CHECK(obj, "rectangle");
-	INSTANCE_CHECK(obj, SIGNATURE_RECTANGLE, "rectangle");
 
 	dimension_set_start_position(widget_get_dimension(obj->glyph), x, y);
 	dimension_set_rest_if_possible(widget_get_dimension(obj->glyph));
@@ -180,7 +171,6 @@ void rectangle_set_position(rectangle_t * const obj, dim_t x, dim_t y)
 void rectangle_set_fill_color_html(rectangle_t * const obj, const char *html_color_code)
 {
 	PTR_CHECK(obj, "rectangle");
-	INSTANCE_CHECK(obj, SIGNATURE_RECTANGLE, "rectangle");
 
 	obj->fill_color = color_html(html_color_code);
 	obj->is_filled = true;
@@ -189,7 +179,6 @@ void rectangle_set_fill_color_html(rectangle_t * const obj, const char *html_col
 widget_t *rectangle_get_widget(rectangle_t * const obj)
 {
 	PTR_CHECK_RETURN (obj, "rectangle", NULL);
-	INSTANCE_CHECK_RETURN(obj, SIGNATURE_RECTANGLE, "rectangle", NULL);
 
 	return obj->glyph;
 }
@@ -197,7 +186,6 @@ widget_t *rectangle_get_widget(rectangle_t * const obj)
 void rectangle_set_border_tickness(rectangle_t * const obj, dim_t tickness)
 {
 	PTR_CHECK(obj, "rectangle");
-	INSTANCE_CHECK(obj, SIGNATURE_RECTANGLE, "rectangle");
 
 	obj->border_tickness = tickness;
 	obj->has_border = true;
@@ -206,7 +194,6 @@ void rectangle_set_border_tickness(rectangle_t * const obj, dim_t tickness)
 void rectangle_set_border_color_html(rectangle_t * const obj, const char* html_color_code)
 {
 	PTR_CHECK(obj, "rectangle");
-	INSTANCE_CHECK(obj, SIGNATURE_RECTANGLE, "rectangle");
 
 	obj->border_color = color_html(html_color_code);
 	obj->has_border = true;
@@ -215,7 +202,6 @@ void rectangle_set_border_color_html(rectangle_t * const obj, const char* html_c
 void rectangle_set_rounded_corner_radius(rectangle_t * const obj, dim_t radius)
 {
 	PTR_CHECK(obj, "rectangle");
-	INSTANCE_CHECK(obj, SIGNATURE_RECTANGLE, "rectangle");
 
 	obj->corner_radius = radius;
 }

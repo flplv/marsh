@@ -33,8 +33,8 @@ enum e_log_lvl {
 typedef struct s_my_log_instance my_log_t;
 
 
-my_log_t * my_log_create(const char * title, enum e_log_lvl default_lvl);
-void my_log_destroy(my_log_t * const obj);
+my_log_t * my_log_new(const char * title, enum e_log_lvl default_lvl);
+void my_log_delete(my_log_t * const obj);
 
 void my_log(enum e_log_lvl, const char *file, int line, const char *, my_log_t *);
 void my_log_continue(const char *, my_log_t *);

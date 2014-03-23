@@ -30,12 +30,10 @@ struct s_stack
 	uint32_t used_slots;
 	uint32_t buffer_total_slots;
 	uint8_t *buffer;
-	MODULE_PRIVATE_DATA_DECLARATION;
 };
 
-#define SIGNATURE_STACK (ADDRESS_TO_SIGNATURE_CAST)&stack_create
 
-my_stack_t* stack_create(uint32_t item_size)
+my_stack_t* stack_new(uint32_t item_size)
 {
 	my_stack_t *obj;
 
@@ -46,8 +44,6 @@ my_stack_t* stack_create(uint32_t item_size)
 
 	obj = (my_stack_t*)calloc(1, sizeof(struct s_stack));
 	MEMORY_ALLOC_CHECK(obj);
-
-	INSTANCE_SET(obj, SIGNATURE_STACK);
 
 	obj->item_size = item_size;
 
@@ -60,21 +56,18 @@ my_stack_t* stack_create(uint32_t item_size)
 	return obj;
 }
 
-void stack_destroy(my_stack_t *obj)
+void stack_delete(my_stack_t *obj)
 {
 	PTR_CHECK(obj, "stack");
-	INSTANCE_CHECK(obj, SIGNATURE_STACK, "stack");
 
 	free(obj->buffer);
 
-	INSTANCE_CLEAR(obj);
 	free(obj);
 }
 
 uint32_t stack_add(my_stack_t *obj, BUFFER_PTR_RDOLY item)
 {
 	PTR_CHECK_RETURN (obj, "stack", -1);
-	INSTANCE_CHECK_RETURN(obj, SIGNATURE_STACK, "stack", -1);
 
 	if (obj->used_slots == obj->buffer_total_slots)
 	{

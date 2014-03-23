@@ -39,7 +39,7 @@ int _stdout_output_impl(const char * str)
 }
 int (*marshmallow_terminal_output)(const char * str) = _stdout_output_impl;
 
-my_log_t * my_log_create(const char * module_tag, enum e_log_lvl default_lvl)
+my_log_t * my_log_new(const char * module_tag, enum e_log_lvl default_lvl)
 {
 	my_log_t * log = (my_log_t *)malloc(sizeof(struct s_my_log_instance));
 
@@ -48,7 +48,7 @@ my_log_t * my_log_create(const char * module_tag, enum e_log_lvl default_lvl)
 	log->stream_output = marshmallow_terminal_output;
 	return log;
 }
-void my_log_destroy(my_log_t * const obj)
+void my_log_delete(my_log_t * const obj)
 {
 	if(obj)
 		free(obj);

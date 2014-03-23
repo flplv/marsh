@@ -24,8 +24,8 @@
 
 #include "types.h"
 
-interaction_engine_t * interaction_engine_create(dimension_t * owner_dimension);
-void interaction_engine_destroy(interaction_engine_t *);
+interaction_engine_t * interaction_engine_new(dimension_t * owner_dimension);
+void interaction_engine_delete(interaction_engine_t *);
 
 void interaction_engine_click(interaction_engine_t *obj);
 void interaction_engine_press(interaction_engine_t *obj, dim_t x, dim_t y);

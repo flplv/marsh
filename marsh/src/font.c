@@ -74,6 +74,8 @@ static dim_t height(font_t * font)
 
 dim_t font_char_width(font_t * font, char c)
 {
+	PTR_CHECK_RETURN(font, "font", (dim_t)0);
+
 	return font->width[(uint32_t)font->index[(uint32_t)c]];
 }
 
@@ -82,6 +84,8 @@ dim_t font_string_width(font_t* font, my_string_t* string)
 	dim_t width = 0;
 	dim_t last_line_width = 0;
 	const char * pCh = my_string_get(string);
+
+	PTR_CHECK_RETURN(font, "font", (dim_t)0);
 
 	while (*pCh)
 	{
@@ -109,6 +113,8 @@ dim_t font_string_height(font_t* font, my_string_t* string)
 	dim_t height = font->height;
 	const char * pCh = my_string_get(string);
 
+	PTR_CHECK_RETURN(font, "font", (dim_t)0);
+
 	while (*pCh)
 	{
 		if (*pCh == '\n')
@@ -125,6 +131,8 @@ void font_draw_left_just(font_t* font, my_string_t* string, const canvas_t *canv
 {
 	const char * pCh = my_string_get(string);
 	uint32_t x, y, bitmap_height, bitmap_width;
+
+	PTR_CHECK(font, "font");
 
 	bitmap_height = char_bitmap_height(font);
 	bitmap_width = char_bitmap_width(font);
@@ -151,6 +159,8 @@ static dim_t line_width(font_t * font, const char *pCh)
 {
 	dim_t width = 0;
 
+	PTR_CHECK_RETURN(font, "font", (dim_t)0);
+
 	while(*pCh)
 	{
 		if (charactere_is_printable(*pCh)) {
@@ -171,6 +181,8 @@ void font_draw_center_just(font_t* font, my_string_t* string, const canvas_t *ca
 {
 	const char * pCh = my_string_get(string);
 	uint32_t x, y, bitmap_height, bitmap_width;
+
+	PTR_CHECK(font, "font");
 
 	bitmap_height = char_bitmap_height(font);
 	bitmap_width = char_bitmap_width(font);
@@ -198,6 +210,8 @@ void font_draw_right_just(font_t* font, my_string_t* string, const canvas_t *can
 {
 	const char * pCh = my_string_get(string);
 	uint32_t x, y, bitmap_height, bitmap_width;
+
+	PTR_CHECK(font, "font");
 
 	bitmap_height = char_bitmap_height(font);
 	bitmap_width = char_bitmap_width(font);

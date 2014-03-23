@@ -24,8 +24,8 @@
 
 #include "types.h"
 
-canvas_t * canvas_create_fullscreen(void);
-canvas_t * canvas_create(dimension_t *);
+canvas_t * canvas_new_fullscreen(void);
+canvas_t * canvas_new(dimension_t *);
 
 void canvas_draw_solid_rectangle(const canvas_t *canv);
 void canvas_draw_solid_round_rectangle(const canvas_t *canv, size_t round_radius);
@@ -39,6 +39,6 @@ void canvas_draw_alpha_bitmap_8bpp(const canvas_t *canv, BUFFER_PTR_RDOLY bitmap
 void canvas_set_color(canvas_t *canv, pixel_t);
 size_t canvas_get_width(const canvas_t *canv);
 
-void canvas_destroy(canvas_t *);
+void canvas_delete(canvas_t *);
 
 #endif /* CANVAS_H_ */

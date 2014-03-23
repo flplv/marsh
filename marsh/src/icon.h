@@ -25,24 +25,11 @@
 #include "types.h"
 #include "bitmap_data/bitmaps.h"
 
-icon_t * icon_create(void);
-void icon_destroy(icon_t * const obj);
+icon_t * icon_new(void);
+void icon_delete(icon_t * const obj);
 void icon_set_position(icon_t * obj, dim_t x, dim_t y);
 void icon_set_color_html(icon_t * obj, const char *html_color_code);
 void icon_set_bitmap(icon_t * obj, bitmap_t * bitmap);
-widget_t *icon_get_widget(icon_t * const obj);
-
-
-
-
-
-
-
-
-
-
-
-
-
+widget_t *icon_get_widget(const icon_t * obj);
 
 #endif /* ICON_H_ */

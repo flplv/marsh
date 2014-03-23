@@ -29,11 +29,7 @@ struct s_my_string
 	size_t str_len;
 	size_t mem_size;
 	signal_t *update_signal;
-
-	MODULE_PRIVATE_DATA_DECLARATION;
 };
-
-#define SIGNATURE_MY_STRING (ADDRESS_TO_SIGNATURE_CAST)&my_string_create
 
 static void _expand(my_string_t *obj, size_t size)
 {
@@ -74,43 +70,44 @@ static void _set(my_string_t * obj, const char *str)
 }
 
 
-my_string_t* my_string_create(void)
+my_string_t* my_string_new(void)
 {
 	my_string_t* obj = (my_string_t *)calloc(1, sizeof(my_string_t));
 	MEMORY_ALLOC_CHECK(obj);
-
-	INSTANCE_SET(obj, SIGNATURE_MY_STRING);
 
 	obj->str_data = (char*)calloc(1, sizeof(char));
 	obj->str_len = 0;
 	obj->mem_size = 1;
 
-	obj->update_signal = signal_create();
+	obj->update_signal = signal_new();
 
 	return obj;
 }
 
-void my_string_destroy(my_string_t *obj)
+void my_string_delete(my_string_t *obj)
 {
 	PTR_CHECK(obj, "my_string");
-	INSTANCE_CHECK(obj, SIGNATURE_MY_STRING, "my_string");
 
 	if (obj->str_data)
 		free(obj->str_data);
 
-	signal_destroy(obj->update_signal);
+	signal_delete(obj->update_signal);
 
 	free(obj);
 }
 
 void my_string_clear(my_string_t * obj)
 {
+	PTR_CHECK(obj, "my_string");
+
 	_clear(obj);
 }
 
 size_t my_string_set(my_string_t *obj, const char* str)
 {
 	size_t len = my_strlen(str);
+
+	PTR_CHECK_RETURN(obj, "my_string", 0);
 
 	if ((len+1) > obj->mem_size)
 	{
@@ -127,22 +124,31 @@ size_t my_string_set(my_string_t *obj, const char* str)
 
 const char* my_string_get(my_string_t* obj)
 {
+	PTR_CHECK_RETURN(obj, "my_string", (char *) 0);
+
 	return obj->str_data;
 }
 
 size_t my_string_len(my_string_t* obj)
 {
+	PTR_CHECK_RETURN(obj, "my_string", 0);
+
 	return obj->str_len;
 }
 
 signal_t * my_string_get_update_signal(my_string_t * obj)
 {
+	PTR_CHECK_RETURN(obj, "my_string", (signal_t *) 0);
+
 	return obj->update_signal;
 }
 
 size_t my_strlen(const char* str)
 {
 	size_t len = 0;
+
+	PTR_CHECK_RETURN(str, "my_string", 0);
+
 	while (*str++)
 		len++;
 	return len;

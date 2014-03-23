@@ -72,16 +72,16 @@ TEST_GROUP(drawManager)
 
 	void setup()
 	{
-		framebuffer_create();
-		owner1 = widget_interface_create(this, draw1mock, destroy1mock);
-		owner2 = widget_interface_create(this, draw2mock, destroy2mock);
-		owner3 = widget_interface_create(this, draw3mock, destroy3mock);
-		obj1 = widget_create(owner1);
-		obj2 = widget_create(owner2);
-		obj3 = widget_create(owner3);
+		framebuffer_new();
+		owner1 = widget_interface_new(this, draw1mock, destroy1mock);
+		owner2 = widget_interface_new(this, draw2mock, destroy2mock);
+		owner3 = widget_interface_new(this, draw3mock, destroy3mock);
+		obj1 = widget_new(owner1);
+		obj2 = widget_new(owner2);
+		obj3 = widget_new(owner3);
 
-		stack = widget_stack_create();
-		cut = draw_manager_create();
+		stack = widget_stack_new();
+		cut = draw_manager_new();
 
 		dimension_set_size(&obj1->dim, 100, 100);
 		dimension_set_start_position(&obj1->dim, 100, 100);
@@ -102,15 +102,15 @@ TEST_GROUP(drawManager)
 
 	void teardown()
 	{
-		draw_manager_destroy(cut);
-		widget_stack_destroy(stack);
-		widget_destroy(obj3);
-		widget_destroy(obj2);
-		widget_destroy(obj1);
-		widget_interface_destroy(owner1);
-		widget_interface_destroy(owner2);
-		widget_interface_destroy(owner3);
-		framebuffer_destroy();
+		draw_manager_delete(cut);
+		widget_stack_delete(stack);
+		widget_delete(obj3);
+		widget_delete(obj2);
+		widget_delete(obj1);
+		widget_interface_delete(owner1);
+		widget_interface_delete(owner2);
+		widget_interface_delete(owner3);
+		framebuffer_delete();
 	}
 };
 

@@ -23,12 +23,12 @@
 
 #include "types.h"
 
-signal_t *signal_create(void);
-void signal_destroy(signal_t *);
+signal_t *signal_new(void);
+void signal_delete(signal_t *);
 void signal_emit(signal_t *);
 
-slot_t *slot_create(void);
-void slot_destroy(slot_t *);
+slot_t *slot_new(void);
+void slot_delete(slot_t *);
 void slot_set(slot_t *, slot_func function, slot_arg arg);
 void slot_connect(slot_t *, signal_t *);
 

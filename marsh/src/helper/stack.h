@@ -24,8 +24,8 @@
 
 #include "types.h"
 
-my_stack_t *stack_create(uint32_t item_size);
-void stack_destroy(my_stack_t *);
+my_stack_t *stack_new(uint32_t item_size);
+void stack_delete(my_stack_t *);
 uint32_t stack_add(my_stack_t *, BUFFER_PTR_RDOLY item);
 uint32_t stack_size(my_stack_t *);
 void stack_get(my_stack_t *, BUFFER_PTR target, uint32_t pos);

@@ -25,11 +25,10 @@
 #include "widget_private.h"
 #include "widget_interface.h"
 
-widget_interface_t * widget_interface_create(void *owner, void (*draw_func)(void *), void (*destroy_func)(void *))
+widget_interface_t * widget_interface_new(void *owner, void (*draw_func)(void *), void (*destroy_func)(void *))
 {
 	widget_interface_t * obj = (widget_interface_t *)malloc(sizeof(struct s_widget_interface));
 	MEMORY_ALLOC_CHECK(obj);
-	INSTANCE_SET(obj, (ADDRESS_TO_SIGNATURE_CAST)&widget_interface_create);
 
 	obj->owner_instance = owner;
 	obj->draw = draw_func;
@@ -38,11 +37,9 @@ widget_interface_t * widget_interface_create(void *owner, void (*draw_func)(void
 	return obj;
 }
 
-void widget_interface_destroy(widget_interface_t * const obj)
+void widget_interface_delete(widget_interface_t * const obj)
 {
 	PTR_CHECK(obj, "widget_interface");
-	INSTANCE_CHECK(obj, (ADDRESS_TO_SIGNATURE_CAST)&widget_interface_create, "widget_interface");
-	INSTANCE_CLEAR(obj);
 	free(obj);
 }
 

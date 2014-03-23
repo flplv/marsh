@@ -42,12 +42,12 @@ TEST_GROUP(interaction_engine)
 		dimension_set_start_position(&dim, 0, 0);
 		dimension_set_size(&dim, 100, 100);
 		dimension_set_rest_if_possible(&dim);
-		cut = interaction_engine_create(&dim);
+		cut = interaction_engine_new(&dim);
 	}
 
 	void teardown()
 	{
-		interaction_engine_destroy(cut);
+		interaction_engine_delete(cut);
 	}
 };
 
@@ -59,7 +59,7 @@ static void callme(void*)
 
 TEST(interaction_engine, click1)
 {
-	slot_t *slot = slot_create();
+	slot_t *slot = slot_new();
 
 	slot_connect(slot, interaction_engine_get_click_signal(cut));
 	slot_set(slot, callme, NULL);
@@ -71,12 +71,12 @@ TEST(interaction_engine, click1)
 
 	CHECK_TRUE(called);
 
-	slot_destroy(slot);
+	slot_delete(slot);
 }
 
 TEST(interaction_engine, pressrelease)
 {
-	slot_t *slot = slot_create();
+	slot_t *slot = slot_new();
 
 	slot_connect(slot, interaction_engine_get_click_signal(cut));
 	slot_set(slot, callme, NULL);
@@ -91,6 +91,6 @@ TEST(interaction_engine, pressrelease)
 
 	CHECK_TRUE(called);
 
-	slot_destroy(slot);
+	slot_delete(slot);
 }
 

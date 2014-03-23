@@ -39,11 +39,8 @@ struct s_icon_instance
 	my_log_t * log;
 	widget_t *glyph;
 	widget_interface_t *self_reference;
-
-	MODULE_PRIVATE_DATA_DECLARATION;
 };
 
-#define SIGNATURE_ICON (ADDRESS_TO_SIGNATURE_CAST)&icon_create
 
 static bool ready_to_draw(icon_t * obj)
 {
@@ -59,7 +56,6 @@ static bool ready_to_draw(icon_t * obj)
 static void draw(icon_t * obj)
 {
 	PTR_CHECK(obj, "icon");
-	INSTANCE_CHECK(obj, SIGNATURE_ICON, "icon");
 
 	if (!ready_to_draw(obj))
 	{
@@ -67,7 +63,7 @@ static void draw(icon_t * obj)
 		return;
 	}
 
-	canvas_t *canv = canvas_create(widget_get_dimension(obj->glyph));
+	canvas_t *canv = canvas_new(widget_get_dimension(obj->glyph));
 	canvas_set_color(canv, color_to_pixel(obj->color));
 
 	if (obj->bitmap->bitmap_data_width == BITMAP_BUFFER_8BPP)
@@ -79,41 +75,37 @@ static void draw(icon_t * obj)
 		my_log(ERROR, __FILE__, __LINE__, "Bad bitmap_data_width", obj->log);
 	}
 
-	canvas_destroy(canv);
+	canvas_delete(canv);
 }
 
-icon_t * icon_create()
+icon_t * icon_new()
 {
 	icon_t * obj = (icon_t *) malloc(sizeof(struct s_icon_instance));
 	MEMORY_ALLOC_CHECK(obj);
-	INSTANCE_SET(obj, SIGNATURE_ICON);
 
-	obj->log = my_log_create("Icon", MESSAGE);
-	obj->self_reference = widget_interface_create(obj, (void(*)(void *))draw, (void(*)(void *))icon_destroy);
-	obj->glyph = widget_create(obj->self_reference);
+	obj->log = my_log_new("Icon", MESSAGE);
+	obj->self_reference = widget_interface_new(obj, (void(*)(void *))draw, (void(*)(void *))icon_delete);
+	obj->glyph = widget_new(obj->self_reference);
 	obj->color = color(255,255,255);
 	obj->bitmap = NULL;
 
 	return obj;
 }
 
-void icon_destroy(icon_t * const obj)
+void icon_delete(icon_t * const obj)
 {
 	PTR_CHECK(obj, "icon");
-	INSTANCE_CHECK(obj, SIGNATURE_ICON, "icon");
 
-	my_log_destroy(obj->log);
-	widget_destroy(obj->glyph);
-	widget_interface_destroy(obj->self_reference);
+	my_log_delete(obj->log);
+	widget_delete(obj->glyph);
+	widget_interface_delete(obj->self_reference);
 
-	INSTANCE_CLEAR(obj);
 	free(obj);
 }
 
 static void set_size(icon_t * obj, dim_t width, dim_t height)
 {
 	PTR_CHECK(obj, "icon");
-	INSTANCE_CHECK(obj, SIGNATURE_ICON, "icon");
 
 	dimension_set_size(widget_get_dimension(obj->glyph), width, height);
 	dimension_set_rest_if_possible(widget_get_dimension(obj->glyph));
@@ -133,7 +125,6 @@ static bool is_bitmap_icon(bitmap_t* bitmap)
 void icon_set_bitmap(icon_t * obj, bitmap_t * bitmap)
 {
 	PTR_CHECK(obj, "icon");
-	INSTANCE_CHECK(obj, SIGNATURE_ICON, "icon");
 
 	if (!is_bitmap_icon(bitmap))
 	{
@@ -148,7 +139,6 @@ void icon_set_bitmap(icon_t * obj, bitmap_t * bitmap)
 void icon_set_position(icon_t * obj, dim_t x, dim_t y)
 {
 	PTR_CHECK(obj, "icon");
-	INSTANCE_CHECK(obj, SIGNATURE_ICON, "icon");
 
 	dimension_set_start_position(widget_get_dimension(obj->glyph), x, y);
 	dimension_set_rest_if_possible(widget_get_dimension(obj->glyph));
@@ -157,15 +147,13 @@ void icon_set_position(icon_t * obj, dim_t x, dim_t y)
 void icon_set_color_html(icon_t * obj, const char *html_color_code)
 {
 	PTR_CHECK(obj, "icon");
-	INSTANCE_CHECK(obj, SIGNATURE_ICON, "icon");
 
 	obj->color = color_html(html_color_code);
 }
 
-widget_t *icon_get_widget(icon_t * const obj)
+widget_t *icon_get_widget(const icon_t * obj)
 {
 	PTR_CHECK_RETURN (obj, "icon", NULL);
-	INSTANCE_CHECK_RETURN(obj, SIGNATURE_ICON, "icon", NULL);
 
 	return obj->glyph;
 }

@@ -24,8 +24,8 @@
 
 #include "types.h"
 
-rectangle_t * rectangle_create(void);
-void rectangle_destroy(rectangle_t * const);
+rectangle_t * rectangle_new(void);
+void rectangle_delete(rectangle_t * const);
 
 void rectangle_set_position(rectangle_t * const, dim_t x, dim_t y);
 void rectangle_set_size(rectangle_t * const, dim_t width, dim_t height);

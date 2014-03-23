@@ -32,40 +32,33 @@ struct s_widget_stack
 {
 	my_log_t * log;
 	my_stack_t *stack;
-	MODULE_PRIVATE_DATA_DECLARATION;
 };
 
-#define SIGNATURE_OBJECT_STACK (ADDRESS_TO_SIGNATURE_CAST)&widget_stack_create
-
-widget_stack_t * widget_stack_create(void)
+widget_stack_t * widget_stack_new(void)
 {
 	widget_stack_t * instance;
 
 	instance = (widget_stack_t *)calloc(1, sizeof(widget_stack_t));
 	MEMORY_ALLOC_CHECK(instance);
 
-	INSTANCE_SET(instance, SIGNATURE_OBJECT_STACK);
-
-	instance->log = my_log_create("widgetStack", ERROR);
-	instance->stack = stack_create(sizeof (widget_t *));
+	instance->log = my_log_new("widgetStack", ERROR);
+	instance->stack = stack_new(sizeof (widget_t *));
 
 	return instance;
 }
 
-void widget_stack_destroy(widget_stack_t * const instance)
+void widget_stack_delete(widget_stack_t * const instance)
 {
 	PTR_CHECK(instance, "widgetStack");
-	INSTANCE_CHECK(instance, SIGNATURE_OBJECT_STACK, "widgetStack");
 
-	stack_destroy(instance->stack);
-	my_log_destroy(instance->log);
+	stack_delete(instance->stack);
+	my_log_delete(instance->log);
 	free(instance);
 }
 
 void widget_stack_add(widget_stack_t * instance, widget_t *graphic_obj)
 {
 	PTR_CHECK(instance, "widgetStack");
-	INSTANCE_CHECK(instance, SIGNATURE_OBJECT_STACK, "widgetStack");
 
 	stack_add(instance->stack, (BUFFER_PTR_RDOLY)&graphic_obj);
 }
@@ -75,7 +68,6 @@ widget_t * widget_stack_get_object(widget_stack_t * instance, uint32_t index)
 	widget_t * return_object;
 
 	PTR_CHECK_RETURN (instance, "widgetStack", NULL);
-	INSTANCE_CHECK_RETURN(instance, SIGNATURE_OBJECT_STACK, "widgetStack", NULL);
 
 	if (index >= stack_size(instance->stack))
 		return NULL;
@@ -92,14 +84,13 @@ widget_t * widget_stack_get_top_object(widget_stack_t * instance, dim_t x, dim_t
 	pos_t position;
 
 	PTR_CHECK_RETURN (instance, "widgetStack", NULL);
-	INSTANCE_CHECK_RETURN(instance, SIGNATURE_OBJECT_STACK, "widgetStack", NULL);
 
 	stack_iterator = stack_size(instance->stack);
 
 	while(stack_iterator--)
 	{
 		stack_get(instance->stack, (BUFFER_PTR)&object, stack_iterator);
-		position = widget_get_position(object);
+		position = dimension_get_position(widget_get_dimension(object));
 
 		if (position.start.x <= x && position.start.y <= y)
 			if (position.end.x >= x && position.end.y >= y)
@@ -115,7 +106,6 @@ uint32_t widget_stack_get_object_index(widget_stack_t * instance, const widget_t
 	widget_t * stack_object;
 
 	PTR_CHECK_RETURN (instance, "widgetStack", WIDGET_STACK_INVALID_INDEX);
-	INSTANCE_CHECK_RETURN(instance, SIGNATURE_OBJECT_STACK, "widgetStack", WIDGET_STACK_INVALID_INDEX);
 
 	stack_iterator = stack_size(instance->stack);
 
@@ -133,7 +123,6 @@ uint32_t widget_stack_get_object_index(widget_stack_t * instance, const widget_t
 uint32_t widget_stack_size(widget_stack_t * instance)
 {
 	PTR_CHECK_RETURN (instance, "widgetStack", WIDGET_STACK_INVALID_INDEX);
-	INSTANCE_CHECK_RETURN(instance, SIGNATURE_OBJECT_STACK, "widgetStack", WIDGET_STACK_INVALID_INDEX);
 
 	return stack_size(instance->stack);
 }
@@ -144,7 +133,6 @@ widget_t *widget_stack_get_object_on_top(widget_stack_t* instance, dim_t x, dim_
 	widget_t *object;
 
 	PTR_CHECK_RETURN (instance, "widgetStack", NULL);
-	INSTANCE_CHECK_RETURN(instance, SIGNATURE_OBJECT_STACK, "widgetStack", NULL);
 
 	stack_iterator = stack_size(instance->stack);
 

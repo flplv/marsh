@@ -24,17 +24,30 @@
 
 #include "types.h"
 
-widget_t * widget_create(widget_interface_t *);
-void widget_destroy(widget_t * const obj);
+/*
+ * Widget is a base class for widgets.
+ *
+ * Caution must be taken on the destruction of a widget, read the following comments.
+ */
 
-interaction_engine_t *widget_get_interaction_engine(widget_t*);
+widget_t * widget_new(widget_interface_t *);
 
-dimension_t *widget_get_dimension(widget_t *);
-pos_t widget_get_position(widget_t *);
-area_t widget_get_size(widget_t *);
+/* Only use this method if you hold the ownership of the widget, or created directly
+   the widget through widget_new. This is the real widget_t type destructor. */
+void widget_delete(widget_t * obj);
 
-void widget_destroy_owner(widget_t * obj);
+/* Use this method to call the widget creator (rectangle, etc.) destroy function.
+   This is the virtual call of the widget destructor*/
+void widget_delete_interface(widget_t * obj);
 
-void widget_draw(widget_t *);
+/* TODO: both destructors can be merged into one, as long a default destructor, which would
+ * be the current widget_delete, is initialized as the destructor interface.  */
+
+interaction_engine_t * widget_get_interaction_engine(widget_t *);
+
+dimension_t * widget_get_dimension(widget_t *);
+
+
+void widget_draw(const widget_t *);
 
 #endif /* widget_H_ */

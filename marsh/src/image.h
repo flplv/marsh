@@ -25,8 +25,8 @@
 #include "types.h"
 #include "bitmap_data/bitmaps.h"
 
-image_t * image_create(void);
-void image_destroy(image_t * const obj);
+image_t * image_new(void);
+void image_delete(image_t * const obj);
 void image_set_position(image_t * obj, dim_t x, dim_t y);
 void image_set_bitmap(image_t * obj, bitmap_t * bitmap);
 widget_t *image_get_widget(image_t * const obj);

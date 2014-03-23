@@ -10,8 +10,8 @@
 
 #include "types.h"
 
-my_string_t *my_string_create(void);
-void my_string_destroy(my_string_t *);
+my_string_t *my_string_new(void);
+void my_string_delete(my_string_t *);
 
 size_t my_string_set(my_string_t *, const char *);
 const char *my_string_get(my_string_t *);

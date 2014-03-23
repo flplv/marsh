@@ -38,11 +38,7 @@ struct s_image_instance
 	my_log_t * log;
 	widget_t *glyph;
 	widget_interface_t *self_reference;
-
-	MODULE_PRIVATE_DATA_DECLARATION;
 };
-
-#define SIGNATURE_IMAGE (ADDRESS_TO_SIGNATURE_CAST)&image_create
 
 static bool ready_to_draw(image_t * obj)
 {
@@ -58,7 +54,6 @@ static bool ready_to_draw(image_t * obj)
 static void draw(image_t * obj)
 {
 	PTR_CHECK(obj, "image");
-	INSTANCE_CHECK(obj, SIGNATURE_IMAGE, "image");
 
 	if (!ready_to_draw(obj))
 	{
@@ -66,7 +61,7 @@ static void draw(image_t * obj)
 		return;
 	}
 
-	canvas_t *canv = canvas_create(widget_get_dimension(obj->glyph));
+	canvas_t *canv = canvas_new(widget_get_dimension(obj->glyph));
 
 	if (obj->bitmap->bitmap_data_width == BITMAP_BUFFER_16BPP)
 	{
@@ -77,40 +72,36 @@ static void draw(image_t * obj)
 		my_log(ERROR, __FILE__, __LINE__, "Bad bitmap_data_width", obj->log);
 	}
 
-	canvas_destroy(canv);
+	canvas_delete(canv);
 }
 
-image_t * image_create()
+image_t * image_new()
 {
 	image_t * obj = (image_t *) malloc(sizeof(struct s_image_instance));
 	MEMORY_ALLOC_CHECK(obj);
-	INSTANCE_SET(obj, SIGNATURE_IMAGE);
 
-	obj->log = my_log_create("Icon", MESSAGE);
-	obj->self_reference = widget_interface_create(obj, (void(*)(void *))draw, (void(*)(void *))image_destroy);
-	obj->glyph = widget_create(obj->self_reference);
+	obj->log = my_log_new("Icon", MESSAGE);
+	obj->self_reference = widget_interface_new(obj, (void(*)(void *))draw, (void(*)(void *))image_delete);
+	obj->glyph = widget_new(obj->self_reference);
 	obj->bitmap = NULL;
 
 	return obj;
 }
 
-void image_destroy(image_t * const obj)
+void image_delete(image_t * const obj)
 {
 	PTR_CHECK(obj, "image");
-	INSTANCE_CHECK(obj, SIGNATURE_IMAGE, "image");
 
-	my_log_destroy(obj->log);
-	widget_destroy(obj->glyph);
-	widget_interface_destroy(obj->self_reference);
+	my_log_delete(obj->log);
+	widget_delete(obj->glyph);
+	widget_interface_delete(obj->self_reference);
 
-	INSTANCE_CLEAR(obj);
 	free(obj);
 }
 
 static void set_size(image_t * obj, dim_t width, dim_t height)
 {
 	PTR_CHECK(obj, "image");
-	INSTANCE_CHECK(obj, SIGNATURE_IMAGE, "image");
 
 	dimension_set_size(widget_get_dimension(obj->glyph), width, height);
 	dimension_set_rest_if_possible(widget_get_dimension(obj->glyph));
@@ -127,7 +118,6 @@ static bool is_bitmap_image(bitmap_t* bitmap)
 void image_set_bitmap(image_t * obj, bitmap_t * bitmap)
 {
 	PTR_CHECK(obj, "image");
-	INSTANCE_CHECK(obj, SIGNATURE_IMAGE, "image");
 
 	if (!is_bitmap_image(bitmap))
 	{
@@ -142,7 +132,6 @@ void image_set_bitmap(image_t * obj, bitmap_t * bitmap)
 void image_set_position(image_t * obj, dim_t x, dim_t y)
 {
 	PTR_CHECK(obj, "image");
-	INSTANCE_CHECK(obj, SIGNATURE_IMAGE, "image");
 
 	dimension_set_start_position(widget_get_dimension(obj->glyph), x, y);
 	dimension_set_rest_if_possible(widget_get_dimension(obj->glyph));
@@ -151,7 +140,6 @@ void image_set_position(image_t * obj, dim_t x, dim_t y)
 widget_t *image_get_widget(image_t * const obj)
 {
 	PTR_CHECK_RETURN (obj, "image", NULL);
-	INSTANCE_CHECK_RETURN(obj, SIGNATURE_IMAGE, "image", NULL);
 
 	return obj->glyph;
 }

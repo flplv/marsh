@@ -35,12 +35,12 @@ TEST_GROUP(my_string)
 	my_string_t * cut;
 	void setup()
 	{
-		cut = my_string_create();
+		cut = my_string_new();
 	}
 
 	void teardown()
 	{
-		my_string_destroy(cut);
+		my_string_delete(cut);
 	}
 };
 

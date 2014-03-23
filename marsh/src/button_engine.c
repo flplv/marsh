@@ -45,15 +45,11 @@ struct s_button_engine
 	widget_t *state_off;
 	widget_t *state_on_to_off;
 	widget_t *state_off_to_on;
-	MODULE_PRIVATE_DATA_DECLARATION;
 };
-
-#define SIGNATURE_BUTTON (ADDRESS_TO_SIGNATURE_CAST)&button_engine_create
 
 static void draw(button_engine_t * obj)
 {
 	PTR_CHECK(obj, "buttonEngine");
-	INSTANCE_CHECK(obj, SIGNATURE_BUTTON, "buttonEngine");
 
 	if (!obj->current_state) {
 		global_my_log(ERROR, __FILE__, __LINE__, "No Logic selected.", "buttonEngine");
@@ -134,17 +130,16 @@ static void bad_config_message(void)
 	global_my_log(ERROR, __FILE__, __LINE__, "No Logic selected.", "buttonEngine");
 }
 
-button_engine_t* button_engine_create()
+button_engine_t* button_engine_new()
 {
 	button_engine_t * obj = (button_engine_t *) calloc(1, sizeof(struct s_button_engine));
 	MEMORY_ALLOC_CHECK(obj);
-	INSTANCE_SET(obj, SIGNATURE_BUTTON);
 
-	obj->self_reference = widget_interface_create(obj, (void(*)(void*))draw, (void(*)(void*))button_engine_destroy);
-	obj->glyph = widget_create(obj->self_reference);
+	obj->self_reference = widget_interface_new(obj, (void(*)(void*))draw, (void(*)(void*))button_engine_delete);
+	obj->glyph = widget_new(obj->self_reference);
 
-	obj->press = slot2_create();
-	obj->release = slot2_create();
+	obj->press = slot2_new();
+	obj->release = slot2_new();
 
 	slot2_set(obj->press, (slot2_func)bad_config_message, obj);
 	slot2_set(obj->release, (slot2_func)bad_config_message, obj);
@@ -159,24 +154,21 @@ button_engine_t* button_engine_create()
 	return obj;
 }
 
-void button_engine_destroy(button_engine_t *obj)
+void button_engine_delete(button_engine_t *obj)
 {
 	PTR_CHECK(obj, "buttonEngine");
-	INSTANCE_CHECK(obj, SIGNATURE_BUTTON, "buttonEngine");
 
-	widget_destroy(obj->glyph);
-	widget_interface_destroy(obj->self_reference);
-	slot2_destroy(obj->press);
-	slot2_destroy(obj->release);
+	widget_delete(obj->glyph);
+	widget_interface_delete(obj->self_reference);
+	slot2_delete(obj->press);
+	slot2_delete(obj->release);
 
-	INSTANCE_CLEAR(obj);
 	free(obj);
 }
 
 widget_t *button_engine_get_widget(button_engine_t *obj)
 {
 	PTR_CHECK_RETURN (obj, "buttonEngine", NULL);
-	INSTANCE_CHECK_RETURN(obj, SIGNATURE_BUTTON, "buttonEngine", NULL);
 
 	return obj->glyph;
 }
@@ -196,7 +188,6 @@ static void set_toggle_slots(button_engine_t* obj)
 void button_engine_select_toggle_logic(button_engine_t *obj)
 {
 	PTR_CHECK(obj, "buttonEngine");
-	INSTANCE_CHECK(obj, SIGNATURE_BUTTON, "buttonEngine");
 
 	set_toggle_slots(obj);
 	obj->current_state = &obj->state_off;
@@ -205,7 +196,6 @@ void button_engine_select_toggle_logic(button_engine_t *obj)
 void button_engine_select_action_logic(button_engine_t *obj)
 {
 	PTR_CHECK(obj, "buttonEngine");
-	INSTANCE_CHECK(obj, SIGNATURE_BUTTON, "buttonEngine");
 
 	set_action_slots(obj);
 	obj->current_state = &obj->state_normal;
@@ -250,7 +240,6 @@ static void dimension_update(button_engine_t *obj)
 void button_engine_set_action_normal_state(button_engine_t *obj, widget_t *gobj)
 {
 	PTR_CHECK(obj, "buttonEngine");
-	INSTANCE_CHECK(obj, SIGNATURE_BUTTON, "buttonEngine");
 
 	obj->state_normal = gobj;
 	dimension_update(obj);
@@ -259,7 +248,6 @@ void button_engine_set_action_normal_state(button_engine_t *obj, widget_t *gobj)
 void button_engine_set_action_onpress_state(button_engine_t *obj, widget_t *gobj)
 {
 	PTR_CHECK(obj, "buttonEngine");
-	INSTANCE_CHECK(obj, SIGNATURE_BUTTON, "buttonEngine");
 
 	obj->state_press = gobj;
 	dimension_update(obj);
@@ -268,7 +256,6 @@ void button_engine_set_action_onpress_state(button_engine_t *obj, widget_t *gobj
 void button_engine_set_toggle_on_state(button_engine_t *obj, widget_t *gobj)
 {
 	PTR_CHECK(obj, "buttonEngine");
-	INSTANCE_CHECK(obj, SIGNATURE_BUTTON, "buttonEngine");
 
 	obj->state_on = gobj;
 	dimension_update(obj);
@@ -277,7 +264,6 @@ void button_engine_set_toggle_on_state(button_engine_t *obj, widget_t *gobj)
 void button_engine_set_toggle_off_state(button_engine_t *obj, widget_t *gobj)
 {
 	PTR_CHECK(obj, "buttonEngine");
-	INSTANCE_CHECK(obj, SIGNATURE_BUTTON, "buttonEngine");
 
 	obj->state_off = gobj;
 	dimension_update(obj);
@@ -286,7 +272,6 @@ void button_engine_set_toggle_off_state(button_engine_t *obj, widget_t *gobj)
 void button_engine_set_toggle_on_to_off_state(button_engine_t *obj, widget_t *gobj)
 {
 	PTR_CHECK(obj, "buttonEngine");
-	INSTANCE_CHECK(obj, SIGNATURE_BUTTON, "buttonEngine");
 
 	obj->state_on_to_off = gobj;
 	dimension_update(obj);
@@ -295,7 +280,6 @@ void button_engine_set_toggle_on_to_off_state(button_engine_t *obj, widget_t *go
 void button_engine_set_toggle_off_to_on_state(button_engine_t *obj, widget_t *gobj)
 {
 	PTR_CHECK(obj, "buttonEngine");
-	INSTANCE_CHECK(obj, SIGNATURE_BUTTON, "buttonEngine");
 
 	obj->state_off_to_on = gobj;
 	dimension_update(obj);

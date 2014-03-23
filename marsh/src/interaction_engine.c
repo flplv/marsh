@@ -36,44 +36,35 @@ struct s_interaction_engine {
 
 	bool is_interactable;
 	bool pressing;
-
-	MODULE_PRIVATE_DATA_DECLARATION;
 };
 
-#define SIGNATURE_INTERACTION_INTERFACE (ADDRESS_TO_SIGNATURE_CAST)&interaction_engine_create
 
-
-
-interaction_engine_t* interaction_engine_create(dimension_t * owner_dimension)
+interaction_engine_t* interaction_engine_new(dimension_t * owner_dimension)
 {
 	interaction_engine_t *obj = (interaction_engine_t *)calloc(1, sizeof (struct s_interaction_engine));
 	MEMORY_ALLOC_CHECK(obj);
-	INSTANCE_SET(obj, SIGNATURE_INTERACTION_INTERFACE);
 
-	obj->click_sig = signal_create();
-	obj->press_sig = signal2_create();
-	obj->release_sig = signal2_create();
+	obj->click_sig = signal_new();
+	obj->press_sig = signal2_new();
+	obj->release_sig = signal2_new();
 	obj->dimension = owner_dimension;
 	obj->is_interactable = true;
 
 	return obj;
 }
 
-void interaction_engine_destroy(interaction_engine_t* obj)
+void interaction_engine_delete(interaction_engine_t* obj)
 {
-	PTR_CHECK(obj, "interactionInterface");
-	INSTANCE_CHECK(obj, SIGNATURE_INTERACTION_INTERFACE, "interactionInterface");
-	signal_destroy(obj->click_sig);
-	signal2_destroy(obj->press_sig);
-	signal2_destroy(obj->release_sig);
-	INSTANCE_CLEAR(obj);
+	PTR_CHECK(obj, "interaction_interface");
+	signal_delete(obj->click_sig);
+	signal2_delete(obj->press_sig);
+	signal2_delete(obj->release_sig);
 	free(obj);
 }
 
 void interaction_engine_click(interaction_engine_t *obj)
 {
-	PTR_CHECK(obj, "interactionInterface");
-	INSTANCE_CHECK(obj, SIGNATURE_INTERACTION_INTERFACE, "interactionInterface");
+	PTR_CHECK(obj, "interaction_interface");
 
 	signal_emit(obj->click_sig);
 }
@@ -82,7 +73,7 @@ static void set_prio_release(interaction_engine_t* obj)
 {
 	if (prioritary_release)
 	{
-		LOG_ERROR("interactionInterface", "prioritary_release colision");
+		LOG_ERROR("interaction_interface", "prioritary_release colision");
 	}
 
 	prioritary_release = obj;
@@ -98,8 +89,7 @@ void interaction_engine_emmit_pending_release(size_t x, size_t y)
 
 void interaction_engine_press(interaction_engine_t *obj, dim_t x, dim_t y)
 {
-	PTR_CHECK(obj, "interactionInterface");
-	INSTANCE_CHECK(obj, SIGNATURE_INTERACTION_INTERFACE, "interactionInterface");
+	PTR_CHECK(obj, "interaction_interface");
 
 	if (obj->is_interactable)
 	{
@@ -112,8 +102,7 @@ void interaction_engine_press(interaction_engine_t *obj, dim_t x, dim_t y)
 
 void interaction_engine_release(interaction_engine_t *obj, dim_t x, dim_t y)
 {
-	PTR_CHECK(obj, "interactionInterface");
-	INSTANCE_CHECK(obj, SIGNATURE_INTERACTION_INTERFACE, "interactionInterface");
+	PTR_CHECK(obj, "interaction_interface");
 
 	if (obj->is_interactable)
 	{
@@ -131,32 +120,28 @@ void interaction_engine_release(interaction_engine_t *obj, dim_t x, dim_t y)
 
 signal2_t * interaction_engine_get_press_signal(interaction_engine_t *obj)
 {
-	PTR_CHECK_RETURN(obj, "interactionInterface", NULL);
-	INSTANCE_CHECK_RETURN(obj, SIGNATURE_INTERACTION_INTERFACE, "interactionInterface", NULL);
+	PTR_CHECK_RETURN(obj, "interaction_interface", NULL);
 
 	return obj->press_sig;
 }
 
 signal_t * interaction_engine_get_click_signal(interaction_engine_t *obj)
 {
-	PTR_CHECK_RETURN(obj, "interactionInterface", NULL);
-	INSTANCE_CHECK_RETURN(obj, SIGNATURE_INTERACTION_INTERFACE, "interactionInterface", NULL);
+	PTR_CHECK_RETURN(obj, "interaction_interface", NULL);
 
 	return obj->click_sig;
 }
 
 signal2_t * interaction_engine_get_release_signal(interaction_engine_t *obj)
 {
-	PTR_CHECK_RETURN(obj, "interactionInterface", NULL);
-	INSTANCE_CHECK_RETURN(obj, SIGNATURE_INTERACTION_INTERFACE, "interactionInterface", NULL);
+	PTR_CHECK_RETURN(obj, "interaction_interface", NULL);
 
 	return obj->release_sig;
 }
 
 void interaction_engine_disable_interaction_logic(interaction_engine_t* obj)
 {
-	PTR_CHECK(obj, "interactionInterface");
-	INSTANCE_CHECK(obj, SIGNATURE_INTERACTION_INTERFACE, "interactionInterface");
+	PTR_CHECK(obj, "interaction_interface");
 
 	obj->is_interactable = false;
 }

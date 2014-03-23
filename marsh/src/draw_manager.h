@@ -27,8 +27,8 @@
 
 typedef struct s_draw_manager_instance draw_manager_t;
 
-draw_manager_t * draw_manager_create(void);
-void draw_manager_destroy(draw_manager_t * const);
+draw_manager_t * draw_manager_new(void);
+void draw_manager_delete(draw_manager_t * const);
 void draw_manager_assossiate_drawing_stack(draw_manager_t *, widget_stack_t *);
 void draw_manager_draw(draw_manager_t *, widget_t *);
 void draw_manager_draw_all(draw_manager_t *);

@@ -27,7 +27,6 @@
 struct s_signal2
 {
 	my_stack_t *slot2s_stack;
-	MODULE_PRIVATE_DATA_DECLARATION;
 };
 
 struct s_slot2
@@ -35,32 +34,24 @@ struct s_slot2
 	slot2_func func;
 	slot_arg arg0;
 	bool set;
-	MODULE_PRIVATE_DATA_DECLARATION;
 };
-
-#define SIG_MOD_SIG (ADDRESS_TO_SIGNATURE_CAST)signal2_create
-#define SLO_MOD_SLO (ADDRESS_TO_SIGNATURE_CAST)slot2_create
 
 static void slot2_call(slot2_t *, size_t, size_t);
 
-signal2_t *signal2_create()
+signal2_t *signal2_new()
 {
 	signal2_t * obj = (signal2_t *)calloc(1, sizeof(struct s_signal2));
-	INSTANCE_SET(obj, SIG_MOD_SIG);
 
-	obj->slot2s_stack = stack_create(sizeof(slot2_t *));
+	obj->slot2s_stack = stack_new(sizeof(slot2_t *));
 
 	return obj;
 }
 
-void signal2_destroy(signal2_t * obj)
+void signal2_delete(signal2_t * obj)
 {
 	PTR_CHECK(obj, "signal2");
-	INSTANCE_CHECK(obj, SIG_MOD_SIG, "signal2");
 
-	stack_destroy(obj->slot2s_stack);
-
-	INSTANCE_CLEAR(obj);
+	stack_delete(obj->slot2s_stack);
 
 	free(obj);
 }
@@ -71,8 +62,6 @@ void signal2_emit(signal2_t *obj, size_t x, size_t y)
 	slot2_t *slot2_to_be_called = NULL;
 
 	PTR_CHECK(obj, "signal2");
-	INSTANCE_CHECK(obj, SIG_MOD_SIG, "signal2");
-
 
 	n_of_slot2s = stack_size(obj->slot2s_stack);
 
@@ -90,7 +79,6 @@ static bool signal2_is_connected(signal2_t *obj, slot2_t *slot2)
 	slot2_t *slot2_to_be_checked = NULL;
 
 	PTR_CHECK_RETURN(obj, "signal2", false);
-	INSTANCE_CHECK_RETURN(obj, SIG_MOD_SIG, "signal2", false);
 
 	n_of_slot2s = stack_size(obj->slot2s_stack);
 
@@ -107,7 +95,6 @@ static bool signal2_is_connected(signal2_t *obj, slot2_t *slot2)
 static void signal2_connect(signal2_t *obj, slot2_t *slot2)
 {
 	PTR_CHECK(obj, "signal2");
-	INSTANCE_CHECK(obj, SIG_MOD_SIG, "signal2");
 
 	if (signal2_is_connected(obj, slot2))
 		return;
@@ -115,28 +102,22 @@ static void signal2_connect(signal2_t *obj, slot2_t *slot2)
 	stack_add(obj->slot2s_stack, (BUFFER_PTR)&slot2);
 }
 
-slot2_t *slot2_create()
+slot2_t *slot2_new()
 {
 	slot2_t * obj = (slot2_t *)calloc(1, sizeof(struct s_slot2));
-	INSTANCE_SET(obj, SLO_MOD_SLO);
 
 	return obj;
 }
 
-void slot2_destroy(slot2_t * obj)
+void slot2_delete(slot2_t * obj)
 {
 	PTR_CHECK(obj, "slot2");
-	INSTANCE_CHECK(obj, SLO_MOD_SLO, "slot2");
-
-
-	INSTANCE_CLEAR(obj);
 	free(obj);
 }
 
 void slot2_set(slot2_t *obj, slot2_func function, slot_arg arg)
 {
 	PTR_CHECK(obj, "slot2");
-	INSTANCE_CHECK(obj, SLO_MOD_SLO, "slot2");
 
 	if (!function) {
 		LOG_ERROR("slot2", "bad slot2 function");
@@ -151,7 +132,6 @@ void slot2_set(slot2_t *obj, slot2_func function, slot_arg arg)
 void slot2_connect(slot2_t *obj, signal2_t* signal2)
 {
 	PTR_CHECK(obj, "slot2");
-	INSTANCE_CHECK(obj, SLO_MOD_SLO, "slot2");
 
 	signal2_connect(signal2, obj);
 }
@@ -159,7 +139,6 @@ void slot2_connect(slot2_t *obj, signal2_t* signal2)
 static void slot2_call(slot2_t *obj, size_t x, size_t y)
 {
 	PTR_CHECK(obj, "slot2");
-	INSTANCE_CHECK(obj, SLO_MOD_SLO, "slot2");
 
 	if (!obj->set) {
 		LOG_ERROR("slot2", "no slot2 function set");

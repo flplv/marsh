@@ -25,8 +25,8 @@
 #include "types.h"
 
 
-void framebuffer_create(void);
-void framebuffer_destroy(void);
+void framebuffer_new(void);
+void framebuffer_delete(void);
 
 pixel_t *framebuffer_start(void);
 pixel_t *framebuffer_at(pixel_t x, pixel_t y);

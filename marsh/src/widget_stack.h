@@ -27,8 +27,8 @@
 
 typedef struct s_widget_stack widget_stack_t;
 
-widget_stack_t *widget_stack_create(void);
-void widget_stack_destroy(widget_stack_t * const);
+widget_stack_t *widget_stack_new(void);
+void widget_stack_delete(widget_stack_t * const);
 
 void widget_stack_add(widget_stack_t *, widget_t *);
 uint32_t widget_stack_size(widget_stack_t *);

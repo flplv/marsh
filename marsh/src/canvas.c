@@ -35,10 +35,7 @@ struct s_canvas
 	size_t height;
 	size_t width;
 	size_t line_incrementation_width;
-	MODULE_PRIVATE_DATA_DECLARATION;
 };
-
-#define SIG (ADDRESS_TO_SIGNATURE_CAST)canvas_create
 
 #define CANVAS_START_RECT(__canvas, __x, __y, __to, __color) pixel_t *__to = __canvas->memory_start + __x + __y * __canvas->line_incrementation_width; const pixel_t __color = __canvas->color
 #define CANVAS_START_BITMAP(__canvas, __x, __y, __to) pixel_t *__to = __canvas->memory_start + __x + __y * __canvas->line_incrementation_width
@@ -195,7 +192,6 @@ static void draw_solid_rectangle(pixel_t * to, pixel_t color, size_t width, size
 void canvas_draw_circle(const canvas_t *canv)
 {
 	PTR_CHECK(canv, "canvas");
-	INSTANCE_CHECK(canv, SIG, "canvas");
 
 	size_t radius = ((canv->width>canv->height)?(canv->width/2):(canv->height/2));
 	size_t x_center = canv->width/2;
@@ -211,7 +207,6 @@ void canvas_draw_solid_round_rectangle(const canvas_t *canv, size_t round_radius
 	size_t xi, yi;
 
 	PTR_CHECK(canv, "canvas");
-	INSTANCE_CHECK(canv, SIG, "canvas");
 
 	xi = 0;
 	yi = 0;
@@ -246,7 +241,6 @@ void canvas_draw_round_rectangle(const canvas_t *canv, size_t line_width, size_t
 	size_t i;
 
 	PTR_CHECK(canv, "canvas");
-	INSTANCE_CHECK(canv, SIG, "canvas");
 
 	to = CANVAS_TO(canv, 0, 0);
 
@@ -316,7 +310,6 @@ void canvas_draw_rectangle(const canvas_t *canv, size_t line_width)
 	size_t i;
 
 	PTR_CHECK(canv, "canvas");
-	INSTANCE_CHECK(canv, SIG, "canvas");
 
 	to = CANVAS_TO(canv, 0, 0);
 
@@ -332,7 +325,6 @@ void canvas_draw_rectangle(const canvas_t *canv, size_t line_width)
 void canvas_draw_solid_rectangle(const canvas_t *canv)
 {
 	PTR_CHECK(canv, "canvas");
-	INSTANCE_CHECK(canv, SIG, "canvas");
 
 	draw_solid_rectangle(CANVAS_TO(canv, 0, 0), canv->color, canv->width, canv->height, canv->line_incrementation_width);
 }
@@ -340,7 +332,6 @@ void canvas_draw_solid_rectangle(const canvas_t *canv)
 void canvas_set_color(canvas_t* canv, pixel_t pixel_color)
 {
 	PTR_CHECK(canv, "canvas");
-	INSTANCE_CHECK(canv, SIG, "canvas");
 
 	if (color_check(pixel_color))
 	{
@@ -377,7 +368,6 @@ void canvas_draw_bitmap_1bpp(const canvas_t* canv, BUFFER_PTR_RDOLY bitmap, size
 	size_t i,j;
 
 	PTR_CHECK(canv, "canvas");
-	INSTANCE_CHECK(canv, SIG, "canvas");
 
 	CANVAS_START_RECT(canv, x, y, to, color);
 
@@ -400,7 +390,6 @@ void canvas_draw_bitmap(const canvas_t *canv, BUFFER_PTR_RDOLY bitmap, size_t x,
 	pixel_t * from = (pixel_t *)bitmap;
 
 	PTR_CHECK(canv, "canvas");
-	INSTANCE_CHECK(canv, SIG, "canvas");
 
 	CANVAS_START_BITMAP(canv, x, y, to);
 
@@ -426,7 +415,6 @@ void canvas_draw_alpha_bitmap_8bpp(const canvas_t *canv, BUFFER_PTR_RDOLY bitmap
 
 
 	PTR_CHECK(canv, "canvas");
-	INSTANCE_CHECK(canv, SIG, "canvas");
 
 	CANVAS_START_RECT(canv, x, y, to, color);
 
@@ -454,11 +442,10 @@ void canvas_draw_alpha_bitmap_8bpp(const canvas_t *canv, BUFFER_PTR_RDOLY bitmap
 	}
 }
 
-canvas_t* canvas_create_fullscreen()
+canvas_t* canvas_new_fullscreen()
 {
 	canvas_t * canv = (canvas_t*)calloc(1, sizeof(struct s_canvas));
 	MEMORY_ALLOC_CHECK(canv);
-	INSTANCE_SET(canv, SIG);
 
 	canv->memory_start = framebuffer_start();
 	canv->height = framebuffer_height();
@@ -469,11 +456,10 @@ canvas_t* canvas_create_fullscreen()
 	return canv;
 }
 
-canvas_t* canvas_create(dimension_t * dim)
+canvas_t* canvas_new(dimension_t * dim)
 {
 	canvas_t * canv = (canvas_t*)calloc(1, sizeof(struct s_canvas));
 	MEMORY_ALLOC_CHECK(canv);
-	INSTANCE_SET(canv, SIG);
 
 	if (!dimension_good(dim))
 	{
@@ -490,15 +476,13 @@ canvas_t* canvas_create(dimension_t * dim)
 	return canv;
 }
 
-canvas_t * canvas_create_sub_canvas(canvas_t* canv, size_t x, size_t y, size_t width, size_t height)
+canvas_t * canvas_new_sub_canvas(canvas_t* canv, size_t x, size_t y, size_t width, size_t height)
 {
 	canvas_t *sub_canvas;
 	PTR_CHECK_RETURN(canv, "canvas", NULL);
-	INSTANCE_CHECK_RETURN(canv, SIG, "canvas", NULL);
 
 	sub_canvas = (canvas_t*)calloc(1, sizeof(struct s_canvas));
 	MEMORY_ALLOC_CHECK(sub_canvas);
-	INSTANCE_SET(sub_canvas, SIG);
 
 	sub_canvas->memory_start = canv->memory_start + x + y * canv->line_incrementation_width;
 	sub_canvas->height = height;
@@ -509,18 +493,15 @@ canvas_t * canvas_create_sub_canvas(canvas_t* canv, size_t x, size_t y, size_t w
 	return sub_canvas;
 }
 
-void canvas_destroy(canvas_t *canv)
+void canvas_delete(canvas_t *canv)
 {
 	PTR_CHECK(canv, "canvas");
-	INSTANCE_CHECK(canv, SIG, "canvas");
-	INSTANCE_CLEAR(canv);
 	free(canv);
 }
 
 size_t canvas_get_width(const canvas_t *canv)
 {
 	PTR_CHECK_RETURN(canv, "canvas", 0);
-	INSTANCE_CHECK_RETURN(canv, SIG, "canvas", 0);
 	return canv->width;
 }
 

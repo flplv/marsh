@@ -42,7 +42,7 @@ TEST_GROUP(font)
 TEST(font, sizes)
 {
 	my_string_t * str;
-	str = my_string_create();
+	str = my_string_new();
 	my_string_set(str, "a");
 
 	CHECK_EQUAL(ubuntu_monospace_16->height, height(ubuntu_monospace_16));
@@ -54,6 +54,6 @@ TEST(font, sizes)
 	my_string_set(str, "abc\ndef");
 	CHECK_EQUAL(24, font_string_width(ubuntu_monospace_16, str));
 
-	my_string_destroy(str);
+	my_string_delete(str);
 }
 
