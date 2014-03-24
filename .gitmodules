@@ -1,0 +1,3 @@
+[submodule "marsh.wiki"]
+	path = marsh.wiki
+	url = git@github.com:felipe-lavratti/marsh.wiki.git
