@@ -62,7 +62,7 @@ typedef struct _graphic_dimension {
 	uint32_t pos_end_set:1;
 } dimension_t;
 
-typedef struct s_canvas canvas_t;
+typedef struct s_canvas canvas_legacy_t;
 
 typedef struct s_my_string my_string_t;
 

@@ -24,21 +24,21 @@
 
 #include "types.h"
 
-canvas_t * canvas_new_fullscreen(void);
-canvas_t * canvas_new(dimension_t *);
+canvas_legacy_t * canvas_legacy_new_fullscreen(void);
+canvas_legacy_t * canvas_legacy_new(dimension_t *);
 
-void canvas_draw_solid_rectangle(const canvas_t *canv);
-void canvas_draw_solid_round_rectangle(const canvas_t *canv, size_t round_radius);
-void canvas_draw_round_rectangle(const canvas_t *canv, size_t line_width, size_t round_radius);
-void canvas_draw_rectangle(const canvas_t *canv, size_t line_width);
-void canvas_draw_circle(const canvas_t *canv);
-void canvas_draw_bitmap_1bpp(const canvas_t *canv, BUFFER_PTR_RDOLY bitmap, size_t x, size_t y, size_t width, size_t height);
-void canvas_draw_bitmap(const canvas_t *canv, BUFFER_PTR_RDOLY bitmap, size_t x, size_t y, size_t width, size_t height);
-void canvas_draw_alpha_bitmap_8bpp(const canvas_t *canv, BUFFER_PTR_RDOLY bitmap, size_t x, size_t y, size_t width, size_t height);
+void canvas_legacy_draw_solid_rectangle(const canvas_legacy_t *canv);
+void canvas_legacy_draw_solid_round_rectangle(const canvas_legacy_t *canv, size_t round_radius);
+void canvas_legacy_draw_round_rectangle(const canvas_legacy_t *canv, size_t line_width, size_t round_radius);
+void canvas_legacy_draw_rectangle(const canvas_legacy_t *canv, size_t line_width);
+void canvas_legacy_draw_circle(const canvas_legacy_t *canv);
+void canvas_legacy_draw_bitmap_1bpp(const canvas_legacy_t *canv, BUFFER_PTR_RDOLY bitmap, size_t x, size_t y, size_t width, size_t height);
+void canvas_legacy_draw_bitmap(const canvas_legacy_t *canv, BUFFER_PTR_RDOLY bitmap, size_t x, size_t y, size_t width, size_t height);
+void canvas_legacy_draw_alpha_bitmap_8bpp(const canvas_legacy_t *canv, BUFFER_PTR_RDOLY bitmap, size_t x, size_t y, size_t width, size_t height);
 
-void canvas_set_color(canvas_t *canv, pixel_t);
-size_t canvas_get_width(const canvas_t *canv);
+void canvas_legacy_set_color(canvas_legacy_t *canv, pixel_t);
+size_t canvas_legacy_get_width(const canvas_legacy_t *canv);
 
-void canvas_delete(canvas_t *);
+void canvas_legacy_delete(canvas_legacy_t *);
 
 #endif /* CANVAS_H_ */

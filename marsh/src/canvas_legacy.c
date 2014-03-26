@@ -19,7 +19,7 @@
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "canvas.h"
+#include "canvas_legacy.h"
 #include "color.h"
 #include "framebuffer.h"
 #include "dimension.h"
@@ -189,7 +189,7 @@ static void draw_solid_rectangle(pixel_t * to, pixel_t color, size_t width, size
 	}
 }
 
-void canvas_draw_circle(const canvas_t *canv)
+void canvas_legacy_draw_circle(const canvas_legacy_t *canv)
 {
 	PTR_CHECK(canv, "canvas");
 
@@ -201,7 +201,7 @@ void canvas_draw_circle(const canvas_t *canv)
 	circle_loop(to, color, CIRCLE_ALL, radius, x_center, y_center,canv->line_incrementation_width);
 }
 
-void canvas_draw_solid_round_rectangle(const canvas_t *canv, size_t round_radius)
+void canvas_legacy_draw_solid_round_rectangle(const canvas_legacy_t *canv, size_t round_radius)
 {
 	pixel_t *to;
 	size_t xi, yi;
@@ -234,7 +234,7 @@ void canvas_draw_solid_round_rectangle(const canvas_t *canv, size_t round_radius
 
 }
 
-void canvas_draw_round_rectangle(const canvas_t *canv, size_t line_width, size_t round_radius)
+void canvas_legacy_draw_round_rectangle(const canvas_legacy_t *canv, size_t line_width, size_t round_radius)
 {
 	pixel_t *to;
 	size_t xi, yi;
@@ -304,7 +304,7 @@ void canvas_draw_round_rectangle(const canvas_t *canv, size_t line_width, size_t
 	}
 }
 
-void canvas_draw_rectangle(const canvas_t *canv, size_t line_width)
+void canvas_legacy_draw_rectangle(const canvas_legacy_t *canv, size_t line_width)
 {
 	pixel_t *to;
 	size_t i;
@@ -322,14 +322,14 @@ void canvas_draw_rectangle(const canvas_t *canv, size_t line_width)
 	}
 }
 
-void canvas_draw_solid_rectangle(const canvas_t *canv)
+void canvas_legacy_draw_solid_rectangle(const canvas_legacy_t *canv)
 {
 	PTR_CHECK(canv, "canvas");
 
 	draw_solid_rectangle(CANVAS_TO(canv, 0, 0), canv->color, canv->width, canv->height, canv->line_incrementation_width);
 }
 
-void canvas_set_color(canvas_t* canv, pixel_t pixel_color)
+void canvas_legacy_set_color(canvas_legacy_t* canv, pixel_t pixel_color)
 {
 	PTR_CHECK(canv, "canvas");
 
@@ -363,7 +363,7 @@ static uint8_t bitmap_byte(BUFFER_PTR_RDOLY bitmap, uint32_t byte_offset)
 	return bitmap[byte_offset];
 }
 
-void canvas_draw_bitmap_1bpp(const canvas_t* canv, BUFFER_PTR_RDOLY bitmap, size_t x, size_t y, size_t width, size_t height)
+void canvas_legacy_draw_bitmap_1bpp(const canvas_legacy_t* canv, BUFFER_PTR_RDOLY bitmap, size_t x, size_t y, size_t width, size_t height)
 {
 	size_t i,j;
 
@@ -384,7 +384,7 @@ void canvas_draw_bitmap_1bpp(const canvas_t* canv, BUFFER_PTR_RDOLY bitmap, size
 	}
 }
 
-void canvas_draw_bitmap(const canvas_t *canv, BUFFER_PTR_RDOLY bitmap, size_t x, size_t y, size_t width, size_t height)
+void canvas_legacy_draw_bitmap(const canvas_legacy_t *canv, BUFFER_PTR_RDOLY bitmap, size_t x, size_t y, size_t width, size_t height)
 {
 	size_t i,j;
 	pixel_t * from = (pixel_t *)bitmap;
@@ -406,7 +406,7 @@ void canvas_draw_bitmap(const canvas_t *canv, BUFFER_PTR_RDOLY bitmap, size_t x,
 	}
 }
 
-void canvas_draw_alpha_bitmap_8bpp(const canvas_t *canv, BUFFER_PTR_RDOLY bitmap, size_t x, size_t y, size_t width, size_t height)
+void canvas_legacy_draw_alpha_bitmap_8bpp(const canvas_legacy_t *canv, BUFFER_PTR_RDOLY bitmap, size_t x, size_t y, size_t width, size_t height)
 {
 	size_t i,j;
 	uint8_t alpha_intensity;
@@ -442,9 +442,9 @@ void canvas_draw_alpha_bitmap_8bpp(const canvas_t *canv, BUFFER_PTR_RDOLY bitmap
 	}
 }
 
-canvas_t* canvas_new_fullscreen()
+canvas_legacy_t* canvas_legacy_new_fullscreen()
 {
-	canvas_t * canv = (canvas_t*)calloc(1, sizeof(struct s_canvas));
+	canvas_legacy_t * canv = (canvas_legacy_t*)calloc(1, sizeof(struct s_canvas));
 	MEMORY_ALLOC_CHECK(canv);
 
 	canv->memory_start = framebuffer_start();
@@ -456,9 +456,9 @@ canvas_t* canvas_new_fullscreen()
 	return canv;
 }
 
-canvas_t* canvas_new(dimension_t * dim)
+canvas_legacy_t* canvas_legacy_new(dimension_t * dim)
 {
-	canvas_t * canv = (canvas_t*)calloc(1, sizeof(struct s_canvas));
+	canvas_legacy_t * canv = (canvas_legacy_t*)calloc(1, sizeof(struct s_canvas));
 	MEMORY_ALLOC_CHECK(canv);
 
 	if (!dimension_good(dim))
@@ -476,12 +476,12 @@ canvas_t* canvas_new(dimension_t * dim)
 	return canv;
 }
 
-canvas_t * canvas_new_sub_canvas(canvas_t* canv, size_t x, size_t y, size_t width, size_t height)
+canvas_legacy_t * canvas_legacy_new_sub_canvas(canvas_legacy_t* canv, size_t x, size_t y, size_t width, size_t height)
 {
-	canvas_t *sub_canvas;
+	canvas_legacy_t *sub_canvas;
 	PTR_CHECK_RETURN(canv, "canvas", NULL);
 
-	sub_canvas = (canvas_t*)calloc(1, sizeof(struct s_canvas));
+	sub_canvas = (canvas_legacy_t*)calloc(1, sizeof(struct s_canvas));
 	MEMORY_ALLOC_CHECK(sub_canvas);
 
 	sub_canvas->memory_start = canv->memory_start + x + y * canv->line_incrementation_width;
@@ -493,13 +493,13 @@ canvas_t * canvas_new_sub_canvas(canvas_t* canv, size_t x, size_t y, size_t widt
 	return sub_canvas;
 }
 
-void canvas_delete(canvas_t *canv)
+void canvas_legacy_delete(canvas_legacy_t *canv)
 {
 	PTR_CHECK(canv, "canvas");
 	free(canv);
 }
 
-size_t canvas_get_width(const canvas_t *canv)
+size_t canvas_legacy_get_width(const canvas_legacy_t *canv)
 {
 	PTR_CHECK_RETURN(canv, "canvas", 0);
 	return canv->width;
