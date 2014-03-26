@@ -19,19 +19,41 @@
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef FONT_H_
-#define FONT_H_
+#include "virtual_canvas.h"
+#include "helper/checks.h"
 
-#include "types.h"
-#include "font_data/fonts.h"
+struct s_virtual_canvas
+{
+	dim_t x, y, width, height, xend, yend;
+};
 
-dim_t font_char_width(font_t * font, char c);
+static dim_t end_pos(dim_t start_pos, dim_t length)
+{
+	return start_pos + length;
+}
 
-dim_t font_string_width(font_t * font, my_string_t * string);
-dim_t font_string_height(font_t * font, my_string_t * string);
+virtual_canvas_t * virtual_canvas_new(void)
+{
+	virtual_canvas_t * obj = (virtual_canvas_t *) malloc(sizeof(struct s_virtual_canvas));
+	MEMORY_ALLOC_CHECK(obj);
 
-void font_draw_left_just(font_t *font, my_string_t *string, const canvas_legacy_t *canv);
-void font_draw_center_just(font_t *font, my_string_t *string, const canvas_legacy_t *canv);
-void font_draw_right_just(font_t *font, my_string_t *string, const canvas_legacy_t *canv);
+	return obj;
+}
 
-#endif /* FONT_H_ */
+void virtual_canvas_delete(virtual_canvas_t * obj)
+{
+	PTR_CHECK(obj, "virtual_canvas");
+	free(obj);
+}
+
+void virtual_canvas_set_dimension(virtual_canvas_t * obj, dim_t x, dim_t y, dim_t width, dim_t height)
+{
+	PTR_CHECK(obj, "virtual_canvas");
+
+	obj->x = x;
+	obj->y = y;
+	obj->width = width;
+	obj->height = height;
+	obj->xend = end_pos(x, width);
+	obj->yend = end_pos(y, height);
+}

@@ -19,8 +19,8 @@
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef CANVAS_H_
-#define CANVAS_H_
+#ifndef CANVASLEGACY_H_
+#define CANVASLEGACY_H_
 
 #include "types.h"
 
@@ -41,4 +41,4 @@ size_t canvas_legacy_get_width(const canvas_legacy_t *canv);
 
 void canvas_legacy_delete(canvas_legacy_t *);
 
-#endif /* CANVAS_H_ */
+#endif /* CANVASLEGACY_H_ */

@@ -19,19 +19,15 @@
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef FONT_H_
-#define FONT_H_
+#ifndef VIRTUAL_CANVAS_H_
+#define VIRTUAL_CANVAS_H_
 
 #include "types.h"
-#include "font_data/fonts.h"
 
-dim_t font_char_width(font_t * font, char c);
+virtual_canvas_t * virtual_canvas_new();
+void virtual_canvas_delete(virtual_canvas_t *);
 
-dim_t font_string_width(font_t * font, my_string_t * string);
-dim_t font_string_height(font_t * font, my_string_t * string);
+void virtual_canvas_set_dimension(virtual_canvas_t *, dim_t x, dim_t y, dim_t width, dim_t height);
 
-void font_draw_left_just(font_t *font, my_string_t *string, const canvas_legacy_t *canv);
-void font_draw_center_just(font_t *font, my_string_t *string, const canvas_legacy_t *canv);
-void font_draw_right_just(font_t *font, my_string_t *string, const canvas_legacy_t *canv);
 
-#endif /* FONT_H_ */
+#endif /* VIRTUAL_CANVAS_H_ */

@@ -28,7 +28,7 @@
 #include "types.h"
 #include <math.h>
 
-struct s_canvas
+struct s_canvas_legacy
 {
 	pixel_t color;
 	pixel_t *memory_start;
@@ -444,7 +444,7 @@ void canvas_legacy_draw_alpha_bitmap_8bpp(const canvas_legacy_t *canv, BUFFER_PT
 
 canvas_legacy_t* canvas_legacy_new_fullscreen()
 {
-	canvas_legacy_t * canv = (canvas_legacy_t*)calloc(1, sizeof(struct s_canvas));
+	canvas_legacy_t * canv = (canvas_legacy_t*)calloc(1, sizeof(struct s_canvas_legacy));
 	MEMORY_ALLOC_CHECK(canv);
 
 	canv->memory_start = framebuffer_start();
@@ -458,7 +458,7 @@ canvas_legacy_t* canvas_legacy_new_fullscreen()
 
 canvas_legacy_t* canvas_legacy_new(dimension_t * dim)
 {
-	canvas_legacy_t * canv = (canvas_legacy_t*)calloc(1, sizeof(struct s_canvas));
+	canvas_legacy_t * canv = (canvas_legacy_t*)calloc(1, sizeof(struct s_canvas_legacy));
 	MEMORY_ALLOC_CHECK(canv);
 
 	if (!dimension_good(dim))
@@ -481,7 +481,7 @@ canvas_legacy_t * canvas_legacy_new_sub_canvas(canvas_legacy_t* canv, size_t x, 
 	canvas_legacy_t *sub_canvas;
 	PTR_CHECK_RETURN(canv, "canvas", NULL);
 
-	sub_canvas = (canvas_legacy_t*)calloc(1, sizeof(struct s_canvas));
+	sub_canvas = (canvas_legacy_t*)calloc(1, sizeof(struct s_canvas_legacy));
 	MEMORY_ALLOC_CHECK(sub_canvas);
 
 	sub_canvas->memory_start = canv->memory_start + x + y * canv->line_incrementation_width;

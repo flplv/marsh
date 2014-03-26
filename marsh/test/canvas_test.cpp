@@ -19,19 +19,39 @@
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef FONT_H_
-#define FONT_H_
+extern "C" {
 
-#include "types.h"
-#include "font_data/fonts.h"
+#include "virtual_canvas.h"
+#include "virtual_canvas.c"
 
-dim_t font_char_width(font_t * font, char c);
+}
 
-dim_t font_string_width(font_t * font, my_string_t * string);
-dim_t font_string_height(font_t * font, my_string_t * string);
+#include "CppUTest/TestHarness.h"
+#include "CppUTest/MemoryLeakDetector.h"
 
-void font_draw_left_just(font_t *font, my_string_t *string, const canvas_legacy_t *canv);
-void font_draw_center_just(font_t *font, my_string_t *string, const canvas_legacy_t *canv);
-void font_draw_right_just(font_t *font, my_string_t *string, const canvas_legacy_t *canv);
+TEST_GROUP(canvas)
+{
+	virtual_canvas_t * cut;
 
-#endif /* FONT_H_ */
+	void setup()
+	{
+		cut = virtual_canvas_new();
+	}
+
+	void teardown()
+	{
+		virtual_canvas_delete(cut);
+	}
+};
+
+TEST(canvas, dimensions)
+{
+	virtual_canvas_set_dimension(cut, -5, -6, 13, 17);
+	CHECK_EQUAL(-5, (int)cut->x);
+	CHECK_EQUAL(-6, (int)cut->y);
+	CHECK_EQUAL(13, (int)cut->width);
+	CHECK_EQUAL(17, (int)cut->height);
+	CHECK_EQUAL(8, (int)cut->xend);
+	CHECK_EQUAL(11, (int)cut->yend);
+}
+
