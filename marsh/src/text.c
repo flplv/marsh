@@ -30,7 +30,7 @@
 #include "widget.h"
 #include "widget_interface.h"
 #include "signalslot.h"
-#include "canvas_legacy.h"
+#include "canvas.h"
 #include "framebuffer.h"
 
 struct s_text
@@ -134,22 +134,23 @@ static bool ready_to_draw(text_t * obj)
 
 static void text_draw(text_t * obj)
 {
-	canvas_legacy_t *canv;
+	canvas_t *canv;
 
 	if (!ready_to_draw(obj)) {
 		LOG_ERROR("text", "unable to draw");
 		return;
 	}
 
-	canv = canvas_legacy_new(widget_get_dimension(obj->glyph));
-	canvas_legacy_set_color(canv, color_to_pixel(obj->color));
+	canv = canvas_new(widget_get_dimension(obj->glyph));
+
 	if (obj->just == TEXT_LEFT_JUST)
-		font_draw_left_just(obj->font, obj->string, canv);
+		font_draw_left_just(obj->font, obj->string, color_to_pixel(obj->color), canv);
 	else if (obj->just == TEXT_CENTER_JUST)
-		font_draw_center_just(obj->font, obj->string, canv);
+		font_draw_center_just(obj->font, obj->string, color_to_pixel(obj->color), canv);
 	else if (obj->just == TEXT_RIGHT_JUST)
-		font_draw_right_just(obj->font, obj->string, canv);
-	canvas_legacy_delete(canv);
+		font_draw_right_just(obj->font, obj->string, color_to_pixel(obj->color), canv);
+
+	canvas_delete(canv);
 }
 text_t* text_new()
 {

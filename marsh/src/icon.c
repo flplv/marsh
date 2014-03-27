@@ -24,7 +24,8 @@
 #include "helper/log.h"
 #include "color.h"
 #include "dimension.h"
-#include "canvas_legacy.h"
+#include "canvas.h"
+#include "drawing_algorithms.h"
 #include "widget.h"
 #include "widget_interface.h"
 #include "icon.h"
@@ -63,19 +64,18 @@ static void draw(icon_t * obj)
 		return;
 	}
 
-	canvas_legacy_t *canv = canvas_legacy_new(widget_get_dimension(obj->glyph));
-	canvas_legacy_set_color(canv, color_to_pixel(obj->color));
+	canvas_t *canv = canvas_new(widget_get_dimension(obj->glyph));
 
 	if (obj->bitmap->bitmap_data_width == BITMAP_BUFFER_8BPP)
 	{
-		canvas_legacy_draw_alpha_bitmap_8bpp(canv, (BUFFER_PTR_RDOLY)obj->bitmap->bitmap, 0, 0, obj->bitmap->width, obj->bitmap->height);
+		draw_alpha_bitmap_8bpp(canv, color_to_pixel(obj->color), (BUFFER_PTR_RDOLY)obj->bitmap->bitmap, 0, 0, obj->bitmap->width, obj->bitmap->height);
 	}
 	else
 	{
 		my_log(ERROR, __FILE__, __LINE__, "Bad bitmap_data_width", obj->log);
 	}
 
-	canvas_legacy_delete(canv);
+	canvas_delete(canv);
 }
 
 icon_t * icon_new()

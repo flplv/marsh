@@ -30,8 +30,8 @@ dim_t font_char_width(font_t * font, char c);
 dim_t font_string_width(font_t * font, my_string_t * string);
 dim_t font_string_height(font_t * font, my_string_t * string);
 
-void font_draw_left_just(font_t *font, my_string_t *string, const canvas_legacy_t *canv);
-void font_draw_center_just(font_t *font, my_string_t *string, const canvas_legacy_t *canv);
-void font_draw_right_just(font_t *font, my_string_t *string, const canvas_legacy_t *canv);
+void font_draw_left_just(font_t *font, my_string_t *string, pixel_t color, const canvas_t *canv);
+void font_draw_center_just(font_t *font, my_string_t *string, pixel_t color, const canvas_t *canv);
+void font_draw_right_just(font_t *font, my_string_t *string, pixel_t color, const canvas_t *canv);
 
 #endif /* FONT_H_ */

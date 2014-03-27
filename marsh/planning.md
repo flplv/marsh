@@ -40,7 +40,7 @@
    algorithms module.
 
 		added:       19 / 03 / 2014
-		implemented: not yet.
+		implemented: 26 / 03 / 2014 by Felipe Lavratti
 		
 		
 4) Rename object creation and destruction

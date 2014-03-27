@@ -24,7 +24,8 @@
 #include "helper/number.h"
 #include "helper/my_string.h"
 #include "font_data/font_data.h"
-#include "canvas_legacy.h"
+#include "canvas.h"
+#include "drawing_algorithms.h"
 
 
 static dim_t char_bitmap_width(font_t *font)
@@ -127,7 +128,7 @@ dim_t font_string_height(font_t* font, my_string_t* string)
 	return height;
 }
 
-void font_draw_left_just(font_t* font, my_string_t* string, const canvas_legacy_t *canv)
+void font_draw_left_just(font_t* font, my_string_t* string, pixel_t color, const canvas_t *canv)
 {
 	const char * pCh = my_string_get(string);
 	uint32_t x, y, bitmap_height, bitmap_width;
@@ -143,7 +144,7 @@ void font_draw_left_just(font_t* font, my_string_t* string, const canvas_legacy_
 	while (*pCh)
 	{
 		if (charactere_is_printable(*pCh)) {
-			canvas_legacy_draw_bitmap_1bpp(canv, bitmap(font, *pCh), x, y, bitmap_width, bitmap_height);
+			draw_bitmap_1bpp(canv, color, bitmap(font, *pCh), x, y, bitmap_width, bitmap_height);
 			x += font_char_width(font, *pCh);
 		}
 		else if ('\n' == *pCh) {
@@ -177,7 +178,7 @@ static dim_t line_width(font_t * font, const char *pCh)
 	return width;
 }
 
-void font_draw_center_just(font_t* font, my_string_t* string, const canvas_legacy_t *canv)
+void font_draw_center_just(font_t* font, my_string_t* string, pixel_t color, const canvas_t *canv)
 {
 	const char * pCh = my_string_get(string);
 	uint32_t x, y, bitmap_height, bitmap_width;
@@ -187,17 +188,17 @@ void font_draw_center_just(font_t* font, my_string_t* string, const canvas_legac
 	bitmap_height = char_bitmap_height(font);
 	bitmap_width = char_bitmap_width(font);
 
-	x = (canvas_legacy_get_width(canv) - line_width(font, pCh))/2;
+	x = (canvas_get_width(canv) - line_width(font, pCh))/2;
 	y = 0;
 
 	while (*pCh)
 	{
 		if (charactere_is_printable(*pCh)) {
-			canvas_legacy_draw_bitmap_1bpp(canv, bitmap(font, *pCh), x, y, bitmap_width, bitmap_height);
+			draw_bitmap_1bpp(canv, color, bitmap(font, *pCh), x, y, bitmap_width, bitmap_height);
 			x += font_char_width(font, *pCh);
 		}
 		else if ('\n' == *pCh) {
-			x = (canvas_legacy_get_width(canv) - line_width(font, pCh+1))/2;
+			x = (canvas_get_width(canv) - line_width(font, pCh+1))/2;
 			y += height(font);
 		}
 
@@ -206,7 +207,7 @@ void font_draw_center_just(font_t* font, my_string_t* string, const canvas_legac
 }
 
 
-void font_draw_right_just(font_t* font, my_string_t* string, const canvas_legacy_t *canv)
+void font_draw_right_just(font_t* font, my_string_t* string, pixel_t color, const canvas_t *canv)
 {
 	const char * pCh = my_string_get(string);
 	uint32_t x, y, bitmap_height, bitmap_width;
@@ -216,17 +217,17 @@ void font_draw_right_just(font_t* font, my_string_t* string, const canvas_legacy
 	bitmap_height = char_bitmap_height(font);
 	bitmap_width = char_bitmap_width(font);
 
-	x = (canvas_legacy_get_width(canv) - line_width(font, pCh));
+	x = (canvas_get_width(canv) - line_width(font, pCh));
 	y = 0;
 
 	while (*pCh)
 	{
 		if (charactere_is_printable(*pCh)) {
-			canvas_legacy_draw_bitmap_1bpp(canv, bitmap(font, *pCh), x, y, bitmap_width, bitmap_height);
+			draw_bitmap_1bpp(canv, color, bitmap(font, *pCh), x, y, bitmap_width, bitmap_height);
 			x += font_char_width(font, *pCh);
 		}
 		else if ('\n' == *pCh) {
-			x = (canvas_legacy_get_width(canv) - line_width(font, pCh+1));
+			x = (canvas_get_width(canv) - line_width(font, pCh+1));
 			y += height(font);
 		}
 

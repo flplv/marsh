@@ -19,41 +19,16 @@
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "virtual_canvas.h"
-#include "helper/checks.h"
+#ifndef CANVAS_H_
+#define CANVAS_H_
 
-struct s_virtual_canvas
-{
-	dim_t x, y, width, height, xend, yend;
-};
+#include "types.h"
 
-static dim_t end_pos(dim_t start_pos, dim_t length)
-{
-	return start_pos + length;
-}
+canvas_t * canvas_new_fullscreen(void);
+canvas_t * canvas_new(dimension_t *);
 
-virtual_canvas_t * virtual_canvas_new(void)
-{
-	virtual_canvas_t * obj = (virtual_canvas_t *) malloc(sizeof(struct s_virtual_canvas));
-	MEMORY_ALLOC_CHECK(obj);
+size_t canvas_get_width(const canvas_t *canv);
 
-	return obj;
-}
+void canvas_delete(canvas_t *);
 
-void virtual_canvas_delete(virtual_canvas_t * obj)
-{
-	PTR_CHECK(obj, "virtual_canvas");
-	free(obj);
-}
-
-void virtual_canvas_set_dimension(virtual_canvas_t * obj, dim_t x, dim_t y, dim_t width, dim_t height)
-{
-	PTR_CHECK(obj, "virtual_canvas");
-
-	obj->x = x;
-	obj->y = y;
-	obj->width = width;
-	obj->height = height;
-	obj->xend = end_pos(x, width);
-	obj->yend = end_pos(y, height);
-}
+#endif /* CANVASLEGACY_H_ */

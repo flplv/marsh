@@ -23,8 +23,10 @@
 #include "helper/number.h"
 #include "helper/log.h"
 #include "color.h"
+#include "drawing_algorithms.h"
 #include "dimension.h"
-#include "canvas_legacy.h"
+#include "canvas.h"
+#include "canvas.h"
 #include "widget.h"
 #include "widget_interface.h"
 #include "image.h"
@@ -61,18 +63,18 @@ static void draw(image_t * obj)
 		return;
 	}
 
-	canvas_legacy_t *canv = canvas_legacy_new(widget_get_dimension(obj->glyph));
+	canvas_t *canv = canvas_new(widget_get_dimension(obj->glyph));
 
 	if (obj->bitmap->bitmap_data_width == BITMAP_BUFFER_16BPP)
 	{
-		canvas_legacy_draw_bitmap(canv, (BUFFER_PTR_RDOLY)obj->bitmap->bitmap, 0, 0, obj->bitmap->width, obj->bitmap->height);
+		draw_bitmap(canv, (BUFFER_PTR_RDOLY)obj->bitmap->bitmap, 0, 0, obj->bitmap->width, obj->bitmap->height);
 	}
 	else
 	{
 		my_log(ERROR, __FILE__, __LINE__, "Bad bitmap_data_width", obj->log);
 	}
 
-	canvas_legacy_delete(canv);
+	canvas_delete(canv);
 }
 
 image_t * image_new()

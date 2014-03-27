@@ -24,10 +24,11 @@
 #include "helper/log.h"
 #include "color.h"
 #include "dimension.h"
-#include "canvas_legacy.h"
+#include "canvas.h"
 #include "widget.h"
 #include "widget_interface.h"
 #include "rectangle.h"
+#include "drawing_algorithms.h"
 
 
 struct s_rectangle_instance
@@ -72,32 +73,28 @@ static void abstract_delete(void * obj)
 
 static void decode_and_draw(rectangle_t* obj)
 {
-	canvas_legacy_t *canv = canvas_legacy_new(widget_get_dimension(obj->glyph));
+	canvas_t *canv = canvas_new(widget_get_dimension(obj->glyph));
 
 	if (obj->corner_radius)
 	{
 		if (obj->is_filled) {
-			canvas_legacy_set_color(canv, color_to_pixel(obj->fill_color));
-			canvas_legacy_draw_solid_round_rectangle(canv, obj->corner_radius);
+			draw_solid_round_rectangle(canv, color_to_pixel(obj->fill_color), obj->corner_radius);
 		}
 		if (obj->has_border) {
-			canvas_legacy_set_color(canv, color_to_pixel(obj->border_color));
-			canvas_legacy_draw_round_rectangle(canv, obj->border_tickness, obj->corner_radius);
+			draw_round_rectangle(canv,  color_to_pixel(obj->border_color), obj->border_tickness, obj->corner_radius);
 		}
 	}
 	else
 	{
 		if (obj->is_filled) {
-			canvas_legacy_set_color(canv, color_to_pixel(obj->fill_color));
-			canvas_legacy_draw_solid_rectangle(canv);
+			draw_solid_rectangle(canv, color_to_pixel(obj->fill_color));
 		}
 		if (obj->has_border) {
-			canvas_legacy_set_color(canv, color_to_pixel(obj->border_color));
-			canvas_legacy_draw_rectangle(canv, obj->border_tickness);
+			draw_rectangle(canv, color_to_pixel(obj->border_color), obj->border_tickness);
 		}
 	}
 
-	canvas_legacy_delete(canv);
+	canvas_delete(canv);
 }
 
 static void draw(rectangle_t * obj)

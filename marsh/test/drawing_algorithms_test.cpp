@@ -20,38 +20,26 @@
  */
 
 extern "C" {
-
-#include "virtual_canvas.h"
-#include "virtual_canvas.c"
-
 }
+
+#include "mocks/terminal_intercepter.h"
 
 #include "CppUTest/TestHarness.h"
 #include "CppUTest/MemoryLeakDetector.h"
 
-TEST_GROUP(canvas)
+TEST_GROUP(drawing_algorithms)
 {
-	virtual_canvas_t * cut;
-
 	void setup()
 	{
-		cut = virtual_canvas_new();
 	}
 
 	void teardown()
 	{
-		virtual_canvas_delete(cut);
 	}
 };
 
-TEST(canvas, dimensions)
+TEST(drawing_algorithms, test_all_against_zero_dimension_canvas)
 {
-	virtual_canvas_set_dimension(cut, -5, -6, 13, 17);
-	CHECK_EQUAL(-5, (int)cut->x);
-	CHECK_EQUAL(-6, (int)cut->y);
-	CHECK_EQUAL(13, (int)cut->width);
-	CHECK_EQUAL(17, (int)cut->height);
-	CHECK_EQUAL(8, (int)cut->xend);
-	CHECK_EQUAL(11, (int)cut->yend);
+	// TODO: test_all_against_zero_dimension_canvas
 }
 
