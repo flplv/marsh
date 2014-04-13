@@ -43,12 +43,12 @@ my_stack_t* stack_new(uint32_t item_size)
 	}
 
 	obj = (my_stack_t*)calloc(1, sizeof(struct s_stack));
-	MEMORY_ALLOC_CHECK(obj);
+	MEMORY_ALLOC_CHECK_RETURN(obj, NULL);
 
 	obj->item_size = item_size;
 
 	obj->buffer = (uint8_t *)calloc(2, obj->item_size);
-	MEMORY_ALLOC_CHECK(obj->buffer);
+	MEMORY_ALLOC_CHECK_RETURN(obj->buffer, NULL);
 	obj->buffer_total_slots = 2;
 
 	obj->used_slots = 0;
@@ -72,7 +72,7 @@ uint32_t stack_add(my_stack_t *obj, BUFFER_PTR_RDOLY item)
 	if (obj->used_slots == obj->buffer_total_slots)
 	{
 		obj->buffer = (uint8_t *)realloc(obj->buffer, obj->buffer_total_slots * 2 * obj->item_size);
-		MEMORY_ALLOC_CHECK(obj->buffer);
+		MEMORY_ALLOC_CHECK_RETURN(obj->buffer, NULL);
 		obj->buffer_total_slots *= 2;
 	}
 

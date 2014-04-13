@@ -25,7 +25,7 @@
 #include "types.h"
 #include "bitmap_data/bitmaps.h"
 
-icon_t * icon_new(void);
+icon_t * icon_new(widget_t * parent);
 void icon_delete(icon_t * const obj);
 void icon_set_position(icon_t * obj, dim_t x, dim_t y);
 void icon_set_color_html(icon_t * obj, const char *html_color_code);

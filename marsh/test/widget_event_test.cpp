@@ -19,27 +19,39 @@
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "helper/checks.h"
+#include <cstring>
 
-#include "widget.h"
-#include "widget_private.h"
-#include "widget_interface.h"
+#include "CppUTest/TestHarness.h"
+#include "CppUTest/MemoryLeakDetector.h"
 
-widget_interface_t * widget_interface_new(void *owner, void (*draw_func)(void *), void (*destroy_func)(void *))
-{
-	widget_interface_t * obj = (widget_interface_t *)malloc(sizeof(struct s_widget_interface));
-	MEMORY_ALLOC_CHECK(obj);
+#include "mocks/terminal_intercepter.h"
 
-	obj->owner_instance = owner;
-	obj->draw = draw_func;
-	obj->destroy = destroy_func;
-
-	return obj;
+extern "C" {
+#include "types.h"
+#include "widget_event.h"
+#include "widget_event.c"
 }
 
-void widget_interface_delete(widget_interface_t * const obj)
+TEST_GROUP(widget_event)
 {
-	PTR_CHECK(obj, "widget_interface");
-	free(obj);
-}
+	void setup()
+	{
+	}
 
+	void teardown()
+	{
+		DISABLE_INTERCEPTION;
+	}
+};
+
+TEST(widget_event, leaks)
+{
+	//TODO: Add checks on returns of the install
+	widget_t wid;
+	widget_event_init(&wid.event_handler_list);
+
+	CHECK_TRUE(0 == widget_event_install_handler(&wid, 13, NULL));
+	CHECK_FALSE(-1 == widget_event_install_handler(&wid, 13, NULL));
+
+	widget_event_deinit(&wid.event_handler_list);
+}

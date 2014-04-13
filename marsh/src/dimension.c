@@ -81,6 +81,7 @@ void dimension_set_rest_if_possible(dimension_t * tgt)
 
 	if (tgt->size_set)
 	{
+		//TODO: Use END as start + length, instead of start + length - 1.
 		if (tgt->pos_start_set)
 		{
 			tgt->pos.end.x = tgt->pos.start.x + tgt->size.width - 1;
@@ -138,7 +139,6 @@ void dimension_merge(dimension_t* tgt, const dimension_t* from)
 	PTR_CHECK(from, "dimension");
 
 	if (!dimension_good(from)) {
-		global_my_log(ERROR, __FILE__, __LINE__, "\"from\" Badly configured", "dimension");
 		return;
 	}
 
@@ -189,7 +189,6 @@ bool dimension_contains(const dimension_t* dim, dim_t x, dim_t y)
 	PTR_CHECK_RETURN(dim, "dimension", false);
 
 	if (!dimension_good(dim)) {
-		global_my_log(ERROR, __FILE__, __LINE__, "\"dim\" Badly configured", "dimension");
 		return false;
 	}
 

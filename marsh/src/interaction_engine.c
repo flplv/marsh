@@ -42,7 +42,7 @@ struct s_interaction_engine {
 interaction_engine_t* interaction_engine_new(dimension_t * owner_dimension)
 {
 	interaction_engine_t *obj = (interaction_engine_t *)calloc(1, sizeof (struct s_interaction_engine));
-	MEMORY_ALLOC_CHECK(obj);
+	MEMORY_ALLOC_CHECK_RETURN(obj, NULL);
 
 	obj->click_sig = signal_new();
 	obj->press_sig = signal2_new();

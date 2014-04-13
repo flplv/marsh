@@ -49,7 +49,7 @@ TEST_GROUP(buttonEngine)
 	void setup()
 	{
 		action_called = false;
-		cut = button_engine_new();
+		cut = button_engine_new(NULL);
 	}
 
 	void teardown()
@@ -71,8 +71,8 @@ TEST(buttonEngine, bad)
 {
 	rectangle_t *normal, *onpress;
 
-	normal = rectangle_new();
-	onpress = rectangle_new();
+	normal = rectangle_new(NULL);
+	onpress = rectangle_new(NULL);
 
 	rectangle_set_fill_color_html(normal, "#800000");
 	rectangle_set_fill_color_html(onpress, "#FF0000");
@@ -101,8 +101,8 @@ TEST(buttonEngine, action)
 {
 	rectangle_t *normal, *onpress;
 
-	normal = rectangle_new();
-	onpress = rectangle_new();
+	normal = rectangle_new(NULL);
+	onpress = rectangle_new(NULL);
 
 	rectangle_set_fill_color_html(normal, "#800000");
 	rectangle_set_fill_color_html(onpress, "#FF0000");
@@ -149,10 +149,10 @@ TEST(buttonEngine, toggle)
 {
 	rectangle_t *off, *on, *on_to_off, *off_to_on;
 
-	off = rectangle_new();
-	on = rectangle_new();
-	on_to_off = rectangle_new();
-	off_to_on = rectangle_new();
+	off = rectangle_new(NULL);
+	on = rectangle_new(NULL);
+	on_to_off = rectangle_new(NULL);
+	off_to_on = rectangle_new(NULL);
 
 	rectangle_set_fill_color_html(off, "#800000");
 	rectangle_set_fill_color_html(off_to_on, "#FF0000");

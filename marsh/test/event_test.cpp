@@ -27,57 +27,68 @@
 #include "mocks/terminal_intercepter.h"
 
 extern "C" {
-#include "text.h"
-#include "text.c"
-#include "helper/my_string.h"
+#include "types.h"
+#include "event.h"
+#include "event.c"
 }
 
-TEST_GROUP(text)
+TEST_GROUP(event)
 {
-	text_t *cut;
-
 	void setup()
 	{
-		cut = text_new(NULL);
 	}
 
 	void teardown()
 	{
-		text_delete(cut);
+		event_unreserve_all_uids();
 		DISABLE_INTERCEPTION;
 	}
 };
 
-TEST(text, instance)
+TEST(event, linked_list)
+{
+	POINTERS_EQUAL(&press_event, uid_list_root);
+	POINTERS_EQUAL(&release_event, uid_list_root->head.next);
+	POINTERS_EQUAL(&click_event, uid_list_root->head.next->next);
+	POINTERS_EQUAL(NULL, uid_list_root->head.next->next->next);
+}
+
+TEST(event, reservation)
+{
+	LONGS_EQUAL(4, event_reserve_new_uid(event_propagate_from_current, event_life_single, "test_event"));
+
+	LONGS_EQUAL(4, event_get_uid_from_name("test_event"));
+	LONGS_EQUAL(3, event_get_uid_from_name("default_click"));
+	LONGS_EQUAL(2, event_get_uid_from_name("default_release"));
+	LONGS_EQUAL(1, event_get_uid_from_name("default_press"));
+
+	event_unreserve_all_uids();
+}
+
+static void my_free(void * data) { free (data); }
+
+TEST(event, instances)
 {
 	ENABLE_INTERCEPTION;
 
-	CHECK_TRUE(cut != NULL);
-//	text_delete(cut);
-//	text_delete(cut);
-//	STRCMP_CONTAINS("text", intercepted_output[2]);
-//	STRCMP_CONTAINS("Invalid Instance", intercepted_output[0]);
-}
+	event_t * cut;
+	cut = event_new(event_uid_press, NULL, NULL);
+	CHECK_TRUE(cut);
+	event_delete(cut);
 
-TEST(text, sizes)
-{
-	int width;
-	int height;
+	cut = event_new(event_uid_press, malloc(1024), my_free);
+	CHECK_TRUE(cut);
+	event_delete(cut);
 
-	width = widget_get_dimension(cut->glyph)->size.width;
-	height = widget_get_dimension(cut->glyph)->size.height;
+	int user_unique_id;
+	user_unique_id = event_reserve_new_uid(event_propagate_from_current, event_life_single, "custom");
+	cut = event_new(user_unique_id, malloc(1024), my_free);
+	CHECK_TRUE(cut);
+	event_delete(cut);
+	event_unreserve_all_uids();
 
-	CHECK_EQUAL(0, width);
-	CHECK_EQUAL(0, height);
-
-	text_set_reference_position(cut, 0, 0);
-
-	my_string_set(text_get_string(cut), "tweedledum");
-	text_set_font(cut, ubuntu_monospace_16);
-
-	width = widget_get_dimension(cut->glyph)->size.width;
-	height = widget_get_dimension(cut->glyph)->size.height;
-	CHECK_EQUAL(80, width);
-	CHECK_EQUAL(16, height);
+	cut = event_new(3141, NULL, NULL);
+	CHECK_FALSE(cut);
+	event_delete(cut);
 }
 

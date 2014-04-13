@@ -28,7 +28,6 @@
 #include "color.h"
 #include "dimension.h"
 #include "widget.h"
-#include "widget_interface.h"
 #include "signalslot.h"
 #include "canvas.h"
 #include "framebuffer.h"
@@ -43,7 +42,6 @@ struct s_text
 	bool ref_is_set;
 
 	slot_t *string_update_slot;
-	widget_interface_t *self_reference;
 	widget_t *glyph;
 };
 
@@ -152,12 +150,12 @@ static void text_draw(text_t * obj)
 
 	canvas_delete(canv);
 }
-text_t* text_new()
+text_t* text_new(widget_t * parent)
 {
 	text_t * obj;
 
 	obj = (text_t *)calloc(1, sizeof(text_t));
-	MEMORY_ALLOC_CHECK(obj);
+	MEMORY_ALLOC_CHECK_RETURN(obj, NULL);
 
 	obj->string = my_string_new();
 
@@ -165,8 +163,7 @@ text_t* text_new()
 	slot_set(obj->string_update_slot, (slot_func)string_changed, (slot_arg)obj);
 	slot_connect(obj->string_update_slot, my_string_get_update_signal(obj->string));
 
-	obj->self_reference = widget_interface_new(obj, (void(*)(void *))text_draw, (void(*)(void *))text_delete);
-	obj->glyph = widget_new(obj->self_reference);
+	obj->glyph = widget_new(parent, obj, (void(*)(void *))text_draw, (void(*)(void *))text_delete);
 
 	obj->just = TEXT_LEFT_JUST;
 
@@ -179,8 +176,7 @@ void text_delete(text_t* obj)
 {
 	PTR_CHECK(obj, "text");
 
-	widget_delete(obj->glyph);
-	widget_interface_delete(obj->self_reference);
+	widget_delete_instance_only(obj->glyph);
 
 	slot_delete(obj->string_update_slot);
 	my_string_delete(obj->string);

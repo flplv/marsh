@@ -24,7 +24,7 @@
 
 #include "types.h"
 
-rectangle_t * rectangle_new(void);
+rectangle_t * rectangle_new(widget_t * parent);
 void rectangle_delete(rectangle_t * const);
 
 void rectangle_set_position(rectangle_t * const, dim_t x, dim_t y);

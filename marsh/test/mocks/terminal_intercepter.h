@@ -27,6 +27,5 @@ extern "C" {
 extern int _stdout_output_impl(const char * str);
 }
 
-
 #define ENABLE_INTERCEPTION marshmallow_terminal_output = output_intercepter
 #define DISABLE_INTERCEPTION marshmallow_terminal_output = _stdout_output_impl

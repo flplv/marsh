@@ -22,7 +22,6 @@
 #include "helper/checks.h"
 #include "button_engine.h"
 #include "widget.h"
-#include "widget_interface.h"
 #include "dimension.h"
 #include "signalslot2.h"
 #include "interact.h"
@@ -31,7 +30,6 @@
 struct s_button_engine
 {
 	widget_t *glyph;
-	widget_interface_t *self_reference;
 
 	slot2_t *press;
 	slot2_t *release;
@@ -130,13 +128,12 @@ static void bad_config_message(void)
 	global_my_log(ERROR, __FILE__, __LINE__, "No Logic selected.", "buttonEngine");
 }
 
-button_engine_t* button_engine_new()
+button_engine_t* button_engine_new(widget_t * parent)
 {
 	button_engine_t * obj = (button_engine_t *) calloc(1, sizeof(struct s_button_engine));
-	MEMORY_ALLOC_CHECK(obj);
+	MEMORY_ALLOC_CHECK_RETURN(obj, NULL);
 
-	obj->self_reference = widget_interface_new(obj, (void(*)(void*))draw, (void(*)(void*))button_engine_delete);
-	obj->glyph = widget_new(obj->self_reference);
+	obj->glyph = widget_new(parent, obj, (void(*)(void*))draw, (void(*)(void*))button_engine_delete);
 
 	obj->press = slot2_new();
 	obj->release = slot2_new();
@@ -158,8 +155,7 @@ void button_engine_delete(button_engine_t *obj)
 {
 	PTR_CHECK(obj, "buttonEngine");
 
-	widget_delete(obj->glyph);
-	widget_interface_delete(obj->self_reference);
+	widget_delete_instance_only(obj->glyph);
 	slot2_delete(obj->press);
 	slot2_delete(obj->release);
 

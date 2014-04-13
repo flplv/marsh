@@ -22,23 +22,48 @@
 #ifndef WIDGETPRIVATE_H_
 #define WIDGETPRIVATE_H_
 
-
 #include "helper/checks.h"
+#include "types.h"
 #include "widget.h"
 #include "interact.h"
 #include "dimension.h"
 
-struct s_widget_interface
+#include "helper/linked_list.h"
+
+struct s_widget_tree
 {
-	void * owner_instance;
-	void (*draw)(void *);
-	void (*destroy)(void *);
+	widget_t * parent;
+	widget_t * child;
+	widget_t * right;
+	widget_t * left;
 };
 
-struct s_widget {
-	dimension_t dim;
-	widget_interface_t *interface;
-	interaction_engine_t *interaction;
+struct s_widget_event_handler_node
+{
+	event_uid_t uid;
+	bool (*handler)(widget_t * widget, event_t * event);
+
+	linked_list_t head;
 };
+typedef struct s_widget_event_handler_node widget_event_handler_t;
+
+struct s_widget
+{
+	dimension_t dim;
+	interaction_engine_t *interaction;
+
+	void * creator_instance;
+	void (*creator_draw)(void *);
+	void (*creator_delete)(void *);
+
+	struct s_widget_tree tree;
+	widget_event_handler_t * event_handler_list;
+};
+
+void widget_event_init(widget_event_handler_t ** widget_event_lists_root_ptr);
+void widget_event_deinit(widget_event_handler_t ** widget_event_lists_root_ptr);
+
+void widget_tree_register(widget_t * self, widget_t * parent);
+void widget_tree_unregister(widget_t * self);
 
 #endif /* WIDGETPRIVATE_H_ */

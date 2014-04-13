@@ -27,7 +27,6 @@
 #include "canvas.h"
 #include "drawing_algorithms.h"
 #include "widget.h"
-#include "widget_interface.h"
 #include "icon.h"
 #include "bitmap_data/bitmap_data.h"
 
@@ -39,7 +38,6 @@ struct s_icon_instance
 
 	my_log_t * log;
 	widget_t *glyph;
-	widget_interface_t *self_reference;
 };
 
 
@@ -78,14 +76,13 @@ static void draw(icon_t * obj)
 	canvas_delete(canv);
 }
 
-icon_t * icon_new()
+icon_t * icon_new(widget_t * parent)
 {
 	icon_t * obj = (icon_t *) malloc(sizeof(struct s_icon_instance));
-	MEMORY_ALLOC_CHECK(obj);
+	MEMORY_ALLOC_CHECK_RETURN(obj, NULL);
 
 	obj->log = my_log_new("Icon", MESSAGE);
-	obj->self_reference = widget_interface_new(obj, (void(*)(void *))draw, (void(*)(void *))icon_delete);
-	obj->glyph = widget_new(obj->self_reference);
+	obj->glyph = widget_new(parent, obj, (void(*)(void *))draw, (void(*)(void *))icon_delete);
 	obj->color = color(255,255,255);
 	obj->bitmap = NULL;
 
@@ -97,8 +94,7 @@ void icon_delete(icon_t * const obj)
 	PTR_CHECK(obj, "icon");
 
 	my_log_delete(obj->log);
-	widget_delete(obj->glyph);
-	widget_interface_delete(obj->self_reference);
+	widget_delete_instance_only(obj->glyph);
 
 	free(obj);
 }

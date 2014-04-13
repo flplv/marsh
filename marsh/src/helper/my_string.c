@@ -73,7 +73,7 @@ static void _set(my_string_t * obj, const char *str)
 my_string_t* my_string_new(void)
 {
 	my_string_t* obj = (my_string_t *)calloc(1, sizeof(my_string_t));
-	MEMORY_ALLOC_CHECK(obj);
+	MEMORY_ALLOC_CHECK_RETURN(obj, NULL);
 
 	obj->str_data = (char*)calloc(1, sizeof(char));
 	obj->str_len = 0;

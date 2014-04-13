@@ -42,7 +42,7 @@ TEST_GROUP(icon)
 	{
 		marshmallow_terminal_output = output_intercepter;
 		framebuffer_new();
-		cut = icon_new();
+		cut = icon_new(NULL);
 	}
 
 	void teardown()
@@ -64,8 +64,8 @@ TEST(icon, Instance)
 TEST(icon, DestroyOwner)
 {
 	icon_t * cut2;
-	cut2 = icon_new();
-	widget_delete_interface(icon_get_widget(cut2));
+	cut2 = icon_new(NULL);
+	widget_delete(icon_get_widget(cut2));
 //	icon_delete(cut2);
 //	STRCMP_CONTAINS("icon", intercepted_output[2]);
 //	STRCMP_CONTAINS("Invalid Instance", intercepted_output[0]);
@@ -73,7 +73,7 @@ TEST(icon, DestroyOwner)
 
 TEST(icon, Draw)
 {
-	cut->glyph->interface->draw(cut);
+	cut->glyph->creator_draw(cut);
 	STRCMP_CONTAINS("Object not initialized properly, can't draw.", intercepted_output[0]);
 
 	CHECK_EQUAL(0x0000, *framebuffer_at(1, 10));

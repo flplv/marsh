@@ -39,7 +39,7 @@ widget_stack_t * widget_stack_new(void)
 	widget_stack_t * instance;
 
 	instance = (widget_stack_t *)calloc(1, sizeof(widget_stack_t));
-	MEMORY_ALLOC_CHECK(instance);
+	MEMORY_ALLOC_CHECK_RETURN(instance, NULL);
 
 	instance->log = my_log_new("widgetStack", ERROR);
 	instance->stack = stack_new(sizeof (widget_t *));

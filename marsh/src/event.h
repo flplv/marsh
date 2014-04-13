@@ -19,24 +19,40 @@
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef CANVAS_PRIVATE_H_
-#define CANVAS_PRIVATE_H_
+#ifndef EVENT_H_
+#define EVENT_H_
 
-struct s_canvas
+#include <stdbool.h>
+#include <stdint.h>
+
+#include "types.h"
+
+enum e_event_propagation_policy
 {
-	pixel_t *memory_start;
-	size_t height;
-	size_t width;
-	size_t line_incrementation_width;
+	event_propagate_from_root,   // Event starts its propagation from the root widget down the tree.
+	event_propagate_from_current // Event starts its propagation from the widget that triggered it down.
 };
 
-#define CANVAS_START_RECT(__canvas, __x, __y, __to) pixel_t *__to = __canvas->memory_start + __x + __y * __canvas->line_incrementation_width
-#define CANVAS_START_BITMAP(__canvas, __x, __y, __to) pixel_t *__to = __canvas->memory_start + __x + __y * __canvas->line_incrementation_width
-#define CANVAS_START_CIRC_CENTER_RADIUS(__canvas, __xc, __yc, __r, __to) \
-	pixel_t *__to = __canvas->memory_start + __xc-__r + (__yc-__r) * __canvas->width
-#define CANVAS_TO(__canvas, __x, __y) ((__canvas)->memory_start + (__x) + ((__y) * (__canvas)->line_incrementation_width))
-#define CANVAS_GO_DOWN(__canvas, __to, __amount) to += (__amount) * __canvas->line_incrementation_width
-#define CANVAS_GO_LEFT(__canvas, __to, __amount) to -= __amount
+enum e_event_life_policy
+{
+	event_life_persistent,  // Event don't stop after triggered an action.
+	event_life_single		// Event stop propagation after triggered an action once.
+};
 
+enum e_event_default_unique_id
+{
+	event_uid_press = 1,
+	event_uid_release = 2,
+	event_uid_click = 3,
+};
 
-#endif /* CANVAS_PRIVATE_H_ */
+bool event_is_user_event_uid(event_uid_t event_unique_id);
+event_uid_t event_get_uid_from_name(const char * event_uid_name);
+
+event_uid_t event_reserve_new_uid(enum e_event_propagation_policy prop_policy, enum e_event_life_policy life_cycle, const char * event_name);
+void event_unreserve_all_uids(void);
+
+event_t * event_new(event_uid_t event_unique_id, void * data, void (*free_data)(void *));
+void event_delete(event_t *);
+
+#endif /* WIDGET_EVENT_H_ */

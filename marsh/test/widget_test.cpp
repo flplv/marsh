@@ -23,7 +23,7 @@ extern "C" {
 #include "color.h"
 #include "color_private.h"
 #include "widget.h"
-#include "widget_interface.h"
+#include "widget_tree.h"
 #include "widget_private.h"
 }
 
@@ -40,20 +40,17 @@ static void call(void *){
 TEST_GROUP(Widget)
 {
 	widget_t * cut;
-	widget_interface_t * owner;
 
 	void setup()
 	{
 		marshmallow_terminal_output = output_intercepter;
-		owner = widget_interface_new(NULL, NULL, NULL);
-		cut = widget_new(owner);
+		cut = widget_new(NULL, NULL, NULL, NULL);
 		called = false;
 	}
 
 	void teardown()
 	{
-		widget_delete(cut);
-		widget_interface_delete(owner);
+		widget_delete_instance_only(cut);
 		marshmallow_terminal_output = _stdout_output_impl;
 	}
 };
@@ -64,9 +61,9 @@ TEST(Widget, instance)
 	CHECK_EQUAL(cut->dim.pos_start_set, false);
 	CHECK_EQUAL(cut->dim.pos_end_set, false);
 
-	CHECK_EQUAL((void*)0, cut->interface->owner_instance);
-	CHECK_EQUAL((void(*)(void*))0, cut->interface->draw);
-	CHECK_EQUAL((void(*)(void*))0, cut->interface->destroy);
+	CHECK_EQUAL((void*)0, cut->creator_instance);
+	CHECK_EQUAL((void(*)(void*))0, cut->creator_draw);
+	CHECK_EQUAL((void(*)(void*))0, cut->creator_delete);
 
 //	widget_delete(cut);
 //	widget_delete(cut);
@@ -82,11 +79,40 @@ TEST(Widget, instance)
 TEST(Widget, destroy)
 {
 	widget_t * cut2;
-	widget_interface_t * owner2;
-	owner2 = widget_interface_new(this, (void(*)(void*))2, call);
-	cut2 = widget_new(owner2);
-	widget_delete_interface(cut2);
+	cut2 = widget_new(NULL, this, (void(*)(void*))2, call);
 	widget_delete(cut2);
-	widget_interface_delete(owner2);
+	widget_delete_instance_only(cut2);
 	CHECK_TRUE(called);
+}
+
+TEST(Widget, tree)
+{
+	CHECK_TRUE(cut->tree.child == NULL);
+
+	widget_t * cut2;
+	cut2 = widget_new(cut, NULL, NULL, NULL);
+
+	CHECK_TRUE(cut->tree.child == cut2);
+
+	widget_new(cut2, NULL, NULL, NULL);
+	widget_new(cut2, NULL, NULL, NULL);
+	widget_new(cut2, NULL, NULL, NULL);
+	widget_new(cut2, NULL, NULL, NULL);
+	widget_new(widget_child(cut2), NULL, NULL, NULL);
+	widget_new(widget_child(cut2), NULL, NULL, NULL);
+	widget_new(widget_child(cut2), NULL, NULL, NULL);
+	widget_new(widget_last_child(cut2), NULL, NULL, NULL);
+	widget_new(widget_last_child(cut2), NULL, NULL, NULL);
+	widget_new(widget_last_child(cut2), NULL, NULL, NULL);
+	widget_new(widget_last_child(cut2), NULL, NULL, NULL);
+	widget_new(widget_last_child(cut2), NULL, NULL, NULL);
+
+	CHECK_EQUAL(1, widget_num_of_children(cut));
+	CHECK_EQUAL(4, widget_num_of_children(cut2));
+	CHECK_EQUAL(3, widget_num_of_children(widget_child(cut2)));
+	CHECK_EQUAL(5, widget_num_of_children(widget_last_child(cut2)));
+
+	widget_delete(cut2);
+
+	CHECK_TRUE(cut->tree.child == NULL);
 }

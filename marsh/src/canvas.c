@@ -33,7 +33,7 @@
 canvas_t* canvas_new_fullscreen()
 {
 	canvas_t * canv = (canvas_t*)calloc(1, sizeof(struct s_canvas));
-	MEMORY_ALLOC_CHECK(canv);
+	MEMORY_ALLOC_CHECK_RETURN(canv, NULL);
 
 	canv->memory_start = framebuffer_start();
 	canv->height = framebuffer_height();
@@ -46,7 +46,7 @@ canvas_t* canvas_new_fullscreen()
 canvas_t* canvas_new(dimension_t * dim)
 {
 	canvas_t * canv = (canvas_t*)calloc(1, sizeof(struct s_canvas));
-	MEMORY_ALLOC_CHECK(canv);
+	MEMORY_ALLOC_CHECK_RETURN(canv, NULL);
 
 	if (!dimension_good(dim))
 	{
@@ -68,7 +68,7 @@ canvas_t * canvas_new_sub_canvas(canvas_t* canv, size_t x, size_t y, size_t widt
 	PTR_CHECK_RETURN(canv, "canvas", NULL);
 
 	sub_canvas = (canvas_t*)calloc(1, sizeof(struct s_canvas));
-	MEMORY_ALLOC_CHECK(sub_canvas);
+	MEMORY_ALLOC_CHECK_RETURN(sub_canvas, NULL);
 
 	sub_canvas->memory_start = canv->memory_start + x + y * canv->line_incrementation_width;
 	sub_canvas->height = height;

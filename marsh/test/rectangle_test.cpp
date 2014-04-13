@@ -43,7 +43,7 @@ TEST_GROUP(WidgetRectangle)
 	{
 		marshmallow_terminal_output = output_intercepter;
 		framebuffer_new();
-		cut = rectangle_new();
+		cut = rectangle_new(NULL);
 	}
 
 	void teardown()
@@ -59,10 +59,9 @@ TEST(WidgetRectangle, Instance)
 	CHECK_TRUE(cut != NULL);
 	CHECK_TRUE(cut->log != NULL);
 	CHECK_TRUE(cut->glyph != NULL);
-	CHECK_TRUE(cut->glyph->interface!= NULL);
-	CHECK_TRUE(cut->self_reference->owner_instance != NULL);
-	CHECK_TRUE(cut->self_reference->draw  != NULL);
-	CHECK_TRUE(cut->self_reference->destroy  != NULL);
+	CHECK_TRUE(cut->glyph->creator_instance != NULL);
+	CHECK_TRUE(cut->glyph->creator_draw  != NULL);
+	CHECK_TRUE(cut->glyph->creator_delete != NULL);
 //	rectangle_delete(cut);
 //	rectangle_delete(cut);
 //	STRCMP_CONTAINS("rectangle", intercepted_output[2]);
@@ -72,8 +71,8 @@ TEST(WidgetRectangle, Instance)
 TEST(WidgetRectangle, DestroyOwner)
 {
 	rectangle_t * cut2;
-	cut2 = rectangle_new();
-	widget_delete_interface(rectangle_get_widget(cut2));
+	cut2 = rectangle_new(NULL);
+	widget_delete(rectangle_get_widget(cut2));
 //	rectangle_delete(cut2);
 //	STRCMP_CONTAINS("rectangle", intercepted_output[2]);
 //	STRCMP_CONTAINS("Invalid Instance", intercepted_output[0]);
@@ -81,7 +80,7 @@ TEST(WidgetRectangle, DestroyOwner)
 
 TEST(WidgetRectangle, Draw)
 {
-	cut->glyph->interface->draw(cut);
+	cut->glyph->creator_draw(cut);
 	STRCMP_CONTAINS("Object not initialized properly, can't draw.", intercepted_output[0]);
 
 	CHECK_EQUAL(0x0000, *framebuffer_at(5, 5));

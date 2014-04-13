@@ -26,54 +26,118 @@
 
 #include "widget_private.h"
 #include "widget.h"
+#include "widget_tree.h"
+#include "widget_event.h"
 #include "interact.h"
 #include "interaction_engine.h"
 
-widget_t * widget_new(widget_interface_t * interface)
+widget_t * widget_new(widget_t * parent, void * report_instance, void (*report_draw)(void *), void (*report_delete)(void *))
 {
 	widget_t * obj = (widget_t *)calloc(1, sizeof(struct s_widget));
-	MEMORY_ALLOC_CHECK(obj);
+	MEMORY_ALLOC_CHECK_RETURN(obj, NULL);
 
 	dimension_clear(&obj->dim);
-	obj->interface = interface;
+
+	obj->creator_instance = report_instance;
+	obj->creator_draw = report_draw;
+	obj->creator_delete = report_delete;
 
 	obj->interaction = interaction_engine_new(&obj->dim);
+
+	widget_tree_register(obj, parent);
+
+	widget_event_init(&obj->event_handler_list);
 
 	return obj;
 }
 
-void widget_delete(widget_t * obj)
+void widget_delete_instance_only(widget_t * obj)
 {
 	PTR_CHECK(obj, "widget");
+
 	interaction_engine_delete(obj->interaction);
+
+	widget_tree_unregister(obj);
 	free(obj);
 }
 
-void widget_delete_interface(widget_t * obj)
+void widget_delete(widget_t * obj)
 {
+	widget_t * child;
+
 	PTR_CHECK(obj, "widget");
 
-	if (obj->interface->destroy && obj->interface->owner_instance)
+	while((child = widget_last_child(obj)))
+		widget_delete(child);
+
+	if (obj->creator_delete && obj->creator_instance)
 	{
-		obj->interface->destroy(obj->interface->owner_instance);
+		obj->creator_delete(obj->creator_instance);
+	}
+	else
+	{
+		widget_delete_instance_only(obj);
 	}
 }
 
-void widget_draw(const widget_t * obj)
+void widget_draw(widget_t * obj)
 {
+	widget_t * child;
+
 	PTR_CHECK(obj, "widget");
 
-	obj->interface->draw(obj->interface->owner_instance);
-}
+	if (obj->creator_draw && obj->creator_instance)
+	{
+		obj->creator_draw(obj->creator_instance);
+	}
 
-dimension_t *widget_get_dimension(widget_t *obj)
+	child = widget_child(obj);
+
+	while (child)
+	{
+		widget_draw(child);
+		child = widget_right_sibling(child);
+	}
+}
+///* TODO TODO TODO: Stoped here: recreate the interaction engine inside widget */
+//bool widget_press(widget_t * obj, int x, int y)
+//{
+//	widget_t * child;
+//
+//	PTR_CHECK_RETURN(obj, "widget", false);
+//
+//	if (dimension_contains(&obj->dim, x, y))
+//	{
+//		interaction_engine_press(obj->interaction, x, y);
+//		return true;
+//	}
+//
+//	child = obj->child;
+//
+//	while (child)
+//	{
+//		if (widget_press(child, x, y))
+//			return true;
+//
+//		child = child->right;
+//	}
+//
+//	return false;
+//}
+//
+//bool widget_release(widget_t * obj, int x, int y)
+//{
+//
+//}
+
+dimension_t * widget_get_dimension(widget_t *obj)
 {
 	PTR_CHECK_RETURN (obj, "widget", NULL);
 
 	return &obj->dim;
 }
 
-interaction_engine_t* widget_get_interaction_engine(widget_t *obj)
+interaction_engine_t * widget_get_interaction_engine(widget_t *obj)
 {
 	PTR_CHECK_RETURN (obj, "widget", NULL);
 

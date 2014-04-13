@@ -26,7 +26,6 @@
 #include "dimension.h"
 #include "canvas.h"
 #include "widget.h"
-#include "widget_interface.h"
 #include "rectangle.h"
 #include "drawing_algorithms.h"
 
@@ -41,7 +40,6 @@ struct s_rectangle_instance
 	dim_t corner_radius;
 	my_log_t * log;
 	widget_t *glyph;
-	widget_interface_t *self_reference;
 };
 
 static bool bad_corner_radius(rectangle_t * obj)
@@ -120,14 +118,13 @@ static void draw(rectangle_t * obj)
 	decode_and_draw(obj);
 }
 
-rectangle_t * rectangle_new()
+rectangle_t * rectangle_new(widget_t * parent)
 {
 	rectangle_t * obj = (rectangle_t *) calloc(1, sizeof(struct s_rectangle_instance));
-	MEMORY_ALLOC_CHECK(obj);
+	MEMORY_ALLOC_CHECK_RETURN(obj, NULL);
 
 	obj->log = my_log_new("Rectangle", MESSAGE);
-	obj->self_reference = widget_interface_new(obj, (void(*)(void *))draw, abstract_delete);
-	obj->glyph = widget_new(obj->self_reference);
+	obj->glyph = widget_new(parent, obj, (void(*)(void *))draw, abstract_delete);
 	obj->fill_color = color(0,0,0);
 	obj->is_filled = false;
 	obj->border_color = color(0,0,0);
@@ -143,8 +140,7 @@ void rectangle_delete(rectangle_t * const obj)
 	PTR_CHECK(obj, "rectangle");
 
 	my_log_delete(obj->log);
-	widget_delete(obj->glyph);
-	widget_interface_delete(obj->self_reference);
+	widget_delete_instance_only(obj->glyph);
 
 	free(obj);
 }

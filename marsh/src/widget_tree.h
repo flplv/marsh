@@ -19,12 +19,18 @@
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef WIDGET_INTERFACE_H_
-#define WIDGET_INTERFACE_H_
+
+#ifndef WIDGET_TREE_H_
+#define WIDGET_TREE_H_
 
 #include "types.h"
 
-widget_interface_t * widget_interface_new(void *owner, void (*draw_func)(void *), void (*destroy_func)(void *));
-void widget_interface_delete(widget_interface_t * const obj);
+widget_t * widget_parent(widget_t * child);
+widget_t * widget_child(widget_t * parent);
+widget_t * widget_left_sibling(widget_t * sibling);
+widget_t * widget_right_sibling(widget_t * sibling);
+widget_t * widget_last(widget_t * sibling);
+widget_t * widget_last_child(widget_t * parent);
+size_t widget_num_of_children(const widget_t * parent);
 
-#endif /* WIDGET_INTERFACE_H_ */
+#endif

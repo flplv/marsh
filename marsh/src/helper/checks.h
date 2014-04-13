@@ -25,11 +25,10 @@
 #include "log.h"
 #include "fatal.h"
 
-#define MEMORY_ALLOC_CHECK(__obj) \
+#define MEMORY_ALLOC_CHECK_RETURN(__obj, __ret__) \
 	if (!__obj) { \
 		global_my_log(ERROR, __FILE__, __LINE__, "Failed to alloc memory", "Malloc"); \
-		fatal("Locked"); \
- 		while(1); \
+ 		return __ret__; \
 	}
 
 #define PTR_CHECK(__ptr, __module__) \
@@ -46,6 +45,18 @@
 #define PTR_CHECK_RETURN(__ptr, __module__, __ret__) \
 	if (!__ptr) { \
 		global_my_log(ERROR, __FILE__, __LINE__, "Invalid Pointer", __module__); \
+		return __ret__; \
+	}
+
+#define ASSERT(__condition, __module__) \
+	if (!__condition) { \
+		global_my_log(ERROR, __FILE__, __LINE__, "Assertion " #__condition " failed.", __module__); \
+		return; \
+	}
+
+#define ASSERT_RETURN(__condition, __module__, __ret__) \
+	if (!(__condition)) { \
+		global_my_log(ERROR, __FILE__, __LINE__, "Assertion " #__condition " failed.", __module__); \
 		return __ret__; \
 	}
 

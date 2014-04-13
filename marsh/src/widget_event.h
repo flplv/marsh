@@ -19,19 +19,15 @@
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef CONTAINER_H_
-#define CONTAINER_H_
+#ifndef WIDGET_EVENT_H_
+#define WIDGET_EVENT_H_
 
-#include "widget.h"
+#include "types.h"
 
-typedef struct s_container_instance container_t;
+/*
+ * TODO: Write the widget event propagation algorithm inside widget class.
+ */
 
-container_t *container_new(void);
-void container_delete(container_t * const);
+int widget_event_install_handler(widget_t * widget, event_uid_t uid, bool (*handler)(widget_t * widget, event_t * event));
 
-void container_add(container_t *, widget_t *);
-widget_t *container_get_widget(container_t * const obj);
-
-void container_draw(container_t *);
-
-#endif /* CONTAINER_H_ */
+#endif /* WIDGET_EVENT_H_ */
