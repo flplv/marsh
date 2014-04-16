@@ -39,20 +39,20 @@ enum e_event_life_policy
 	event_life_single		// Event stop propagation after triggered an action once.
 };
 
-enum e_event_default_unique_id
+enum e_event_default_codes
 {
-	event_uid_press = 1,
-	event_uid_release = 2,
-	event_uid_click = 3,
+	event_code_press = 1,
+	event_code_release = 2,
+	event_code_click = 3,
 };
 
-bool event_is_user_event_uid(event_uid_t event_unique_id);
-event_uid_t event_get_uid_from_name(const char * event_uid_name);
+bool event_is_user_event_code(event_code_t event_code);
+event_code_t event_get_code_from_name(const char * event_name);
 
-event_uid_t event_reserve_new_uid(enum e_event_propagation_policy prop_policy, enum e_event_life_policy life_cycle, const char * event_name);
+event_code_t event_reserve_new_code(enum e_event_propagation_policy prop_policy, enum e_event_life_policy life_cycle, const char * event_name);
 void event_unreserve_all_uids(void);
 
-event_t * event_new(event_uid_t event_unique_id, void * data, void (*free_data)(void *));
+event_t * event_new(event_code_t event_code, void * data, void (*free_data)(void *));
 void event_delete(event_t *);
 
 #endif /* WIDGET_EVENT_H_ */

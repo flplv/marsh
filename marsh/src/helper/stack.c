@@ -72,7 +72,7 @@ uint32_t stack_add(my_stack_t *obj, BUFFER_PTR_RDOLY item)
 	if (obj->used_slots == obj->buffer_total_slots)
 	{
 		obj->buffer = (uint8_t *)realloc(obj->buffer, obj->buffer_total_slots * 2 * obj->item_size);
-		MEMORY_ALLOC_CHECK_RETURN(obj->buffer, NULL);
+		MEMORY_ALLOC_CHECK_RETURN(obj->buffer, -1);
 		obj->buffer_total_slots *= 2;
 	}
 

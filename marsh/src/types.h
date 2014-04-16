@@ -92,6 +92,6 @@ typedef struct s_button_engine button_engine_t;
 typedef struct s_stack my_stack_t;
 
 typedef struct s_event event_t;
-typedef int32_t event_uid_t;
+typedef int32_t event_code_t;
 
 #endif /* TYPES_H_ */

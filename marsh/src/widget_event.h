@@ -28,6 +28,6 @@
  * TODO: Write the widget event propagation algorithm inside widget class.
  */
 
-int widget_event_install_handler(widget_t * widget, event_uid_t uid, bool (*handler)(widget_t * widget, event_t * event));
+int widget_event_install_handler(widget_t * widget, event_code_t uid, bool (*handler)(widget_t * widget, event_t * event));
 
 #endif /* WIDGET_EVENT_H_ */

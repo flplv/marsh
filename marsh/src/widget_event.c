@@ -22,17 +22,17 @@
 #include "widget_event.h"
 #include "widget_private.h"
 
-static bool uid_cmp(event_uid_t seed, widget_event_handler_t * node)
+static bool uid_cmp(event_code_t seed, widget_event_handler_t * node)
 {
 	PTR_CHECK_RETURN(node, "widget_event", false);
 
-	if (seed == node->uid)
+	if (seed == node->code)
 		return true;
 
 	return false;
 }
 
-static bool has_uid_already_installed(widget_event_handler_t * list_root, event_uid_t uid_number)
+static bool has_code_already_installed(widget_event_handler_t * list_root, event_code_t uid_number)
 {
 	widget_event_handler_t * found_node;
 
@@ -47,19 +47,19 @@ static bool has_uid_already_installed(widget_event_handler_t * list_root, event_
 	return false;
 }
 
-int widget_event_install_handler (widget_t * widget, event_uid_t uid, bool (*handler)(widget_t * widget, event_t * event))
+int widget_event_install_handler (widget_t * widget, event_code_t uid, bool (*handler)(widget_t * widget, event_t * event))
 {
 	widget_event_handler_t * new_event_handler;
 
 	PTR_CHECK_RETURN(widget, "widget_event", -1);
 
-	if (has_uid_already_installed(widget->event_handler_list, uid))
+	if (has_code_already_installed(widget->event_handler_list, uid))
 		return 0;
 
 	new_event_handler = (typeof(new_event_handler)) malloc (sizeof(*new_event_handler));
 	MEMORY_ALLOC_CHECK_RETURN(new_event_handler, -1);
 
-	new_event_handler->uid = uid;
+	new_event_handler->code = uid;
 	new_event_handler->handler = handler;
 	linked_list_init(new_event_handler, head);
 

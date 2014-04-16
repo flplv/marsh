@@ -55,12 +55,12 @@ TEST(event, linked_list)
 
 TEST(event, reservation)
 {
-	LONGS_EQUAL(4, event_reserve_new_uid(event_propagate_from_current, event_life_single, "test_event"));
+	LONGS_EQUAL(4, event_reserve_new_code(event_propagate_from_current, event_life_single, "test_event"));
 
-	LONGS_EQUAL(4, event_get_uid_from_name("test_event"));
-	LONGS_EQUAL(3, event_get_uid_from_name("default_click"));
-	LONGS_EQUAL(2, event_get_uid_from_name("default_release"));
-	LONGS_EQUAL(1, event_get_uid_from_name("default_press"));
+	LONGS_EQUAL(4, event_get_code_from_name("test_event"));
+	LONGS_EQUAL(3, event_get_code_from_name("default_click"));
+	LONGS_EQUAL(2, event_get_code_from_name("default_release"));
+	LONGS_EQUAL(1, event_get_code_from_name("default_press"));
 
 	event_unreserve_all_uids();
 }
@@ -72,16 +72,16 @@ TEST(event, instances)
 	ENABLE_INTERCEPTION;
 
 	event_t * cut;
-	cut = event_new(event_uid_press, NULL, NULL);
+	cut = event_new(event_code_press, NULL, NULL);
 	CHECK_TRUE(cut);
 	event_delete(cut);
 
-	cut = event_new(event_uid_press, malloc(1024), my_free);
+	cut = event_new(event_code_press, malloc(1024), my_free);
 	CHECK_TRUE(cut);
 	event_delete(cut);
 
 	int user_unique_id;
-	user_unique_id = event_reserve_new_uid(event_propagate_from_current, event_life_single, "custom");
+	user_unique_id = event_reserve_new_code(event_propagate_from_current, event_life_single, "custom");
 	cut = event_new(user_unique_id, malloc(1024), my_free);
 	CHECK_TRUE(cut);
 	event_delete(cut);

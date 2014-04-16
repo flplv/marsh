@@ -28,12 +28,12 @@
 
 struct s_event
 {
-	event_uid_t uid;
+	event_code_t uid;
 	void * data;
 	void (*free_data)(void *);
 };
 
-struct s_event_uid_info
+struct s_event_code_info
 {
 	/* Do not edit this order,
 	 * order dependente static initialization
@@ -41,58 +41,58 @@ struct s_event_uid_info
 
 	linked_list_t head;
 
-	event_uid_t id_number;
+	event_code_t code_number;
 	char name[32];
 
 	enum e_event_propagation_policy propagation;
 	enum e_event_life_policy life_cycle;
 };
 
-static struct s_event_uid_info click_event = {{NULL}, event_uid_click, "default_click", event_propagate_from_current, event_life_single};
-static struct s_event_uid_info release_event = {{&click_event.head}, event_uid_release, "default_release", event_propagate_from_current, event_life_single};
-static struct s_event_uid_info press_event = {{&release_event.head}, event_uid_press, "default_press", event_propagate_from_current, event_life_single};
+static struct s_event_code_info click_event = {{NULL}, event_code_click, "default_click", event_propagate_from_current, event_life_single};
+static struct s_event_code_info release_event = {{&click_event.head}, event_code_release, "default_release", event_propagate_from_current, event_life_single};
+static struct s_event_code_info press_event = {{&release_event.head}, event_code_press, "default_press", event_propagate_from_current, event_life_single};
 
-struct s_event_uid_info * uid_list_root = &press_event;
+struct s_event_code_info * uid_list_root = &press_event;
 
 #define event_user_uid_start 100
 
-static bool uid_valid(event_uid_t uid)
+static bool uid_valid(event_code_t uid)
 {
 	if (uid <= 0)
 		return false;
 
-	if (uid > (linked_list_last(uid_list_root, head)->id_number))
+	if (uid > (linked_list_last(uid_list_root, head)->code_number))
 		return false;
 
 	return true;
 }
 
-bool event_is_user_event_uid(event_uid_t event_unique_id)
+bool event_is_user_event_code(event_code_t event_unique_id)
 {
 	return event_unique_id >= event_user_uid_start;
 }
 
-static bool name_comparator (const char * seed, struct s_event_uid_info * node)
+static bool name_comparator (const char * seed, struct s_event_code_info * node)
 {
 	return (strcmp(seed, node->name) == 0);
 }
 
-event_uid_t event_get_uid_from_name(const char * event_uid_name)
+event_code_t event_get_code_from_name(const char * event_uid_name)
 {
 	PTR_CHECK_RETURN(event_uid_name, "event", -1);
 
-	struct s_event_uid_info * found_node = linked_list_find(uid_list_root, head, name_comparator, event_uid_name);
+	struct s_event_code_info * found_node = linked_list_find(uid_list_root, head, name_comparator, event_uid_name);
 
 	if (found_node)
-		return found_node->id_number;
+		return found_node->code_number;
 
 	return -1;
 }
 
-event_uid_t event_reserve_new_uid(enum e_event_propagation_policy prop_policy, enum e_event_life_policy life_cycle, const char * event_name)
+event_code_t event_reserve_new_code(enum e_event_propagation_policy prop_policy, enum e_event_life_policy life_cycle, const char * event_name)
 {
-	struct s_event_uid_info * last_uid;
-	struct s_event_uid_info * new_uid;
+	struct s_event_code_info * last_uid;
+	struct s_event_code_info * new_uid;
 
 	last_uid = linked_list_last(uid_list_root, head);
 	ASSERT_RETURN(last_uid, "event", -1);
@@ -101,23 +101,23 @@ event_uid_t event_reserve_new_uid(enum e_event_propagation_policy prop_policy, e
 	MEMORY_ALLOC_CHECK_RETURN(new_uid, -1);
 
 	linked_list_init(new_uid, head);
-	new_uid->id_number = last_uid->id_number + 1;
+	new_uid->code_number = last_uid->code_number + 1;
 	new_uid->life_cycle = life_cycle;
 	new_uid->propagation = prop_policy;
 	strncpy(new_uid->name, event_name, 32);
 
 	linked_list_insert_after(last_uid, new_uid, head);
 
-	return new_uid->id_number;
+	return new_uid->code_number;
 }
 
 void event_unreserve_all_uids(void)
 {
-	linked_list_free(container_of(click_event.head.next, struct s_event_uid_info, head), head);
+	linked_list_free(container_of(click_event.head.next, struct s_event_code_info, head), head);
 	click_event.head.next = NULL;
 }
 
-event_t * event_new(event_uid_t event_unique_id, void * data, void (*free_data)(void *))
+event_t * event_new(event_code_t event_unique_id, void * data, void (*free_data)(void *))
 {
 	event_t * new_event;
 
