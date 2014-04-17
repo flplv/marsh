@@ -28,7 +28,7 @@
 
 struct s_event
 {
-	event_code_t uid;
+	event_code_t code;
 	void * data;
 	void (*free_data)(void *);
 };
@@ -44,8 +44,8 @@ struct s_event_code_info
 	event_code_t code_number;
 	char name[32];
 
-	enum e_event_propagation_policy propagation;
-	enum e_event_life_policy life_cycle;
+	enum e_event_propagation_policy propagation_policy;
+	enum e_event_life_policy life_policy;
 };
 
 static struct s_event_code_info click_event = {{NULL}, event_code_click, "default_click", event_propagate_from_current, event_life_single};
@@ -56,20 +56,15 @@ struct s_event_code_info * uid_list_root = &press_event;
 
 #define event_user_uid_start 100
 
-static bool uid_valid(event_code_t uid)
+static bool code_valid(event_code_t code)
 {
-	if (uid <= 0)
+	if (code <= 0)
 		return false;
 
-	if (uid > (linked_list_last(uid_list_root, head)->code_number))
+	if (code > (linked_list_last(uid_list_root, head)->code_number))
 		return false;
 
 	return true;
-}
-
-bool event_is_user_event_code(event_code_t event_unique_id)
-{
-	return event_unique_id >= event_user_uid_start;
 }
 
 static bool name_comparator (const char * seed, struct s_event_code_info * node)
@@ -77,7 +72,43 @@ static bool name_comparator (const char * seed, struct s_event_code_info * node)
 	return (strcmp(seed, node->name) == 0);
 }
 
-event_code_t event_get_code_from_name(const char * event_uid_name)
+static bool code_comparator (event_code_t seed, struct s_event_code_info * node)
+{
+	return (seed == node->code_number);
+}
+
+event_code_t event_code(event_t * event)
+{
+	ASSERT_RETURN(event, "event", -1);
+
+	return event->code;
+}
+
+enum e_event_life_policy event_life_policy(event_t * event)
+{
+	ASSERT_RETURN(event, "event", (enum e_event_life_policy)-1);
+
+	struct s_event_code_info * found_node = linked_list_find(uid_list_root, head, code_comparator, event->code);
+
+	if (found_node)
+		return found_node->life_policy;
+
+	return (enum e_event_life_policy)-1;
+}
+
+enum e_event_propagation_policy event_propagation_policy(event_t * event)
+{
+	ASSERT_RETURN(event, "event", (enum e_event_propagation_policy)-1);
+
+	struct s_event_code_info * found_node = linked_list_find(uid_list_root, head, code_comparator, event->code);
+
+	if (found_node)
+		return found_node->propagation_policy;
+
+	return (enum e_event_propagation_policy)-1;
+}
+
+event_code_t event_code_from_name(const char * event_uid_name)
 {
 	PTR_CHECK_RETURN(event_uid_name, "event", -1);
 
@@ -102,8 +133,8 @@ event_code_t event_reserve_new_code(enum e_event_propagation_policy prop_policy,
 
 	linked_list_init(new_uid, head);
 	new_uid->code_number = last_uid->code_number + 1;
-	new_uid->life_cycle = life_cycle;
-	new_uid->propagation = prop_policy;
+	new_uid->life_policy = life_cycle;
+	new_uid->propagation_policy = prop_policy;
 	strncpy(new_uid->name, event_name, 32);
 
 	linked_list_insert_after(last_uid, new_uid, head);
@@ -121,7 +152,7 @@ event_t * event_new(event_code_t event_unique_id, void * data, void (*free_data)
 {
 	event_t * new_event;
 
-	if (!uid_valid(event_unique_id))
+	if (!code_valid(event_unique_id))
 		return NULL;
 
 	new_event = (typeof(new_event))calloc(1, sizeof(*new_event));
@@ -129,7 +160,7 @@ event_t * event_new(event_code_t event_unique_id, void * data, void (*free_data)
 
 	new_event->data = data;
 	new_event->free_data = free_data;
-	new_event->uid = event_unique_id;
+	new_event->code = event_unique_id;
 
 	return new_event;
 }

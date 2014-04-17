@@ -41,7 +41,7 @@ struct s_widget_tree
 struct s_widget_event_handler_node
 {
 	event_code_t code;
-	bool (*handler)(widget_t * widget, event_t * event);
+	bool (*function)(widget_t * widget, event_t * event);
 
 	linked_list_t head;
 };

@@ -57,12 +57,27 @@ TEST(event, reservation)
 {
 	LONGS_EQUAL(4, event_reserve_new_code(event_propagate_from_current, event_life_single, "test_event"));
 
-	LONGS_EQUAL(4, event_get_code_from_name("test_event"));
-	LONGS_EQUAL(3, event_get_code_from_name("default_click"));
-	LONGS_EQUAL(2, event_get_code_from_name("default_release"));
-	LONGS_EQUAL(1, event_get_code_from_name("default_press"));
+	LONGS_EQUAL(4, event_code_from_name("test_event"));
+	LONGS_EQUAL(3, event_code_from_name("default_click"));
+	LONGS_EQUAL(2, event_code_from_name("default_release"));
+	LONGS_EQUAL(1, event_code_from_name("default_press"));
 
 	event_unreserve_all_uids();
+}
+
+TEST(event, event_quality)
+{
+	ENABLE_INTERCEPTION;
+
+	event_t * cut;
+	cut = event_new(event_code_press, NULL, NULL);
+	CHECK_TRUE(cut);
+
+	CHECK_EQUAL(event_code_press, event_code(cut));
+	CHECK_EQUAL(event_life_single, event_life_policy(cut));
+	CHECK_EQUAL(event_propagate_from_current, event_propagation_policy(cut));
+
+	event_delete(cut);
 }
 
 static void my_free(void * data) { free (data); }

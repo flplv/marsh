@@ -25,6 +25,7 @@
 
 #include "types.h"
 
+widget_t * widget_root(widget_t * child);
 widget_t * widget_parent(widget_t * child);
 widget_t * widget_child(widget_t * parent);
 widget_t * widget_left_sibling(widget_t * sibling);

@@ -20,7 +20,20 @@
  */
 
 #include "widget_event.h"
+#include "widget_tree.h"
 #include "widget_private.h"
+#include "event.h"
+#include "types.h"
+
+#include "helper/linked_list.h"
+
+enum
+{
+	event_processed,
+	event_not_processed,
+	stop_propagation,
+	continue_propagation,
+};
 
 static bool uid_cmp(event_code_t seed, widget_event_handler_t * node)
 {
@@ -60,7 +73,7 @@ int widget_event_install_handler (widget_t * widget, event_code_t uid, bool (*ha
 	MEMORY_ALLOC_CHECK_RETURN(new_event_handler, -1);
 
 	new_event_handler->code = uid;
-	new_event_handler->handler = handler;
+	new_event_handler->function = handler;
 	linked_list_init(new_event_handler, head);
 
 	if (!widget->event_handler_list)
@@ -69,6 +82,95 @@ int widget_event_install_handler (widget_t * widget, event_code_t uid, bool (*ha
 		linked_list_insert_after(linked_list_last(widget->event_handler_list, head), new_event_handler, head);
 
 	return 0;
+}
+
+static bool event_comparator(event_code_t code, widget_event_handler_t * handler)
+{
+	PTR_CHECK_RETURN(handler, "widget_event", false);
+
+	return handler->code == code;
+}
+
+static int event_process (widget_t * widget, event_t * event)
+{
+	widget_event_handler_t * handler;
+
+	PTR_CHECK_RETURN(widget, "widget_event", event_not_processed);
+	PTR_CHECK_RETURN(event, "widget_event", event_not_processed);
+
+	handler = linked_list_find(widget->event_handler_list, head, event_comparator, event_code(event));
+
+	if (!handler)
+		return event_not_processed;
+
+	ASSERT_RETURN(handler->function, "widget_event", event_not_processed);
+
+	if (handler->function(widget, event))
+		return event_processed;
+
+	return event_not_processed;
+}
+
+static int __attribute__((noinline)) widget_event_commit_impl(widget_t * widget, event_t * event)
+{
+	if (event_process(widget, event) == event_processed)
+	{
+		enum e_event_life_policy life = event_life_policy(event);
+
+		if (life == event_life_single)
+		{
+			return stop_propagation;
+		}
+	}
+
+	return continue_propagation;
+}
+
+static int __attribute__((noinline)) widget_event_commit_internal(widget_t * self, event_t * event)
+{
+	widget_t * child;
+
+	PTR_CHECK_RETURN(self, "widget_event", stop_propagation);
+
+	/* Consume in self widget */
+	if (widget_event_commit_impl(self, event) == stop_propagation)
+		return stop_propagation;
+
+	/* Route to children */
+	child = widget_child(self);
+	while(child)
+	{
+		// TODO XXX ATENTION XXX TODO: recursiveness
+		if (widget_event_commit_internal(child, event) == stop_propagation)
+			return stop_propagation;
+
+		child = widget_right_sibling(child);
+	}
+
+	return continue_propagation;
+}
+
+enum e_event_result widget_event_commit(widget_t * self, event_t * event)
+{
+	widget_t * start_widget;
+	enum e_event_propagation_policy propagation;
+
+	propagation = event_propagation_policy(event);
+
+	if (propagation == event_propagate_from_root)
+		start_widget = widget_root(self);
+	else
+		start_widget = self;
+
+
+	if (widget_event_commit_internal(start_widget, event) == continue_propagation)
+	{
+		event_delete(event);
+		return event_not_consumed;
+	}
+
+	event_delete(event);
+	return event_consumed;
 }
 
 void widget_event_init(widget_event_handler_t ** widget_event_lists_root_ptr)

@@ -46,13 +46,16 @@ enum e_event_default_codes
 	event_code_click = 3,
 };
 
-bool event_is_user_event_code(event_code_t event_code);
-event_code_t event_get_code_from_name(const char * event_name);
+event_code_t event_code_from_name(const char * event_name);
 
 event_code_t event_reserve_new_code(enum e_event_propagation_policy prop_policy, enum e_event_life_policy life_cycle, const char * event_name);
 void event_unreserve_all_uids(void);
 
 event_t * event_new(event_code_t event_code, void * data, void (*free_data)(void *));
 void event_delete(event_t *);
+
+enum e_event_life_policy event_life_policy(event_t * event);
+enum e_event_propagation_policy event_propagation_policy(event_t * event);
+event_code_t event_code(event_t * event);
 
 #endif /* WIDGET_EVENT_H_ */

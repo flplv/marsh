@@ -56,7 +56,7 @@ void widget_delete_instance_only(widget_t * obj)
 	PTR_CHECK(obj, "widget");
 
 	interaction_engine_delete(obj->interaction);
-
+	widget_event_deinit(&obj->event_handler_list);
 	widget_tree_unregister(obj);
 	free(obj);
 }
@@ -67,6 +67,7 @@ void widget_delete(widget_t * obj)
 
 	PTR_CHECK(obj, "widget");
 
+	// XXX TODO XXX TODO: recursiveness
 	while((child = widget_last_child(obj)))
 		widget_delete(child);
 

@@ -22,6 +22,12 @@
 #include "widget_private.h"
 #include "widget_tree.h"
 
+/*
+ * TODO:
+ * Add the non recursive widget_tree traversal system, to override
+ * recursiveness found on widget deletion and event propagation.
+ */
+
 void widget_tree_register(widget_t * self, widget_t * parent)
 {
 	widget_t * last_brother;
@@ -59,6 +65,16 @@ void widget_tree_unregister(widget_t * self)
 			self->tree.parent->tree.child = self->tree.right;
 }
 
+widget_t * widget_root(widget_t * child)
+{
+	if (!child)
+		return NULL;
+
+	while(child->tree.parent)
+		child = child->tree.parent;
+
+	return child;
+}
 widget_t * widget_parent(widget_t * child)
 {
 	if (!child)
