@@ -24,6 +24,8 @@
 #include "helper/checks.h"
 #include "helper/log.h"
 
+/* TODO: Remove my_stack_t from signal, and add linked_list to slot. */
+
 struct s_signal
 {
 	my_stack_t *slots_stack;

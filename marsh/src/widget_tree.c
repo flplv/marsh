@@ -23,8 +23,7 @@
 #include "widget_tree.h"
 
 /*
- * TODO:
- * Add the non recursive widget_tree traversal system, to override
+ * TODO Add the non recursive widget_tree traversal system, to override
  * recursiveness found on widget deletion and event propagation.
  */
 

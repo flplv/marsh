@@ -23,7 +23,7 @@
 #include "canvas_private.h"
 #include "color.h"
 #include "framebuffer.h"
-#include "dimension.h"
+#include "area.h"
 #include "helper/number.h"
 #include "helper/checks.h"
 #include "types.h"
@@ -43,20 +43,14 @@ canvas_t* canvas_new_fullscreen()
 	return canv;
 }
 
-canvas_t* canvas_new(dimension_t * dim)
+canvas_t* canvas_new(area_t * area)
 {
 	canvas_t * canv = (canvas_t*)calloc(1, sizeof(struct s_canvas));
 	MEMORY_ALLOC_CHECK_RETURN(canv, NULL);
 
-	if (!dimension_good(dim))
-	{
-		LOG_ERROR("canvas", "dimension not good");
-		return NULL;
-	}
-
-	canv->memory_start = framebuffer_at(dim->pos.start.x, dim->pos.start.y);
-	canv->height = dim->size.height;
-	canv->width = dim->size.width;
+	canv->memory_start = framebuffer_at(area->x, area->y);
+	canv->height = area->height;
+	canv->width = area->width;
 	canv->line_incrementation_width = framebuffer_width();
 
 	return canv;

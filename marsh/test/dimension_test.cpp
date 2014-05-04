@@ -20,7 +20,7 @@
  */
 
 extern "C" {
-#include "dimension.h"
+#include "area.h"
 }
 
 #include "mocks/terminal_intercepter.h"
@@ -28,9 +28,9 @@ extern "C" {
 #include "CppUTest/TestHarness.h"
 #include "CppUTest/MemoryLeakDetector.h"
 
-TEST_GROUP(dimension)
+TEST_GROUP(area)
 {
-	dimension_t dim;
+	area_t dim;
 
 	void setup()
 	{
@@ -41,16 +41,15 @@ TEST_GROUP(dimension)
 	}
 };
 
-TEST(dimension, contains)
+TEST(area, contains)
 {
-	dimension_set_size(&dim, 10, 10);
-	dimension_set_start_position(&dim, 10, 10);
-	dimension_set_rest_if_possible(&dim);
+	area_set_size(&dim, 10, 10);
+	area_set_start_xy(&dim, 10, 10);
 
-	CHECK_TRUE(dimension_contains(&dim, 10, 10));
-	CHECK_TRUE(dimension_contains(&dim, 15, 15));
-	CHECK_TRUE(dimension_contains(&dim, 19, 19));
-	CHECK_FALSE(dimension_contains(&dim, 20, 20));
+	CHECK_TRUE(area_contains_point(&dim,  (point_t){10, 10}));
+	CHECK_TRUE(area_contains_point(&dim,  (point_t){15, 15}));
+	CHECK_TRUE(area_contains_point(&dim,  (point_t){19, 19}));
+	CHECK_FALSE(area_contains_point(&dim, (point_t){20, 20}));
 }
 
 

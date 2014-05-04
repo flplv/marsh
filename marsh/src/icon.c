@@ -23,7 +23,7 @@
 #include "helper/number.h"
 #include "helper/log.h"
 #include "color.h"
-#include "dimension.h"
+#include "area.h"
 #include "canvas.h"
 #include "drawing_algorithms.h"
 #include "widget.h"
@@ -43,7 +43,7 @@ struct s_icon_instance
 
 static bool ready_to_draw(icon_t * obj)
 {
-	if (!dimension_good(widget_get_dimension(obj->glyph)))
+	if (!area_value(widget_area(obj->glyph)))
 		return false;
 
 	if (obj->bitmap == NULL)
@@ -62,7 +62,7 @@ static void draw(icon_t * obj)
 		return;
 	}
 
-	canvas_t *canv = canvas_new(widget_get_dimension(obj->glyph));
+	canvas_t *canv = canvas_new(widget_area(obj->glyph));
 
 	if (obj->bitmap->bitmap_data_width == BITMAP_BUFFER_8BPP)
 	{
@@ -94,7 +94,7 @@ void icon_delete(icon_t * const obj)
 	PTR_CHECK(obj, "icon");
 
 	my_log_delete(obj->log);
-	widget_delete_instance_only(obj->glyph);
+	widget_delete_instance(obj->glyph);
 
 	free(obj);
 }
@@ -103,8 +103,7 @@ static void set_size(icon_t * obj, dim_t width, dim_t height)
 {
 	PTR_CHECK(obj, "icon");
 
-	dimension_set_size(widget_get_dimension(obj->glyph), width, height);
-	dimension_set_rest_if_possible(widget_get_dimension(obj->glyph));
+	area_set_size(widget_area(obj->glyph), width, height);
 }
 
 static bool is_bitmap_icon(bitmap_t* bitmap)
@@ -136,8 +135,7 @@ void icon_set_position(icon_t * obj, dim_t x, dim_t y)
 {
 	PTR_CHECK(obj, "icon");
 
-	dimension_set_start_position(widget_get_dimension(obj->glyph), x, y);
-	dimension_set_rest_if_possible(widget_get_dimension(obj->glyph));
+	area_set_start_xy(widget_area(obj->glyph), x, y);
 }
 
 void icon_set_color_html(icon_t * obj, const char *html_color_code)

@@ -25,7 +25,7 @@
 #include "types.h"
 
 canvas_t * canvas_new_fullscreen(void);
-canvas_t * canvas_new(dimension_t *);
+canvas_t * canvas_new(area_t *);
 
 size_t canvas_get_width(const canvas_t *canv);
 

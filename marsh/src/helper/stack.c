@@ -19,9 +19,9 @@
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "types.h"
+#include "helper_types.h"
+#include "checks.h"
 #include "stack.h"
-#include "helper/checks.h"
 #include <string.h>
 
 struct s_stack

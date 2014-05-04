@@ -22,7 +22,7 @@
 #ifndef STACK_H_
 #define STACK_H_
 
-#include "types.h"
+#include "helper_types.h"
 
 my_stack_t *stack_new(uint32_t item_size);
 void stack_delete(my_stack_t *);

@@ -31,6 +31,12 @@
  		return __ret__; \
 	}
 
+#define MEMORY_ALLOC_CHECK(__obj) \
+	if (!__obj) { \
+		global_my_log(ERROR, __FILE__, __LINE__, "Failed to alloc memory", "Malloc"); \
+ 		return; \
+	}
+
 #define PTR_CHECK(__ptr, __module__) \
 	if (!__ptr) { \
 		global_my_log(ERROR, __FILE__, __LINE__, "Invalid Pointer", __module__); \

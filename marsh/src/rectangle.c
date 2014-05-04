@@ -23,7 +23,7 @@
 #include "helper/number.h"
 #include "helper/log.h"
 #include "color.h"
-#include "dimension.h"
+#include "area.h"
 #include "canvas.h"
 #include "widget.h"
 #include "rectangle.h"
@@ -44,8 +44,8 @@ struct s_rectangle_instance
 
 static bool bad_corner_radius(rectangle_t * obj)
 {
-	dim_t least_dim  = get_smaller( widget_get_dimension(obj->glyph)->size.width,
-			widget_get_dimension(obj->glyph)->size.height);
+	dim_t least_dim  = get_smaller( widget_area(obj->glyph)->width,
+			widget_area(obj->glyph)->height);
 
 	if ( obj->corner_radius > (least_dim/2))
 		return true;
@@ -55,7 +55,7 @@ static bool bad_corner_radius(rectangle_t * obj)
 
 static bool ready_to_draw(rectangle_t * obj)
 {
-	if (!dimension_good(widget_get_dimension(obj->glyph)))
+	if (!area_value(widget_area(obj->glyph)))
 		return false;
 
 	if (!obj->is_filled && !obj->has_border)
@@ -71,7 +71,7 @@ static void abstract_delete(void * obj)
 
 static void decode_and_draw(rectangle_t* obj)
 {
-	canvas_t *canv = canvas_new(widget_get_dimension(obj->glyph));
+	canvas_t *canv = canvas_new(widget_area(obj->glyph));
 
 	if (obj->corner_radius)
 	{
@@ -110,8 +110,8 @@ static void draw(rectangle_t * obj)
 	if (bad_corner_radius(obj))
 	{
 		my_log(WARNING, __FILE__, __LINE__, "Bad corner radius. Radius has been reduced.", obj->log);
-		least_dim  = get_smaller( widget_get_dimension(obj->glyph)->size.width,
-							widget_get_dimension(obj->glyph)->size.height);
+		least_dim  = get_smaller( widget_area(obj->glyph)->width,
+							widget_area(obj->glyph)->height);
 		obj->corner_radius = least_dim / 2;
 	}
 
@@ -140,7 +140,7 @@ void rectangle_delete(rectangle_t * const obj)
 	PTR_CHECK(obj, "rectangle");
 
 	my_log_delete(obj->log);
-	widget_delete_instance_only(obj->glyph);
+	widget_delete_instance(obj->glyph);
 
 	free(obj);
 }
@@ -149,16 +149,14 @@ void rectangle_set_size(rectangle_t * const obj, dim_t width, dim_t height)
 {
 	PTR_CHECK(obj, "rectangle");
 
-	dimension_set_size(widget_get_dimension(obj->glyph), width, height);
-	dimension_set_rest_if_possible(widget_get_dimension(obj->glyph));
+	area_set_size(widget_area(obj->glyph), width, height);
 }
 
 void rectangle_set_position(rectangle_t * const obj, dim_t x, dim_t y)
 {
 	PTR_CHECK(obj, "rectangle");
 
-	dimension_set_start_position(widget_get_dimension(obj->glyph), x, y);
-	dimension_set_rest_if_possible(widget_get_dimension(obj->glyph));
+	area_set_start_xy(widget_area(obj->glyph), x, y);
 }
 
 void rectangle_set_fill_color_html(rectangle_t * const obj, const char *html_color_code)

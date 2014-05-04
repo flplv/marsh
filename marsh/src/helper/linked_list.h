@@ -19,6 +19,7 @@
 struct s_linked_list_head
 {
     struct s_linked_list_head * next;
+    struct s_linked_list_head * prev;
 };
 
 typedef struct s_linked_list_head linked_list_t;
@@ -31,7 +32,10 @@ typedef struct s_linked_list_head linked_list_t;
 #define linked_list_init(structure, field) \
 ({ \
         typeof(structure) ___str = structure; \
-        if (___str) {___str->field.next = (linked_list_t *)0;} \
+        if (___str) {\
+        	___str->field.next = (linked_list_t *)0;\
+        	___str->field.prev = (linked_list_t *)0;\
+        } \
 })
 
 /**
@@ -45,6 +49,23 @@ typedef struct s_linked_list_head linked_list_t;
         if (___ret) \
         { \
            ___head = ___ret->field.next; \
+           if (___head) { ___ret  = container_of(___head, typeof(*(ptr_to_current)), field); }\
+           else {___ret = 0; } \
+        } \
+        ___ret; \
+})
+
+/**
+ * Get the previous node.
+ * @param ptr_to_current
+ * @return Pointer to the previous node.
+ */
+#define linked_list_previous(ptr_to_current, field) \
+({ \
+        typeof(ptr_to_current) ___ret = ptr_to_current; linked_list_t * ___head;\
+        if (___ret) \
+        { \
+           ___head = ___ret->field.prev; \
            if (___head) { ___ret  = container_of(___head, typeof(*(ptr_to_current)), field); }\
            else {___ret = 0; } \
         } \
@@ -71,6 +92,25 @@ typedef struct s_linked_list_head linked_list_t;
 })
 
 /**
+ * Get the first node of the list, including ptr_to_current.
+ *
+ * @param ptr_to_current
+ * @return Pointer to the first node of the list, including ptr_to_current.
+ */
+#define linked_list_first(ptr_to_current, field) \
+({ \
+        typeof(ptr_to_current) ___ret = ptr_to_current; linked_list_t * ___head;\
+        if (___ret) \
+        { \
+            ___head = &___ret->field; \
+            if (___head->prev) { while (___head->prev) ___head = ___head->prev;} \
+            if (___head) { ___ret  = container_of(___head, typeof(*(ptr_to_current)), field); } \
+            else {___ret = 0; } \
+        } \
+        ___ret; \
+})
+
+/**
  * Insert new node between current and current's next.
  *
  * @param ptr_to_current
@@ -83,42 +123,65 @@ typedef struct s_linked_list_head linked_list_t;
         if (___curr && ___new) \
         { \
             ___new->field.next = ___curr->field.next; \
+            ___new->field.prev = &___curr->field; \
             ___curr->field.next = &___new->field; \
         } \
 })
 
 /**
- * Remove the next node counting from the current and return it.
+ * Insert new node between current and current's previous.
+ *
+ * @param ptr_to_current
+ * @param ptr_to_new
+ */
+#define linked_list_insert_before(ptr_to_current, ptr_to_new, field) \
+({ \
+        typeof(ptr_to_current) ___curr = ptr_to_current; \
+        typeof(ptr_to_new) ___new = ptr_to_new; \
+        if (___curr && ___new) \
+        { \
+            ___new->field.prev = ___curr->field.prev; \
+            ___new->field.next = &___curr->field; \
+            ___curr->field.prev = &___new->field; \
+        } \
+})
+
+/**
+ * Remove the current node and return it.
  *
  * @param current
- * @return Return the removed node.
+ * @return Return the new or old beginning of the list.
  */
-#define linked_list_remove_next(ptr_to_current, field) \
+#define linked_list_remove(ptr_to_current, field) \
 ({ \
         typeof(ptr_to_current) ___cur = ptr_to_current; \
-        typeof(ptr_to_current) ___ret = 0; \
-        linked_list_t * ___head; \
+        typeof(ptr_to_current) ___ret = (typeof(ptr_to_current))0; \
+        linked_list_t * ___head_next = (linked_list_t*)0; \
+        linked_list_t * ___head_prev = (linked_list_t*)0; \
         if (___cur) \
         { \
-           ___head = ___cur->field.next; \
-           ___cur->field.next =  ___head->next; \
-           if (___head) { ___ret  = container_of(___head, typeof(*(ptr_to_current)), field); } \
+           ___head_next = ___cur->field.next; \
+           ___head_prev = ___cur->field.prev; \
+           if (___head_prev) ___head_prev->next = ___head_next; \
+           if (___head_next) ___head_next->prev = ___head_prev; \
+           linked_list_init(___cur, field); \
+           if (___head_prev) ___ret = linked_list_first(container_of(___head_prev, typeof(*(ptr_to_current)), field), field); \
+           else if(___head_next) ___ret = linked_list_first(container_of(___head_next, typeof(*(ptr_to_current)), field), field); \
         } \
         ___ret; \
 })
 
 /**
- * Free all list members, counting from ptr_to_current.
+ * Free all list members.
  *
  * @param ptr_to_current
  *
  * @warning
- *      Any node pointing to ptr_to_corrent will have an invalid
- *      pointer.
+ *      Any pointer to the a list node will be invalid.
  */
 #define linked_list_free(ptr_to_current, field) \
 ({ \
-        typeof(ptr_to_current) ___item = ptr_to_current; \
+        typeof(ptr_to_current) ___item = linked_list_first(ptr_to_current, field); \
         typeof(ptr_to_current) ___item_to_delete; \
         while (___item) \
         { \
@@ -129,19 +192,18 @@ typedef struct s_linked_list_head linked_list_t;
 })
 
 /**
- * Free all list members, counting from ptr_to_current,
+ * Free all list members,
  * but instead calling free itself, this function calls
  * user free function passed on free_callback.
  *
  * @param ptr_to_current
  *
  * @warning
- *      Any node pointing to ptr_to_corrent will have an invalid
- *      pointer.
+ *      Any pointer to the a list node will be invalid.
  */
 #define linked_list_free_cb(ptr_to_current, field, free_callback) \
 ({ \
-        typeof(ptr_to_current) ___item = ptr_to_current; \
+        typeof(ptr_to_current) ___item = linked_list_first(ptr_to_current, field); \
         typeof(ptr_to_current) ___item_to_delete; \
         while (___item) \
         { \
@@ -152,15 +214,6 @@ typedef struct s_linked_list_head linked_list_t;
 })
 
 /**
- * Free all list members, counting from ptr_to_current,
- * but instead calling free itself, this function calls
- * user free function passed on free_callback.
- *
- * @param ptr_to_current
- *
- * @warning
- *      Any node pointing to ptr_to_corrent will have an invalid
- *      pointer.
  */
 #define linked_list_find(ptr_to_current, field, comparator_func, comparator_seed) \
 ({ \

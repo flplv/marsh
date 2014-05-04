@@ -44,23 +44,32 @@ widget_t * widget_new(widget_t * parent, void * creator_instance, void (*creator
 
 /* Only use this method if you hold the ownership of the widget, or created directly
    the widget through widget_new. This is the real widget_t type destructor. */
-void widget_delete_instance_only(widget_t * obj);
+void widget_delete_instance(widget_t * obj);
 
 /* Use this method to call the widget creator (rectangle, etc.) destroy function.
    This is the virtual call of the widget destructor.
    If, during creation, there is no creator_delete or creator_instance, no creator destructor
    will be called, than widget_delete_instance_only will be called internally.   */
+void widget_virtual_delete(widget_t * obj);
+
+/* This method delete a widget, its creator, and all tree behind it, including the
+ * creator of each node.  */
 void widget_delete(widget_t * obj);
 
-/* TODO: both destructors can be merged into one, as long a default destructor, which would
- * be the current widget_delete, is initialized as the destructor interface.  */
+/*
+ * TODO: Change the widget patter from polymorphism to decorator. This way all this deletion mass
+ * will be gone.
+ * I.e.: instead a image class contain a widget, a widget will contain a decorator,
+ * that is the image class itself.
+ */
 
-interaction_engine_t * widget_get_interaction_engine(widget_t *);
-
-dimension_t * widget_get_dimension(widget_t *);
+area_t * widget_area(widget_t *);
 
 void widget_draw(widget_t *);
-//bool widget_press(widget_t *, int x, int y);
-//bool widget_release(widget_t *, int x, int y);
+
+void widget_process_click(widget_t * obj);
+void widget_process_release(widget_t * obj);
+void widget_process_press(widget_t * obj);
+void widget_process_draw(widget_t * obj);
 
 #endif /* widget_H_ */

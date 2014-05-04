@@ -24,7 +24,7 @@
 #include "helper/log.h"
 #include "color.h"
 #include "drawing_algorithms.h"
-#include "dimension.h"
+#include "area.h"
 #include "canvas.h"
 #include "canvas.h"
 #include "widget.h"
@@ -42,7 +42,7 @@ struct s_image_instance
 
 static bool ready_to_draw(image_t * obj)
 {
-	if (!dimension_good(widget_get_dimension(obj->glyph)))
+	if (!area_value(widget_area(obj->glyph)))
 		return false;
 
 	if (obj->bitmap == NULL)
@@ -61,7 +61,7 @@ static void draw(image_t * obj)
 		return;
 	}
 
-	canvas_t *canv = canvas_new(widget_get_dimension(obj->glyph));
+	canvas_t *canv = canvas_new(widget_area(obj->glyph));
 
 	if (obj->bitmap->bitmap_data_width == BITMAP_BUFFER_16BPP)
 	{
@@ -92,7 +92,7 @@ void image_delete(image_t * const obj)
 	PTR_CHECK(obj, "image");
 
 	my_log_delete(obj->log);
-	widget_delete_instance_only(obj->glyph);
+	widget_delete_instance(obj->glyph);
 
 	free(obj);
 }
@@ -101,8 +101,7 @@ static void set_size(image_t * obj, dim_t width, dim_t height)
 {
 	PTR_CHECK(obj, "image");
 
-	dimension_set_size(widget_get_dimension(obj->glyph), width, height);
-	dimension_set_rest_if_possible(widget_get_dimension(obj->glyph));
+	area_set_size(widget_area(obj->glyph), width, height);
 }
 
 static bool is_bitmap_image(bitmap_t* bitmap)
@@ -131,8 +130,7 @@ void image_set_position(image_t * obj, dim_t x, dim_t y)
 {
 	PTR_CHECK(obj, "image");
 
-	dimension_set_start_position(widget_get_dimension(obj->glyph), x, y);
-	dimension_set_rest_if_possible(widget_get_dimension(obj->glyph));
+	area_set_start_xy(widget_area(obj->glyph), x, y);
 }
 
 widget_t *image_get_widget(image_t * const obj)

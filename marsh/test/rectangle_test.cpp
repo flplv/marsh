@@ -24,6 +24,7 @@ extern "C" {
 #include "color.h"
 #include "color.c"
 #include "framebuffer.h"
+#include "event.h"
 #include "widget.h"
 #include "widget_private.h"
 #include "rectangle.h"
@@ -43,12 +44,14 @@ TEST_GROUP(WidgetRectangle)
 	{
 		marshmallow_terminal_output = output_intercepter;
 		framebuffer_new();
+		event_pool_init();
 		cut = rectangle_new(NULL);
 	}
 
 	void teardown()
 	{
 		rectangle_delete(cut);
+		event_pool_deinit();
 		framebuffer_delete();
 		marshmallow_terminal_output = _stdout_output_impl;
 	}
@@ -72,7 +75,7 @@ TEST(WidgetRectangle, DestroyOwner)
 {
 	rectangle_t * cut2;
 	cut2 = rectangle_new(NULL);
-	widget_delete(rectangle_get_widget(cut2));
+	widget_virtual_delete(rectangle_get_widget(cut2));
 //	rectangle_delete(cut2);
 //	STRCMP_CONTAINS("rectangle", intercepted_output[2]);
 //	STRCMP_CONTAINS("Invalid Instance", intercepted_output[0]);
@@ -112,6 +115,6 @@ TEST(WidgetRectangle, position_end1)
 	rectangle_set_size(cut, 10, 20);
 	rectangle_set_position(cut, 50, 60);
 
-	CHECK_EQUAL(60-1, dimension_get_position(widget_get_dimension(cut->glyph)).end.x);
-	CHECK_EQUAL(80-1, dimension_get_position(widget_get_dimension(cut->glyph)).end.y);
+	CHECK_EQUAL(60-1, area_end_point(widget_area(cut->glyph)).x);
+	CHECK_EQUAL(80-1, area_end_point(widget_area(cut->glyph)).y);
 }

@@ -44,30 +44,18 @@ typedef void* slot_arg;
 typedef void(*slot_func)(slot_arg);
 typedef void(*slot2_func)(slot_arg, size_t, size_t);
 
-typedef struct _graphic_position {
-	struct {
-		dim_t x, y;
-	} start, end;
-} pos_t;
+typedef struct s_point {
+	dim_t x, y;
+} point_t;
 
-typedef struct _graphic_area {
-	dim_t width, height;
+typedef struct s_area {
+	dim_t x, y, width, height;
 } area_t;
-
-typedef struct _graphic_dimension {
-	area_t size;
-	pos_t pos;
-	uint32_t size_set:1;
-	uint32_t pos_start_set:1;
-	uint32_t pos_end_set:1;
-} dimension_t;
 
 typedef struct s_canvas canvas_t;
 typedef struct s_virtual_canvas virtual_canvas_t;
 
 typedef struct s_my_string my_string_t;
-
-typedef struct s_interaction_engine interaction_engine_t;
 
 typedef uint32_t color_t;
 typedef const struct s_font font_t;
@@ -87,9 +75,20 @@ typedef struct s_text text_t;
 typedef struct s_widget widget_t;
 typedef struct s_button_engine button_engine_t;
 
-#define BUFFER_PTR_RDOLY const uint8_t *
-#define BUFFER_PTR uint8_t *
-typedef struct s_stack my_stack_t;
+enum e_event_default_codes
+{
+	event_code_interaction_press = 1,
+	event_code_interaction_release,
+	event_code_interaction_click,
+	event_code_draw,
+	event_code_delete,
+};
+
+struct s_interaction_data
+{
+	point_t interaction_point;
+};
+typedef struct s_interaction_data interaction_event_data_t;
 
 typedef struct s_event event_t;
 typedef int32_t event_code_t;

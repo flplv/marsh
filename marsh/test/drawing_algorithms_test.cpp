@@ -38,8 +38,8 @@ TEST_GROUP(drawing_algorithms)
 	}
 };
 
-TEST(drawing_algorithms, test_all_against_zero_dimension_canvas)
+TEST(drawing_algorithms, test_all_against_zero_area_canvas)
 {
-	// TODO: test_all_against_zero_dimension_canvas
+	// TODO: test_all_against_zero_area_canvas
 }
 

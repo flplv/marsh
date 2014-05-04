@@ -36,10 +36,12 @@ TEST_GROUP(widget_event)
 {
 	void setup()
 	{
+		event_pool_init();
 	}
 
 	void teardown()
 	{
+		event_pool_deinit();
 		DISABLE_INTERCEPTION;
 	}
 };
@@ -55,9 +57,9 @@ TEST(widget_event, leaks)
 	widget_event_deinit(&wid.event_handler_list);
 }
 
-static bool consume_handler(widget_t * wid, event_t * event)
+static enum e_widget_event_handler_result consume_handler(widget_t * wid, event_t * event)
 {
-	return true;
+	return widget_event_stop_propagation;
 }
 
 TEST(widget_event, consume)
@@ -65,12 +67,21 @@ TEST(widget_event, consume)
 	widget_t * wid = widget_new(NULL, NULL, NULL, NULL);
 	widget_new(wid, NULL, NULL, NULL);
 
-	widget_event_install_handler(widget_child(wid), event_code_click, consume_handler);
+	widget_area(wid)->width = 10;
+	widget_area(wid)->height = 10;
+	widget_area(widget_child(wid))->width = 10;
+	widget_area(widget_child(wid))->height = 10;
 
-	event_t * event = event_new(event_code_click, NULL, NULL);
+	widget_event_install_handler(widget_child(wid), event_code_interaction_click, consume_handler);
 
-	enum e_event_result result = widget_event_commit(wid, event);
-	CHECK_EQUAL(event_consumed, result);
+	interaction_event_data_t event_data;
+	event_data.interaction_point.x = 5;
+	event_data.interaction_point.y = 5;
+
+	event_t * event = event_new(event_code_interaction_click, &event_data, NULL);
+
+	bool result = widget_event_commit(wid, event);
+	CHECK_TRUE(result);
 
 	widget_delete(wid);
 }
@@ -78,13 +89,13 @@ TEST(widget_event, consume)
 widget_t * widgets[100];
 bool widgets_called[100];
 
-static bool list_handler(widget_t * wid, event_t * event)
+static enum e_widget_event_handler_result list_handler(widget_t * wid, event_t * event)
 {
 	for (int i = 0; i < 100; i++)
 		if (wid == widgets[i])
 			widgets_called[i] = true;
 
-	return false;
+	return widget_event_continue_propagation;
 }
 
 TEST(widget_event, tree)
@@ -109,9 +120,9 @@ TEST(widget_event, tree)
 	widgets[total_widgets++] = widget_new(widgets[6], NULL, NULL, NULL);
 
 	for (int i = 0; i < total_widgets; i++)
-		widget_event_install_handler(widgets[i], event_code_press, list_handler);
+		widget_event_install_handler(widgets[i], event_code_interaction_press, list_handler);
 
-	event_t * event = event_new(event_code_press, NULL, NULL);
+	event_t * event = event_new(event_code_interaction_press, NULL, NULL);
 
 	for (int i = 0; i < total_widgets; i++)
 		CHECK_FALSE(widgets_called[i]);

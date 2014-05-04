@@ -20,6 +20,7 @@
  */
 
 #include <stdbool.h>
+#include "helper/helper_types.h"
 #include "helper/checks.h"
 #include "helper/number.h"
 #include "types.h"

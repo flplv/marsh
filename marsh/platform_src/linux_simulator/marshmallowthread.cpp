@@ -28,6 +28,7 @@ extern "C"
 }
 
 #include "framebuffer.h"
+#include "event.h"
 #include "widget.h"
 #include "text.h"
 #include "rectangle.h"
@@ -36,8 +37,6 @@ extern "C"
 #include "button_engine.h"
 #include "signalslot.h"
 #include "signalslot2.h"
-#include "interaction_engine.h"
-#include "interact.h"
 
 struct marshmallow_thread_private
 {
@@ -104,6 +103,7 @@ void marshmallow_thread::release(int x, int y)
 void *marshmallow_thread::thread_handler(marshmallow_thread* self)
 {
 	framebuffer_new();
+	event_pool_init();
 
 	widget_t *screen;
 	screen = widget_new(NULL, NULL, NULL, NULL);
@@ -165,56 +165,6 @@ void *marshmallow_thread::thread_handler(marshmallow_thread* self)
 	rectangle_set_border_tickness(rounded_frame, 5);
 
 
-	rectangle_t *normal, *onpress;
-
-	normal = rectangle_new(NULL);
-	onpress = rectangle_new(NULL);
-
-	rectangle_set_fill_color_html(normal, "#800000");
-	rectangle_set_fill_color_html(onpress, "#FF0000");
-	rectangle_set_size(normal, 100, 100);
-	rectangle_set_size(onpress, 100, 100);
-	rectangle_set_position(normal, 400, 200);
-	rectangle_set_position(onpress, 400, 200);
-
-	button_engine_t *button1;
-	button_engine_t *button2;
-	button1 = button_engine_new(screen);
-	button2 = button_engine_new(screen);
-
-	button_engine_set_action_normal_state(button1, rectangle_get_widget(normal));
-	button_engine_set_action_onpress_state(button1, rectangle_get_widget(onpress));
-	button_engine_select_action_logic(button1);
-
-	rectangle_t *off, *on, *on_to_off, *off_to_on;
-
-	off = rectangle_new(NULL);
-	on = rectangle_new(NULL);
-	on_to_off = rectangle_new(NULL);
-	off_to_on = rectangle_new(NULL);
-
-	rectangle_set_fill_color_html(off, "#800000");
-	rectangle_set_fill_color_html(off_to_on, "#FF0000");
-	rectangle_set_fill_color_html(on, "#008000");
-	rectangle_set_fill_color_html(on_to_off, "#00FF00");
-
-	rectangle_set_size(off, 100, 100);
-	rectangle_set_size(off_to_on, 100, 100);
-	rectangle_set_position(off, 600, 200);
-	rectangle_set_position(off_to_on, 600, 200);
-
-	rectangle_set_size(on, 100, 100);
-	rectangle_set_size(on_to_off, 100, 100);
-	rectangle_set_position(on, 600, 200);
-	rectangle_set_position(on_to_off, 600, 200);
-
-	button_engine_set_toggle_on_state(button2, rectangle_get_widget(on));
-	button_engine_set_toggle_off_state(button2, rectangle_get_widget(off));
-	button_engine_set_toggle_on_to_off_state(button2, rectangle_get_widget(on_to_off));
-	button_engine_set_toggle_off_to_on_state(button2, rectangle_get_widget(off_to_on));
-
-	button_engine_select_toggle_logic(button2);
-
 	text_t *txt1 = text_new(screen);
 	text_set_color_html(txt1, "#C0C0C0");
 	text_set_font(txt1, ubuntu_monospace_16);
@@ -264,78 +214,30 @@ void *marshmallow_thread::thread_handler(marshmallow_thread* self)
 	slot_t *lena_slot = slot_new();
 	slot_set(lena_slot, (slot_func)lena_onclick, NULL);
 
-	slot_connect(lena_slot, interaction_engine_get_click_signal(
-								widget_get_interaction_engine(
-									image_get_widget(lena))));
+//	slot_connect(lena_slot, interaction_engine_get_click_signal(
+//								widget_get_interaction_engine(
+//									image_get_widget(lena))));
 
 
 	widget_draw(screen);
 	framebuffer_inform_written_area(0, 0, framebuffer_width(), framebuffer_height());
 
-	self->popup = widget_new(NULL, NULL, NULL, NULL);
-	widget_t * popup_button_on = widget_new(NULL, NULL, NULL, NULL);
-
-	rectangle_t *popup_button_bg_on = rectangle_new(popup_button_on);
-	rectangle_set_fill_color_html(popup_button_bg_on, "#006080");
-	rectangle_set_size(popup_button_bg_on, 100, 50);
-	rectangle_set_position(popup_button_bg_on, 350, 330);
-	rectangle_set_border_color_html(popup_button_bg_on, "#FFFFFF");
-	rectangle_set_border_tickness(popup_button_bg_on, 3);
-	rectangle_set_rounded_corner_radius(popup_button_bg_on, 4);
-
-	rectangle_t *popup_button_bg_off = rectangle_new(NULL);
-	rectangle_set_fill_color_html(popup_button_bg_off, "#0080C0");
-	rectangle_set_size(popup_button_bg_off, 100, 50);
-	rectangle_set_position(popup_button_bg_off, 350, 330);
-	rectangle_set_border_color_html(popup_button_bg_off, "#0080FF");
-	rectangle_set_border_tickness(popup_button_bg_off, 3);
-	rectangle_set_rounded_corner_radius(popup_button_bg_off, 4);
-
-	text_t *popup_button_text_on = text_new(popup_button_on);
-	text_set_color_html(popup_button_text_on, "#FFFFFF");
-	text_set_reference_position(popup_button_text_on, 400, 345);
-	text_set_justification(popup_button_text_on, TEXT_CENTER_JUST);
-	text_set_font(popup_button_text_on, ubuntu_monospace_16);
-	my_string_set(text_get_string(popup_button_text_on), "Bye bye!");
-
-	widget_t *screen2 = widget_new(NULL, NULL, NULL, NULL);
-
-	button_engine_t *popup_button = button_engine_new(screen2);
-	button_engine_set_action_normal_state(popup_button, popup_button_on);
-	button_engine_set_action_onpress_state(popup_button, rectangle_get_widget(popup_button_bg_off));
-	button_engine_select_action_logic(popup_button);
-
-
-	rectangle_t *popup_background = rectangle_new(screen2);
-	rectangle_set_fill_color_html(popup_background, "#FFFFFF");
-	rectangle_set_position(popup_background, 200, 90);
-	rectangle_set_size(popup_background, 400, 300);
-
-	text_t *popup_text = text_new(screen2);
-	text_set_color_html(popup_text, "#000000");
-	text_set_reference_position(popup_text, 400, 210);
-	text_set_justification(popup_text, TEXT_CENTER_JUST);
-	text_set_font(popup_text, ubuntu_monospace_16);
-	my_string_set(text_get_string(popup_text), "Pop up BRO!!");
-
-
 	self->main = screen;
-	self->popup = screen2;
 	self->root_pointer = self->main;
 
 	slot_t *popup_enter_slot = slot_new();
 	slot_set(popup_enter_slot, (slot_func)marshmallow_thread::goto_popup, self);
-	slot_connect(popup_enter_slot,
-				interaction_engine_get_click_signal(
-					widget_get_interaction_engine(
-						button_engine_get_widget(button1))));
+//	slot_connect(popup_enter_slot,
+//				interaction_engine_get_click_signal(
+//					widget_get_interaction_engine(
+//						button_engine_get_widget(button1))));
 
 	slot_t *main_enter_slot = slot_new();
 	slot_set(main_enter_slot, (slot_func)marshmallow_thread::goto_main, self);
-	slot_connect(main_enter_slot,
-				interaction_engine_get_click_signal(
-					widget_get_interaction_engine(
-						button_engine_get_widget(popup_button))));
+//	slot_connect(main_enter_slot,
+//				interaction_engine_get_click_signal(
+//					widget_get_interaction_engine(
+//						button_engine_get_widget(popup_button))));
 
 	while (self->p->thread_running)
 	{
@@ -343,25 +245,23 @@ void *marshmallow_thread::thread_handler(marshmallow_thread* self)
 
 		if (self->p->interaction.set)
 		{
-			if (self->p->interaction.type == self->p->interaction.PRESS)
-				interact_press(self->root_pointer,
-						self->p->interaction.x, self->p->interaction.y);
-			else if (self->p->interaction.type == self->p->interaction.RELEASE)
-				interact_release(self->root_pointer,
-						self->p->interaction.x, self->p->interaction.y);
+//			if (self->p->interaction.type == self->p->interaction.PRESS)
+//				interact_press(self->root_pointer,
+//						self->p->interaction.x, self->p->interaction.y);
+//			else if (self->p->interaction.type == self->p->interaction.RELEASE)
+//				interact_release(self->root_pointer,
+//						self->p->interaction.x, self->p->interaction.y);
 		}
 
 		framebuffer_inform_written_area(0, 0, framebuffer_width(), framebuffer_height());
 		pthread_mutex_unlock(&self->p->thread_mutex);
 	}
 
-	button_engine_delete(button1);
-	rectangle_delete(normal);
-	rectangle_delete(onpress);
 	text_delete(txt1);
 	text_delete(txt2);
 	text_delete(txt3);
 
+	event_pool_deinit();
 	framebuffer_delete();
 
 	return NULL;
@@ -374,8 +274,7 @@ void marshmallow_thread::lena_onclick()
 
 void marshmallow_thread::goto_popup(marshmallow_thread* self)
 {
-	self->root_pointer = self->popup;
-	widget_draw(self->root_pointer);
+//	widget_draw(self->root_pointer);
 }
 
 void marshmallow_thread::goto_main(marshmallow_thread* self)

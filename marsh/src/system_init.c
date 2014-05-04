@@ -19,12 +19,12 @@
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-void system_init()
-{
-
-}
-
-void system_deinit()
-{
-
-}
+//void system_init()
+//{
+//
+//}
+//
+//void system_deinit()
+//{
+//
+//}

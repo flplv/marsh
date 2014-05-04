@@ -19,9 +19,12 @@
 //START: main
 #include "CppUTest/CommandLineTestRunner.h"
 
-int main(int argc, char** argv)
+//int main(int argc, char** argv)
+int main()
 {
-    return RUN_ALL_TESTS(argc, argv);
+	const char * av_override[] = { "exe", "-v" }; //turn on verbose mode
+
+    return RUN_ALL_TESTS(2, av_override);
 }
 //END: main
 

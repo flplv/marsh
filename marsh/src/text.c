@@ -26,7 +26,7 @@
 #include "helper/my_string.h"
 #include "font.h"
 #include "color.h"
-#include "dimension.h"
+#include "area.h"
 #include "widget.h"
 #include "signalslot.h"
 #include "canvas.h"
@@ -87,7 +87,7 @@ static void update_position_and_size(text_t *obj)
 
 	width = font_string_width(obj->font, obj->string);
 	height = font_string_height(obj->font, obj->string);
-	dimension_set_size(widget_get_dimension(obj->glyph), width, height);
+	area_set_size(widget_area(obj->glyph), width, height);
 
 	y = obj->ref_y;
 
@@ -108,9 +108,7 @@ static void update_position_and_size(text_t *obj)
 		LOG_ERROR("text", "Invalid Justification");
 	}
 
-	dimension_set_start_position(widget_get_dimension(obj->glyph), x, y);
-
-	dimension_set_rest_if_possible(widget_get_dimension(obj->glyph));
+	area_set_start_xy(widget_area(obj->glyph), x, y);
 }
 
 static void string_changed(text_t* obj)
@@ -122,7 +120,7 @@ static bool ready_to_draw(text_t * obj)
 {
 	if (!color_check(obj->color))
 		return false;
-	if (!dimension_good(widget_get_dimension(obj->glyph)))
+	if (!area_value(widget_area(obj->glyph)))
 		return false;
 	if (my_string_len(obj->string) == 0)
 		return false;
@@ -139,7 +137,7 @@ static void text_draw(text_t * obj)
 		return;
 	}
 
-	canv = canvas_new(widget_get_dimension(obj->glyph));
+	canv = canvas_new(widget_area(obj->glyph));
 
 	if (obj->just == TEXT_LEFT_JUST)
 		font_draw_left_just(obj->font, obj->string, color_to_pixel(obj->color), canv);
@@ -176,7 +174,7 @@ void text_delete(text_t* obj)
 {
 	PTR_CHECK(obj, "text");
 
-	widget_delete_instance_only(obj->glyph);
+	widget_delete_instance(obj->glyph);
 
 	slot_delete(obj->string_update_slot);
 	my_string_delete(obj->string);

@@ -23,6 +23,7 @@
 #define DRAWING_ALGORITHMS_H_
 
 #include "types.h"
+#include "helper/helper_types.h"
 
 void draw_solid_rectangle(const canvas_t *canv, pixel_t color);
 void draw_solid_round_rectangle(const canvas_t *canv, pixel_t color, size_t round_radius);

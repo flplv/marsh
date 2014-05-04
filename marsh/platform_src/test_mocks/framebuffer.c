@@ -84,5 +84,9 @@ size_t framebuffer_height()
 
 void framebuffer_inform_written_area(size_t x, size_t y, size_t width, size_t height)
 {
+	x = *(int*)&x;
+	y = *(int*)&y;
+	width = *(int*)&width;
+	height = *(int*)&height;
 }
 

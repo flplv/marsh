@@ -19,14 +19,26 @@
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef INTERACTION_H_
-#define INTERACTION_H_
-
+#ifndef AREA_H_
+#define AREA_H_
 
 #include "types.h"
 
-void interact_press(widget_t *, dim_t x, dim_t y);
-void interact_release(widget_t *, dim_t x, dim_t y);
-void interact_click(widget_t * intobj, dim_t x, dim_t y);
+void point_clear(point_t *tgt);
+void point_set(point_t * tgt, dim_t x, dim_t y);
 
-#endif /* INTERACTION_H_ */
+void area_clear(area_t *tgt);
+void area_clear(area_t* tgt);
+void area_set(area_t * area, dim_t x, dim_t y, dim_t width, dim_t height);
+void area_set_start_point(area_t * area, point_t point);
+void area_set_start_xy(area_t * area, dim_t x, dim_t y);
+void area_set_size(area_t * area, dim_t width, dim_t height);
+
+point_t area_start_point(area_t * area);
+point_t area_end_point(area_t * area);
+
+dim_t area_value(area_t * area);
+
+bool area_contains_point(const area_t * area, point_t point);
+
+#endif /* AREA_H_ */

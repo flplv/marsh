@@ -26,6 +26,7 @@ extern "C" {
 #include "widget.h"
 #include "widget_private.h"
 #include "bitmap_data/bitmaps.h"
+#include "event.h"
 #include "icon.h"
 #include "icon.c"
 }
@@ -42,12 +43,14 @@ TEST_GROUP(icon)
 	{
 		marshmallow_terminal_output = output_intercepter;
 		framebuffer_new();
+		event_pool_init();
 		cut = icon_new(NULL);
 	}
 
 	void teardown()
 	{
 		icon_delete(cut);
+		event_pool_deinit();
 		framebuffer_delete();
 		marshmallow_terminal_output = _stdout_output_impl;
 	}
@@ -65,7 +68,7 @@ TEST(icon, DestroyOwner)
 {
 	icon_t * cut2;
 	cut2 = icon_new(NULL);
-	widget_delete(icon_get_widget(cut2));
+	widget_virtual_delete(icon_get_widget(cut2));
 //	icon_delete(cut2);
 //	STRCMP_CONTAINS("icon", intercepted_output[2]);
 //	STRCMP_CONTAINS("Invalid Instance", intercepted_output[0]);

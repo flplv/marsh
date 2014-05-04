@@ -64,8 +64,8 @@ TEST(text, sizes)
 	int width;
 	int height;
 
-	width = widget_get_dimension(cut->glyph)->size.width;
-	height = widget_get_dimension(cut->glyph)->size.height;
+	width = widget_area(cut->glyph)->width;
+	height = widget_area(cut->glyph)->height;
 
 	CHECK_EQUAL(0, width);
 	CHECK_EQUAL(0, height);
@@ -75,8 +75,8 @@ TEST(text, sizes)
 	my_string_set(text_get_string(cut), "tweedledum");
 	text_set_font(cut, ubuntu_monospace_16);
 
-	width = widget_get_dimension(cut->glyph)->size.width;
-	height = widget_get_dimension(cut->glyph)->size.height;
+	width = widget_area(cut->glyph)->width;
+	height = widget_area(cut->glyph)->height;
 	CHECK_EQUAL(80, width);
 	CHECK_EQUAL(16, height);
 }

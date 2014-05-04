@@ -36,33 +36,38 @@ TEST_GROUP(event)
 {
 	void setup()
 	{
+		event_pool_init();
 	}
 
 	void teardown()
 	{
-		event_unreserve_all_uids();
+		event_pool_deinit();
 		DISABLE_INTERCEPTION;
 	}
 };
 
-TEST(event, linked_list)
+TEST(event, linked_list_default_events)
 {
-	POINTERS_EQUAL(&press_event, uid_list_root);
-	POINTERS_EQUAL(&release_event, uid_list_root->head.next);
-	POINTERS_EQUAL(&click_event, uid_list_root->head.next->next);
-	POINTERS_EQUAL(NULL, uid_list_root->head.next->next->next);
+	CHECK_TRUE(event_list_root);
+	CHECK_TRUE(event_list_root->head.next);
+	CHECK_TRUE(event_list_root->head.next->next);
+	CHECK_TRUE(event_list_root->head.next->next->next);
+	CHECK_TRUE(event_list_root->head.next->next->next->next);
+	CHECK_FALSE(event_list_root->head.next->next->next->next->next);
 }
 
 TEST(event, reservation)
 {
-	LONGS_EQUAL(4, event_reserve_new_code(event_propagate_from_current, event_life_single, "test_event"));
+	LONGS_EQUAL(10, event_pool_new_code(event_prop_default, "test_event"));
 
-	LONGS_EQUAL(4, event_code_from_name("test_event"));
-	LONGS_EQUAL(3, event_code_from_name("default_click"));
-	LONGS_EQUAL(2, event_code_from_name("default_release"));
-	LONGS_EQUAL(1, event_code_from_name("default_press"));
+	LONGS_EQUAL(10, event_pool_code_from_name("test_event"));
+	LONGS_EQUAL(event_code_delete, event_pool_code_from_name("default_delete"));
+	LONGS_EQUAL(event_code_draw, event_pool_code_from_name("default_draw"));
+	LONGS_EQUAL(event_code_interaction_click, event_pool_code_from_name("default_click"));
+	LONGS_EQUAL(event_code_interaction_release, event_pool_code_from_name("default_release"));
+	LONGS_EQUAL(event_code_interaction_press, event_pool_code_from_name("default_press"));
 
-	event_unreserve_all_uids();
+	event_pool_remove_created_codes();
 }
 
 TEST(event, event_quality)
@@ -70,12 +75,11 @@ TEST(event, event_quality)
 	ENABLE_INTERCEPTION;
 
 	event_t * cut;
-	cut = event_new(event_code_press, NULL, NULL);
+	cut = event_new(event_code_interaction_press, NULL, NULL);
 	CHECK_TRUE(cut);
 
-	CHECK_EQUAL(event_code_press, event_code(cut));
-	CHECK_EQUAL(event_life_single, event_life_policy(cut));
-	CHECK_EQUAL(event_propagate_from_current, event_propagation_policy(cut));
+	CHECK_EQUAL(event_code_interaction_press, event_code(cut));
+	CHECK_EQUAL(event_prop_default, event_propagation_mask(cut));
 
 	event_delete(cut);
 }
@@ -87,20 +91,20 @@ TEST(event, instances)
 	ENABLE_INTERCEPTION;
 
 	event_t * cut;
-	cut = event_new(event_code_press, NULL, NULL);
+	cut = event_new(event_code_interaction_press, NULL, NULL);
 	CHECK_TRUE(cut);
 	event_delete(cut);
 
-	cut = event_new(event_code_press, malloc(1024), my_free);
+	cut = event_new(event_code_interaction_press, malloc(1024), my_free);
 	CHECK_TRUE(cut);
 	event_delete(cut);
 
 	int user_unique_id;
-	user_unique_id = event_reserve_new_code(event_propagate_from_current, event_life_single, "custom");
+	user_unique_id = event_pool_new_code(event_prop_default, "custom");
 	cut = event_new(user_unique_id, malloc(1024), my_free);
 	CHECK_TRUE(cut);
 	event_delete(cut);
-	event_unreserve_all_uids();
+	event_pool_remove_created_codes();
 
 	cut = event_new(3141, NULL, NULL);
 	CHECK_FALSE(cut);

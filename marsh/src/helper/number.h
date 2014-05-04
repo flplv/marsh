@@ -33,8 +33,28 @@ uint8_t charactere_hex_to_int(char c);
 int32_t string_hex_to_int(const char* str);
 void int_to_string(int32_t number, char * target, size_t size);
 
-#define get_bigger(__1__, __2__) (((__1__)>(__2__))?(__1__):(__2__))
-#define get_smaller(__1__, __2__) (((__1__)<(__2__))?(__1__):(__2__))
-#define get_sig(__num__) ((((int)__num__)>0)?(1):(-1))
+#define get_bigger(val1, val2) \
+({ \
+	typeof(val1) __1 = val1; typeof(val2) __2 = val2; \
+    (__1 > __2 ? __1 : __2); \
+})
+
+#define get_smaller(val1, val2) \
+({ \
+	typeof(val1) __1 = val1; typeof(val2) __2 = val2; \
+    (__1 < __2 ? __1 : __2); \
+})
+
+#define get_sig(val) \
+({ \
+	typeof(val) __v = val; \
+    (__v > 0 ? 1 : -1); \
+})
+
+#define get_abs(val) \
+({ \
+	typeof(val) __v = val; \
+    (__v > 0 ? __v : -__v); \
+})
 
 #endif /* NUMBER_H_ */

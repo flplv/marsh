@@ -24,14 +24,16 @@
 
 #include "types.h"
 
-enum e_event_result
+enum e_widget_event_handler_result
 {
-	event_consumed,
-	event_not_consumed
+	widget_event_continue_propagation,
+	widget_event_stop_propagation,
 };
 
-int widget_event_install_handler(widget_t * widget, event_code_t uid, bool (*handler)(widget_t * widget, event_t * event));
+typedef enum e_widget_event_handler_result (widget_event_handler_f)(widget_t * widget, event_t * event);
 
-enum e_event_result widget_event_commit(widget_t * widget, event_t * event);
+int widget_event_install_handler(widget_t * widget, event_code_t uid, widget_event_handler_f * handler);
+
+bool widget_event_commit(widget_t * widget, event_t * event);
 
 #endif /* WIDGET_EVENT_H_ */

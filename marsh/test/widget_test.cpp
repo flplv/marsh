@@ -22,6 +22,7 @@
 extern "C" {
 #include "color.h"
 #include "color_private.h"
+#include "event.h"
 #include "widget.h"
 #include "widget_tree.h"
 #include "widget_private.h"
@@ -44,48 +45,45 @@ TEST_GROUP(Widget)
 	void setup()
 	{
 		marshmallow_terminal_output = output_intercepter;
+		event_pool_init();
 		cut = widget_new(NULL, NULL, NULL, NULL);
 		called = false;
 	}
 
 	void teardown()
 	{
-		widget_delete_instance_only(cut);
+		event_pool_deinit();
+		widget_delete_instance(cut);
 		marshmallow_terminal_output = _stdout_output_impl;
 	}
 };
 
 TEST(Widget, instance)
 {
-	CHECK_EQUAL(cut->dim.size_set, false);
-	CHECK_EQUAL(cut->dim.pos_start_set, false);
-	CHECK_EQUAL(cut->dim.pos_end_set, false);
-
 	CHECK_EQUAL((void*)0, cut->creator_instance);
 	CHECK_EQUAL((void(*)(void*))0, cut->creator_draw);
 	CHECK_EQUAL((void(*)(void*))0, cut->creator_delete);
+	CHECK_TRUE((void*)cut->click_signal);
+	CHECK_TRUE((void*)cut->press_signal);
+	CHECK_TRUE((void*)cut->release_signal);
 
-//	widget_delete(cut);
-//	widget_delete(cut);
-//	STRCMP_CONTAINS("widget", intercepted_output[2]);
-//	STRCMP_CONTAINS("Invalid Instance", intercepted_output[0]);
-//
-//	widget_interface_delete(owner);
-//	widget_interface_delete(owner);
-//	STRCMP_CONTAINS("widget_interface", intercepted_output[2]);
-//	STRCMP_CONTAINS("Invalid Instance", intercepted_output[0]);
+	CHECK_TRUE(cut->event_handler_list);
+	CHECK_EQUAL((void*)0, cut->tree.child);
+	CHECK_EQUAL((void*)0, cut->tree.parent);
+	CHECK_EQUAL((void*)0, cut->tree.left);
+	CHECK_EQUAL((void*)0, cut->tree.right);
 }
 
 TEST(Widget, destroy)
 {
 	widget_t * cut2;
 	cut2 = widget_new(NULL, this, (void(*)(void*))2, call);
-	widget_delete(cut2);
-	widget_delete_instance_only(cut2);
+	widget_virtual_delete(cut2);
+	widget_delete_instance(cut2);
 	CHECK_TRUE(called);
 }
 
-TEST(Widget, tree)
+TEST(Widget, tree_deletion)
 {
 	CHECK_TRUE(cut->tree.child == NULL);
 

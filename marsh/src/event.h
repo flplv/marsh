@@ -27,35 +27,24 @@
 
 #include "types.h"
 
-enum e_event_propagation_policy
-{
-	event_propagate_from_root,   // Event starts its propagation from the root widget down the tree.
-	event_propagate_from_current // Event starts its propagation from the widget that triggered it down.
-};
+#define event_prop_default         0x0
+#define event_prop_from_root       0x1  // Event starts its propagation from the root widget down the tree.
+#define event_prop_outside_first   0x2  // All nodes from the starting point receive the event, outside ones first.
+#define event_prop_force_all_nodes 0x4
 
-enum e_event_life_policy
-{
-	event_life_persistent,  // Event don't stop after triggered an action.
-	event_life_single		// Event stop propagation after triggered an action once.
-};
+void event_pool_init(void);
+void event_pool_deinit(void);
 
-enum e_event_default_codes
-{
-	event_code_press = 1,
-	event_code_release = 2,
-	event_code_click = 3,
-};
+event_code_t event_pool_new_code(int propagation_mask, const char * event_name);
+event_code_t event_pool_code_from_name(const char * event_name);
+void event_pool_remove_created_codes(void);
 
-event_code_t event_code_from_name(const char * event_name);
-
-event_code_t event_reserve_new_code(enum e_event_propagation_policy prop_policy, enum e_event_life_policy life_cycle, const char * event_name);
-void event_unreserve_all_uids(void);
-
+/* If no free_data function is passed, data is not freed when event is deleted */
 event_t * event_new(event_code_t event_code, void * data, void (*free_data)(void *));
 void event_delete(event_t *);
 
-enum e_event_life_policy event_life_policy(event_t * event);
-enum e_event_propagation_policy event_propagation_policy(event_t * event);
 event_code_t event_code(event_t * event);
+const void * event_data(event_t * event);
+int event_propagation_mask(event_t * event);
 
 #endif /* WIDGET_EVENT_H_ */

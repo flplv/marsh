@@ -27,14 +27,6 @@
 
 #include "helper/linked_list.h"
 
-enum
-{
-	event_processed,
-	event_not_processed,
-	stop_propagation,
-	continue_propagation,
-};
-
 static bool uid_cmp(event_code_t seed, widget_event_handler_t * node)
 {
 	PTR_CHECK_RETURN(node, "widget_event", false);
@@ -45,35 +37,38 @@ static bool uid_cmp(event_code_t seed, widget_event_handler_t * node)
 	return false;
 }
 
-static bool has_code_already_installed(widget_event_handler_t * list_root, event_code_t uid_number)
+static widget_event_handler_t * get_handler_from_code(widget_event_handler_t * list_root, event_code_t uid_number)
 {
 	widget_event_handler_t * found_node;
 
 	if (!list_root)
-		return false;
+		return NULL;
 
 	found_node = linked_list_find(list_root, head, uid_cmp, uid_number);
 
-	if (found_node)
-		return true;
-
-	return false;
+	return found_node;
 }
 
-int widget_event_install_handler (widget_t * widget, event_code_t uid, bool (*handler)(widget_t * widget, event_t * event))
+int widget_event_install_handler (widget_t * widget, event_code_t code, widget_event_handler_f * handler)
 {
+	widget_event_handler_t * existent_event_handler;
 	widget_event_handler_t * new_event_handler;
 
 	PTR_CHECK_RETURN(widget, "widget_event", -1);
 
-	if (has_code_already_installed(widget->event_handler_list, uid))
+	existent_event_handler = get_handler_from_code(widget->event_handler_list, code);
+
+	if (existent_event_handler)
+	{
+		existent_event_handler->function = (int(*)(widget_t *, event_t *))handler;
 		return 0;
+	}
 
 	new_event_handler = (typeof(new_event_handler)) malloc (sizeof(*new_event_handler));
 	MEMORY_ALLOC_CHECK_RETURN(new_event_handler, -1);
 
-	new_event_handler->code = uid;
-	new_event_handler->function = handler;
+	new_event_handler->code = code;
+	new_event_handler->function = (int(*)(widget_t *, event_t *))handler;
 	linked_list_init(new_event_handler, head);
 
 	if (!widget->event_handler_list)
@@ -95,82 +90,84 @@ static int event_process (widget_t * widget, event_t * event)
 {
 	widget_event_handler_t * handler;
 
-	PTR_CHECK_RETURN(widget, "widget_event", event_not_processed);
-	PTR_CHECK_RETURN(event, "widget_event", event_not_processed);
+	PTR_CHECK_RETURN(widget, "widget_event", widget_event_stop_propagation);
+	PTR_CHECK_RETURN(event, "widget_event", widget_event_stop_propagation);
 
 	handler = linked_list_find(widget->event_handler_list, head, event_comparator, event_code(event));
 
 	if (!handler)
-		return event_not_processed;
+		return widget_event_stop_propagation;
 
-	ASSERT_RETURN(handler->function, "widget_event", event_not_processed);
+	ASSERT_RETURN(handler->function, "widget_event", widget_event_stop_propagation);
 
-	if (handler->function(widget, event))
-		return event_processed;
-
-	return event_not_processed;
+	return handler->function(widget, event);
 }
 
 static int __attribute__((noinline)) widget_event_commit_impl(widget_t * widget, event_t * event)
 {
-	if (event_process(widget, event) == event_processed)
-	{
-		enum e_event_life_policy life = event_life_policy(event);
-
-		if (life == event_life_single)
-		{
-			return stop_propagation;
-		}
-	}
-
-	return continue_propagation;
+	return event_process(widget, event);
 }
 
-static int __attribute__((noinline)) widget_event_commit_internal(widget_t * self, event_t * event)
+static int __attribute__((noinline)) widget_event_commit_internal(widget_t * self, event_t * event, int propagation_mask)
 {
 	widget_t * child;
 
-	PTR_CHECK_RETURN(self, "widget_event", stop_propagation);
+	PTR_CHECK_RETURN(self, "widget_event", widget_event_stop_propagation);
 
-	/* Consume in self widget */
-	if (widget_event_commit_impl(self, event) == stop_propagation)
-		return stop_propagation;
+	if (!(propagation_mask & event_prop_outside_first))
+	{
+		/* Consume in current widget */
+		if (widget_event_commit_impl(self, event) == widget_event_stop_propagation)
+			if (!(propagation_mask & event_prop_force_all_nodes))
+				return widget_event_stop_propagation;
+	}
 
 	/* Route to children */
 	child = widget_child(self);
 	while(child)
 	{
-		// TODO XXX ATENTION XXX TODO: recursiveness
-		if (widget_event_commit_internal(child, event) == stop_propagation)
-			return stop_propagation;
+		/* Next is taken before executing event in case it is a deletion and child cease to exist */
+		widget_t * next_child =  widget_right_sibling(child);
 
-		child = widget_right_sibling(child);
+		// XXX recursiveness
+		if (widget_event_commit_internal(child, event, propagation_mask) == widget_event_stop_propagation)
+			if (!(propagation_mask & event_prop_force_all_nodes))
+				return widget_event_stop_propagation;
+
+		child = next_child;
 	}
 
-	return continue_propagation;
+	if (propagation_mask & event_prop_outside_first)
+	{
+		/* Consume in current widget */
+		if (widget_event_commit_impl(self, event) == widget_event_stop_propagation)
+			if (!(propagation_mask & event_prop_force_all_nodes))
+				return widget_event_stop_propagation;
+	}
+
+	return widget_event_continue_propagation;
 }
 
-enum e_event_result widget_event_commit(widget_t * self, event_t * event)
+bool widget_event_commit(widget_t * widget, event_t * event)
 {
+	int result;
+	int propagation_mask;
 	widget_t * start_widget;
-	enum e_event_propagation_policy propagation;
 
-	propagation = event_propagation_policy(event);
+	PTR_CHECK_RETURN(widget, "widget_event", false);
+	PTR_CHECK_RETURN(event, "widget_event", false);
 
-	if (propagation == event_propagate_from_root)
-		start_widget = widget_root(self);
+	propagation_mask = event_propagation_mask(event);
+
+	if (propagation_mask & event_prop_from_root)
+		start_widget = widget_root(widget);
 	else
-		start_widget = self;
+		start_widget = widget;
 
-
-	if (widget_event_commit_internal(start_widget, event) == continue_propagation)
-	{
-		event_delete(event);
-		return event_not_consumed;
-	}
-
+	result = widget_event_commit_internal(start_widget, event, propagation_mask);
 	event_delete(event);
-	return event_consumed;
+
+	return (result == widget_event_continue_propagation) ? false : true;
 }
 
 void widget_event_init(widget_event_handler_t ** widget_event_lists_root_ptr)

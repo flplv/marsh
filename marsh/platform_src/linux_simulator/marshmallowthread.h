@@ -40,7 +40,7 @@ private:
 	static void goto_popup(marshmallow_thread* self);
 	static void goto_main(marshmallow_thread* self);
 
-	widget_t *root_pointer, *popup, *main;
+	widget_t *root_pointer, *main;
 };
 
 #endif /* MARSHMALLOWTHREAD_H_ */
