@@ -107,6 +107,8 @@ void *marshmallow_thread::thread_handler(marshmallow_thread* self)
 
 	widget_t *screen;
 	screen = widget_new(NULL, NULL, NULL, NULL);
+	widget_area(screen)->width = 800;
+	widget_area(screen)->height = 480;
 
 	rectangle_t *bg = rectangle_new(screen);
 	rectangle_set_fill_color_html(bg, "#004000");
@@ -214,10 +216,7 @@ void *marshmallow_thread::thread_handler(marshmallow_thread* self)
 	slot_t *lena_slot = slot_new();
 	slot_set(lena_slot, (slot_func)lena_onclick, NULL);
 
-//	slot_connect(lena_slot, interaction_engine_get_click_signal(
-//								widget_get_interaction_engine(
-//									image_get_widget(lena))));
-
+	slot_connect(lena_slot, widget_click_signal(image_get_widget(lena)));
 
 	widget_draw(screen);
 	framebuffer_inform_written_area(0, 0, framebuffer_width(), framebuffer_height());
@@ -225,32 +224,18 @@ void *marshmallow_thread::thread_handler(marshmallow_thread* self)
 	self->main = screen;
 	self->root_pointer = self->main;
 
-	slot_t *popup_enter_slot = slot_new();
-	slot_set(popup_enter_slot, (slot_func)marshmallow_thread::goto_popup, self);
-//	slot_connect(popup_enter_slot,
-//				interaction_engine_get_click_signal(
-//					widget_get_interaction_engine(
-//						button_engine_get_widget(button1))));
-
-	slot_t *main_enter_slot = slot_new();
-	slot_set(main_enter_slot, (slot_func)marshmallow_thread::goto_main, self);
-//	slot_connect(main_enter_slot,
-//				interaction_engine_get_click_signal(
-//					widget_get_interaction_engine(
-//						button_engine_get_widget(popup_button))));
-
 	while (self->p->thread_running)
 	{
 		pthread_cond_wait(&self->p->thread_cond, &self->p->thread_mutex);
 
 		if (self->p->interaction.set)
 		{
-//			if (self->p->interaction.type == self->p->interaction.PRESS)
-//				interact_press(self->root_pointer,
-//						self->p->interaction.x, self->p->interaction.y);
-//			else if (self->p->interaction.type == self->p->interaction.RELEASE)
-//				interact_release(self->root_pointer,
-//						self->p->interaction.x, self->p->interaction.y);
+			if (self->p->interaction.type == self->p->interaction.PRESS)
+				widget_press(self->root_pointer,
+						self->p->interaction.x, self->p->interaction.y);
+			else if (self->p->interaction.type == self->p->interaction.RELEASE)
+				widget_release(self->root_pointer,
+						self->p->interaction.x, self->p->interaction.y);
 		}
 
 		framebuffer_inform_written_area(0, 0, framebuffer_width(), framebuffer_height());

@@ -55,6 +55,8 @@ widget_t * widget_new(widget_t * parent, void * report_instance, void (*report_d
 	widget_event_install_handler(obj, event_code_draw, default_draw_event_handler);
 	widget_event_install_handler(obj, event_code_delete, default_delete_event_handler);
 
+	obj->pressed = false;
+
 	return obj;
 }
 
@@ -110,6 +112,54 @@ void widget_draw(widget_t * obj)
 	widget_event_commit(obj, draw_event);
 }
 
+void widget_click(widget_t * obj, int x, int y)
+{
+	event_t * interaction_event;
+	interaction_event_data_t data;
+
+	data.interaction_point.x = x;
+	data.interaction_point.y = y;
+
+	PTR_CHECK(obj, "widget");
+
+	interaction_event = event_new(event_code_interaction_click, &data, NULL);
+	PTR_CHECK(interaction_event, "widget");
+
+	widget_event_commit(obj, interaction_event);
+}
+
+void widget_press(widget_t * obj, int x, int y)
+{
+	event_t * interaction_event;
+	interaction_event_data_t data;
+
+	data.interaction_point.x = x;
+	data.interaction_point.y = y;
+
+	PTR_CHECK(obj, "widget");
+
+	interaction_event = event_new(event_code_interaction_press, &data, NULL);
+	PTR_CHECK(interaction_event, "widget");
+
+	widget_event_commit(obj, interaction_event);
+}
+
+void widget_release(widget_t * obj, int x, int y)
+{
+	event_t * interaction_event;
+	interaction_event_data_t data;
+
+	data.interaction_point.x = x;
+	data.interaction_point.y = y;
+
+	PTR_CHECK(obj, "widget");
+
+	interaction_event = event_new(event_code_interaction_release, &data, NULL);
+	PTR_CHECK(interaction_event, "widget");
+
+	widget_event_commit(obj, interaction_event);
+}
+
 area_t * widget_area(widget_t *obj)
 {
 	PTR_CHECK_RETURN (obj, "widget", NULL);
@@ -124,13 +174,28 @@ void widget_process_click(widget_t * obj)
 
 void widget_process_release(widget_t * obj)
 {
+	bool shall_click = false;
 	PTR_CHECK(obj, "widget");
+
+	if (obj->pressed)
+	{
+		shall_click = true;
+		obj->pressed = false;
+	}
+
 	signal_emit(obj->release_signal);
+
+	/* TODO: Create advanced click algorithm, do deal with false releases. */
+	if (shall_click)
+		signal_emit(obj->click_signal);
 }
 
 void widget_process_press(widget_t * obj)
 {
 	PTR_CHECK(obj, "widget");
+
+	obj->pressed = true;
+
 	signal_emit(obj->press_signal);
 }
 
@@ -142,4 +207,25 @@ void widget_process_draw(widget_t * obj)
 	{
 		obj->creator_draw(obj->creator_instance);
 	}
+}
+
+signal_t * widget_click_signal(widget_t * obj)
+{
+	PTR_CHECK_RETURN(obj, "widget", NULL);
+
+	return obj->click_signal;
+}
+
+signal_t * widget_release_signal(widget_t * obj)
+{
+	PTR_CHECK_RETURN(obj, "widget", NULL);
+
+	return obj->release_signal;
+}
+
+signal_t * widget_press_signal(widget_t * obj)
+{
+	PTR_CHECK_RETURN(obj, "widget", NULL);
+
+	return obj->press_signal;
 }

@@ -94,70 +94,71 @@ default_interaction_event_handler(widget_t * widget, event_t * event)
 {
 	interaction_event_data_t * interaction_data;
 
-	PTR_CHECK_RETURN(widget, __FUNCTION__, widget_event_stop_propagation);
-	PTR_CHECK_RETURN(event, __FUNCTION__, widget_event_stop_propagation);
+	PTR_CHECK_RETURN(widget, __FUNCTION__, widget_event_not_consumed);
+	PTR_CHECK_RETURN(event, __FUNCTION__, widget_event_not_consumed);
 
 	if (!code_is_interaction(event_code(event)))
 	{
 		LOG_ERROR(__FUNCTION__, "Received invalid event.");
-		return widget_event_stop_propagation;
+		return widget_event_not_consumed;
 	}
 
 	interaction_data = (interaction_event_data_t *)event_data(event);
 	if (!interaction_data)
 	{
 		LOG_ERROR(__FUNCTION__, "Received incomplete event.");
-		return widget_event_stop_propagation;
+		return widget_event_not_consumed;
 	}
 
 	if (area_contains_point(widget_area(widget), interaction_data->interaction_point))
 	{
-		if (widget_sibling_area_contain_point(widget, interaction_data->interaction_point))
+		if (widget_child(widget))
 		{
-			return widget_event_continue_propagation;
+			if (widget_sibling_area_contain_point(widget_child(widget), interaction_data->interaction_point))
+			{
+				return widget_event_not_consumed;
+			}
 		}
-		else
-		{
-			default_interaction_event_consume(widget, event);
-			return widget_event_stop_propagation;
-		}
+
+		default_interaction_event_consume(widget, event);
+		return widget_event_consumed;
 	}
 
-	return widget_event_stop_propagation;
+	return widget_event_not_consumed;
 }
 
 enum e_widget_event_handler_result
 default_delete_event_handler(widget_t * widget, event_t * event)
 {
-	PTR_CHECK_RETURN(widget, __FUNCTION__, widget_event_stop_propagation);
-	PTR_CHECK_RETURN(event, __FUNCTION__, widget_event_stop_propagation);
+	PTR_CHECK_RETURN(widget, __FUNCTION__, widget_event_not_consumed);
+	PTR_CHECK_RETURN(event, __FUNCTION__, widget_event_not_consumed);
 
 	if (event_code(event) != event_code_delete)
 	{
 		LOG_ERROR(__FUNCTION__, "Received invalid event.");
-		return widget_event_stop_propagation;
+		return widget_event_not_consumed;
 	}
 
 	widget_virtual_delete(widget);
 
-	return widget_event_continue_propagation;
+	return widget_event_consumed;
 }
 
 enum e_widget_event_handler_result
 default_draw_event_handler(widget_t * widget, event_t * event)
 {
-	PTR_CHECK_RETURN(widget, __FUNCTION__, widget_event_stop_propagation);
-	PTR_CHECK_RETURN(event, __FUNCTION__, widget_event_stop_propagation);
+	PTR_CHECK_RETURN(widget, __FUNCTION__, widget_event_not_consumed);
+	PTR_CHECK_RETURN(event, __FUNCTION__, widget_event_not_consumed);
 
 	//TODO: Create a visible property on widgets to select if it draws or not.
 
 	if (event_code(event) != event_code_draw)
 	{
 		LOG_ERROR(__FUNCTION__, "Received invalid event.");
-		return widget_event_stop_propagation;
+		return widget_event_not_consumed;
 	}
 
 	widget_process_draw(widget);
 
-	return widget_event_continue_propagation;
+	return widget_event_consumed;
 }

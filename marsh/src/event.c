@@ -74,7 +74,7 @@ static void create_default_events()
 	click_event->code_number = event_code_interaction_click;
 	linked_list_init(click_event,head);
 	strcpy(click_event->name, "default_click");
-	click_event->propagation_mask = event_prop_default;
+	click_event->propagation_mask = event_prop_default | event_prop_right_to_left;
 
 
 
@@ -84,7 +84,7 @@ static void create_default_events()
 	release_event->code_number = event_code_interaction_release;
 	linked_list_init(release_event,head);
 	strcpy(release_event->name, "default_release");
-	release_event->propagation_mask = event_prop_default;
+	release_event->propagation_mask = event_prop_default | event_prop_right_to_left;
 
 
 
@@ -94,7 +94,7 @@ static void create_default_events()
 	press_event->code_number = event_code_interaction_press;
 	linked_list_init(press_event,head);
 	strcpy(press_event->name, "default_press");
-	press_event->propagation_mask = event_prop_default;
+	press_event->propagation_mask = event_prop_default | event_prop_right_to_left;
 
 
 
@@ -104,7 +104,7 @@ static void create_default_events()
 	draw_event->code_number = event_code_draw;
 	linked_list_init(draw_event,head);
 	strcpy(draw_event->name, "default_draw");
-	draw_event->propagation_mask = event_prop_default;
+	draw_event->propagation_mask = event_prop_default | event_prop_persistent;
 
 
 
@@ -114,7 +114,7 @@ static void create_default_events()
 	delete_event->code_number = event_code_delete;
 	linked_list_init(delete_event,head);
 	strcpy(delete_event->name, "default_delete");
-	delete_event->propagation_mask = event_prop_force_all_nodes | event_prop_outside_first;
+	delete_event->propagation_mask = event_prop_persistent | event_prop_bottom_up;
 
 
 	/* This order matters */

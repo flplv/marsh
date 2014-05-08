@@ -90,15 +90,15 @@ static int event_process (widget_t * widget, event_t * event)
 {
 	widget_event_handler_t * handler;
 
-	PTR_CHECK_RETURN(widget, "widget_event", widget_event_stop_propagation);
-	PTR_CHECK_RETURN(event, "widget_event", widget_event_stop_propagation);
+	PTR_CHECK_RETURN(widget, "widget_event", widget_event_not_consumed);
+	PTR_CHECK_RETURN(event, "widget_event", widget_event_not_consumed);
 
 	handler = linked_list_find(widget->event_handler_list, head, event_comparator, event_code(event));
 
 	if (!handler)
-		return widget_event_stop_propagation;
+		return widget_event_not_consumed;
 
-	ASSERT_RETURN(handler->function, "widget_event", widget_event_stop_propagation);
+	ASSERT_RETURN(handler->function, "widget_event", widget_event_not_consumed);
 
 	return handler->function(widget, event);
 }
@@ -111,41 +111,57 @@ static int __attribute__((noinline)) widget_event_commit_impl(widget_t * widget,
 static int __attribute__((noinline)) widget_event_commit_internal(widget_t * self, event_t * event, int propagation_mask)
 {
 	widget_t * child;
+	bool event_consumed = false;
 
-	PTR_CHECK_RETURN(self, "widget_event", widget_event_stop_propagation);
+	PTR_CHECK_RETURN(self, "widget_event", widget_event_not_consumed);
 
-	if (!(propagation_mask & event_prop_outside_first))
+	if (!(propagation_mask & event_prop_bottom_up))
 	{
 		/* Consume in current widget */
-		if (widget_event_commit_impl(self, event) == widget_event_stop_propagation)
-			if (!(propagation_mask & event_prop_force_all_nodes))
-				return widget_event_stop_propagation;
+		if (widget_event_commit_impl(self, event) == widget_event_consumed)
+			if (!(propagation_mask & event_prop_persistent))
+				return widget_event_consumed;
 	}
 
 	/* Route to children */
 	child = widget_child(self);
+
+	if (propagation_mask & event_prop_right_to_left)
+		child = widget_last(child);
+
 	while(child)
 	{
 		/* Next is taken before executing event in case it is a deletion and child cease to exist */
-		widget_t * next_child =  widget_right_sibling(child);
+		widget_t * next_child;
+
+		if (propagation_mask & event_prop_right_to_left)
+			next_child =  widget_left_sibling(child);
+		else
+			next_child =  widget_right_sibling(child);
+
 
 		// XXX recursiveness
-		if (widget_event_commit_internal(child, event, propagation_mask) == widget_event_stop_propagation)
-			if (!(propagation_mask & event_prop_force_all_nodes))
-				return widget_event_stop_propagation;
+		if (widget_event_commit_internal(child, event, propagation_mask) == widget_event_consumed)
+			event_consumed = true;
+
+		if (event_consumed && (!(propagation_mask & event_prop_persistent)))
+			break;
 
 		child = next_child;
 	}
 
-	if (propagation_mask & event_prop_outside_first)
+	if (propagation_mask & event_prop_bottom_up)
 	{
 		/* Consume in current widget */
-		if (widget_event_commit_impl(self, event) == widget_event_stop_propagation)
-			if (!(propagation_mask & event_prop_force_all_nodes))
-				return widget_event_stop_propagation;
+		if (widget_event_commit_impl(self, event) == widget_event_consumed)
+			if (!(propagation_mask & event_prop_persistent))
+				return widget_event_consumed;
 	}
 
-	return widget_event_continue_propagation;
+	if (propagation_mask & event_prop_persistent)
+		return widget_event_not_consumed;
+
+	return event_consumed ? widget_event_consumed : widget_event_not_consumed;
 }
 
 bool widget_event_commit(widget_t * widget, event_t * event)
@@ -167,7 +183,7 @@ bool widget_event_commit(widget_t * widget, event_t * event)
 	result = widget_event_commit_internal(start_widget, event, propagation_mask);
 	event_delete(event);
 
-	return (result == widget_event_continue_propagation) ? false : true;
+	return (result == widget_event_not_consumed) ? false : true;
 }
 
 void widget_event_init(widget_event_handler_t ** widget_event_lists_root_ptr)

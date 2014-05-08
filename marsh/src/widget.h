@@ -66,10 +66,17 @@ void widget_delete(widget_t * obj);
 area_t * widget_area(widget_t *);
 
 void widget_draw(widget_t *);
+void widget_press(widget_t *, int x, int y);
+void widget_release(widget_t *, int x, int y);
+void widget_click(widget_t *, int x, int y);
 
 void widget_process_click(widget_t * obj);
 void widget_process_release(widget_t * obj);
 void widget_process_press(widget_t * obj);
 void widget_process_draw(widget_t * obj);
+
+signal_t * widget_click_signal(widget_t * obj);
+signal_t * widget_release_signal(widget_t * obj);
+signal_t * widget_press_signal(widget_t * obj);
 
 #endif /* widget_H_ */

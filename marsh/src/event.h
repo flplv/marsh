@@ -28,9 +28,10 @@
 #include "types.h"
 
 #define event_prop_default         0x0
-#define event_prop_from_root       0x1  // Event starts its propagation from the root widget down the tree.
-#define event_prop_outside_first   0x2  // All nodes from the starting point receive the event, outside ones first.
-#define event_prop_force_all_nodes 0x4
+#define event_prop_from_root       0x1
+#define event_prop_bottom_up       0x2
+#define event_prop_persistent 0x4
+#define event_prop_right_to_left   0x8
 
 void event_pool_init(void);
 void event_pool_deinit(void);

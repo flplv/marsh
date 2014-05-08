@@ -26,11 +26,11 @@
 
 enum e_widget_event_handler_result
 {
-	widget_event_continue_propagation,
-	widget_event_stop_propagation,
+	widget_event_consumed,
+	widget_event_not_consumed,
 };
 
-typedef enum e_widget_event_handler_result (widget_event_handler_f)(widget_t * widget, event_t * event);
+typedef enum e_widget_event_handler_result (widget_event_handler_f) (widget_t * widget, event_t * event);
 
 int widget_event_install_handler(widget_t * widget, event_code_t uid, widget_event_handler_f * handler);
 

@@ -59,6 +59,8 @@ struct s_widget
 
 	struct s_widget_tree tree;
 	widget_event_handler_t * event_handler_list;
+
+	bool pressed;
 };
 
 void widget_event_init(widget_event_handler_t ** widget_event_lists_root_ptr);

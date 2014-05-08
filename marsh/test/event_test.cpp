@@ -79,7 +79,7 @@ TEST(event, event_quality)
 	CHECK_TRUE(cut);
 
 	CHECK_EQUAL(event_code_interaction_press, event_code(cut));
-	CHECK_EQUAL(event_prop_default, event_propagation_mask(cut));
+	CHECK_EQUAL(event_prop_default | event_prop_right_to_left, event_propagation_mask(cut));
 
 	event_delete(cut);
 }

@@ -59,7 +59,7 @@ TEST(widget_event, leaks)
 
 static enum e_widget_event_handler_result consume_handler(widget_t * wid, event_t * event)
 {
-	return widget_event_stop_propagation;
+	return widget_event_consumed;
 }
 
 TEST(widget_event, consume)
@@ -92,10 +92,15 @@ bool widgets_called[100];
 static enum e_widget_event_handler_result list_handler(widget_t * wid, event_t * event)
 {
 	for (int i = 0; i < 100; i++)
+	{
 		if (wid == widgets[i])
+		{
 			widgets_called[i] = true;
+			break;
+		}
+	}
 
-	return widget_event_continue_propagation;
+	return widget_event_not_consumed;
 }
 
 TEST(widget_event, tree)
