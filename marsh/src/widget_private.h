@@ -48,7 +48,9 @@ typedef struct s_widget_event_handler_node widget_event_handler_t;
 
 struct s_widget
 {
-	area_t dim;
+	area_t configured_dim; // Client inputed dimension, relative to parent.
+	area_t absolute_dim;   // Real absolute dimension, relative to the screen.
+	area_t canvas_dim;     // Canvas area used for drawing.
 	signal_t * click_signal;
 	signal_t * press_signal;
 	signal_t * release_signal;
@@ -72,5 +74,6 @@ void widget_tree_unregister(widget_t * self);
 enum e_widget_event_handler_result default_interaction_event_handler(widget_t *, event_t *);
 enum e_widget_event_handler_result default_delete_event_handler(widget_t *, event_t *);
 enum e_widget_event_handler_result default_draw_event_handler(widget_t *, event_t *);
+enum e_widget_event_handler_result default_refresh_dim_event_handler(widget_t *, event_t *);
 
 #endif /* WIDGETPRIVATE_H_ */

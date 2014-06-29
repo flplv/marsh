@@ -24,6 +24,7 @@ extern "C" {
 #include "color.h"
 #include "framebuffer.h"
 #include "widget.h"
+#include "widget_tree.h"
 #include "widget_private.h"
 #include "bitmap_data/bitmaps.h"
 #include "event.h"
@@ -68,7 +69,7 @@ TEST(icon, DestroyOwner)
 {
 	icon_t * cut2;
 	cut2 = icon_new(NULL);
-	widget_virtual_delete(icon_get_widget(cut2));
+	widget_delete(icon_get_widget(cut2));
 //	icon_delete(cut2);
 //	STRCMP_CONTAINS("icon", intercepted_output[2]);
 //	STRCMP_CONTAINS("Invalid Instance", intercepted_output[0]);
@@ -82,7 +83,7 @@ TEST(icon, Draw)
 	CHECK_EQUAL(0x0000, *framebuffer_at(1, 10));
 	icon_set_position(cut, 0, 0);
 	icon_set_bitmap(cut, wifi_icon_bitmap);
-	widget_draw(icon_get_widget(cut));
+	widget_tree_draw(icon_get_widget(cut));
 	CHECK_EQUAL(0xFFFF, *framebuffer_at(1, 10));
 }
 

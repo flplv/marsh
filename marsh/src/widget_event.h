@@ -34,6 +34,6 @@ typedef enum e_widget_event_handler_result (widget_event_handler_f) (widget_t * 
 
 int widget_event_install_handler(widget_t * widget, event_code_t uid, widget_event_handler_f * handler);
 
-bool widget_event_commit(widget_t * widget, event_t * event);
+bool widget_event_emit(widget_t * widget, event_t * event);
 
 #endif /* WIDGET_EVENT_H_ */

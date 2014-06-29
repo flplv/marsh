@@ -82,6 +82,7 @@ enum e_event_default_codes
 	event_code_interaction_click,
 	event_code_draw,
 	event_code_delete,
+	event_code_refresh_dim,
 };
 
 struct s_interaction_data

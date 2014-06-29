@@ -66,6 +66,7 @@ static void create_default_events()
 	struct s_event_code_info * release_event;
 	struct s_event_code_info * draw_event;
 	struct s_event_code_info * delete_event;
+	struct s_event_code_info * redim_event;
 
 
 	click_event = (typeof(click_event))calloc(1, sizeof(*click_event));
@@ -117,12 +118,21 @@ static void create_default_events()
 	delete_event->propagation_mask = event_prop_persistent | event_prop_bottom_up;
 
 
-	/* This order matters */
+	redim_event = (typeof(redim_event))calloc(1, sizeof(*redim_event));
+	MEMORY_ALLOC_CHECK(redim_event);
+
+	redim_event->code_number = event_code_refresh_dim;
+	linked_list_init(redim_event,head);
+	strcpy(redim_event->name, "default_refresh_dim");
+	redim_event->propagation_mask = event_prop_default | event_prop_persistent;
+
+	/* Caution! This code is order dependent. */
 	event_list_root = press_event;
 	linked_list_insert_after(linked_list_last(event_list_root, head), release_event, head);
 	linked_list_insert_after(linked_list_last(event_list_root, head), click_event, head);
 	linked_list_insert_after(linked_list_last(event_list_root, head), draw_event, head);
 	linked_list_insert_after(linked_list_last(event_list_root, head), delete_event, head);
+	linked_list_insert_after(linked_list_last(event_list_root, head), redim_event, head);
 }
 
 void event_pool_init(void)

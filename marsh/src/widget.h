@@ -38,42 +38,39 @@ widget_t * widget_new(widget_t * parent, void * creator_instance, void (*creator
  * children's children, and so on.
  *
  * If the widget is created without a creator destructor (creator_instance and creator_delete),
- * the widget will call widget_delete_instance_only from widget_delete, otherwise, it is
+ * the widget will call widget_delete_instance_only from widget_tree_delete, otherwise, it is
  * expected that creator destructor call widget_delete_instance_only.
  */
 
-/* Only use this method if you hold the ownership of the widget, or created directly
-   the widget through widget_new. This is the real widget_t type destructor. */
-void widget_delete_instance(widget_t * obj);
+/* This is the widget_t instance delete, it doesn't delete it's creator,
+ * If you are a widget class and created a widget to use as base, this is the delete you
+ * need to use. */
+void widget_delete_instance_only(widget_t * obj);
 
-/* Use this method to call the widget creator (rectangle, etc.) destroy function.
-   This is the virtual call of the widget destructor.
-   If, during creation, there is no creator_delete or creator_instance, no creator destructor
-   will be called, than widget_delete_instance_only will be called internally.   */
-void widget_virtual_delete(widget_t * obj);
-
-/* This method delete a widget, its creator, and all tree behind it, including the
- * creator of each node.  */
+/* This is the public delete for a widget, this delete will call its creator (rectangle, image, etc.)
+ * delete function. Use this if you want to delete a widget you created not by calling widget_new, but
+ * rectangle_new, etc. This is the delete to be used when polymorphism is used.  */
 void widget_delete(widget_t * obj);
 
+
 /*
- * TODO: Change the widget patter from polymorphism to decorator. This way all this deletion mass
+ * TODO: Change the widget pattern from polymorphism to decorator. This way all this deletion mass
  * will be gone.
  * I.e.: instead a image class contain a widget, a widget will contain a decorator,
  * that is the image class itself.
+ * Maybe decored is not the right pattern yet, further research in this subject is needed.
  */
 
-area_t * widget_area(widget_t *);
+void widget_set_dim(widget_t *, dim_t width, dim_t height);
+void widget_set_pos(widget_t *, dim_t x, dim_t y);
+void widget_set_area(widget_t *, dim_t x, dim_t y, dim_t width, dim_t height);
+/*const */area_t * widget_area(widget_t *);
+void widget_refresh_dim(widget_t * obj);
 
-void widget_draw(widget_t *);
-void widget_press(widget_t *, int x, int y);
-void widget_release(widget_t *, int x, int y);
-void widget_click(widget_t *, int x, int y);
-
-void widget_process_click(widget_t * obj);
-void widget_process_release(widget_t * obj);
-void widget_process_press(widget_t * obj);
-void widget_process_draw(widget_t * obj);
+void widget_click(widget_t * obj);
+void widget_release(widget_t * obj);
+void widget_press(widget_t * obj);
+void widget_draw(widget_t * obj);
 
 signal_t * widget_click_signal(widget_t * obj);
 signal_t * widget_release_signal(widget_t * obj);

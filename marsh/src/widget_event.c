@@ -164,7 +164,7 @@ static int __attribute__((noinline)) widget_event_commit_internal(widget_t * sel
 	return event_consumed ? widget_event_consumed : widget_event_not_consumed;
 }
 
-bool widget_event_commit(widget_t * widget, event_t * event)
+bool widget_event_emit(widget_t * widget, event_t * event)
 {
 	int result;
 	int propagation_mask;

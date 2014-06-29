@@ -20,6 +20,7 @@
  */
 
 extern "C" {
+#include <string.h>
 #include "area.h"
 }
 
@@ -50,6 +51,80 @@ TEST(area, contains)
 	CHECK_TRUE(area_contains_point(&dim,  (point_t){15, 15}));
 	CHECK_TRUE(area_contains_point(&dim,  (point_t){19, 19}));
 	CHECK_FALSE(area_contains_point(&dim, (point_t){20, 20}));
+}
+
+TEST(area, compare)
+{
+	area_t a, b;
+
+	area_set(&a, 0, 0, 100, 100);
+	area_set(&b, 0, 0, 100, 100);
+
+	CHECK_TRUE(memcmp(&a, &b, sizeof(a)) == 0);
+
+	area_set(&a, 0, 0, 100, 100);
+	area_set(&b, 10, 10, 80, 80);
+
+	CHECK_FALSE(memcmp(&a, &b, sizeof(a)) == 0);
+}
+
+TEST(area, negative)
+{
+	area_t a;
+
+	area_set(&a, 0, 0, 100, 100);
+
+	CHECK_EQUAL(0, area_start_point(&a).x);
+	CHECK_EQUAL(0, area_start_point(&a).y);
+	CHECK_EQUAL(100, area_end_point(&a).x);
+	CHECK_EQUAL(100, area_end_point(&a).y);
+
+	area_set(&a, -1, -1, -100, -100);
+
+	CHECK_EQUAL(-1, area_start_point(&a).x);
+	CHECK_EQUAL(-1, area_start_point(&a).y);
+	CHECK_EQUAL(-101, area_end_point(&a).x);
+	CHECK_EQUAL(-101, area_end_point(&a).y);
+}
+
+TEST(area, intersects)
+{
+	area_t a, b;
+
+	area_set(&a, 0, 0, 100, 100);
+	area_set(&b, 10, 10, 80, 80);
+
+	CHECK_TRUE(area_intersects(&a, &b));
+
+	area_set(&a, 0, 0, 100, 100);
+	area_set(&b, 0, 0, 100, 100);
+
+	CHECK_TRUE(area_intersects(&a, &b));
+
+	area_set(&a, 0, 0, 100, 100);
+	area_set(&b, 10, 10, 90, 90);
+
+	CHECK_TRUE(area_intersects(&a, &b));
+
+	area_set(&a, 0, 0, 100, 100);
+	area_set(&b, -10, -10, 800, 800);
+
+	CHECK_TRUE(area_intersects(&a, &b));
+
+	area_set(&a, 0, 0, 100, 100);
+	area_set(&b, -10, -10, -80, -80);
+
+	CHECK_FALSE(area_intersects(&a, &b));
+
+	area_set(&a, 0, 0, 100, 100);
+	area_set(&b, 100, 100, -20, -20);
+
+	CHECK_TRUE(area_intersects(&a, &b));
+
+	area_set(&a, 0, 0, 100, 100);
+	area_set(&b, 100, 100, 20, 20);
+
+	CHECK_FALSE(area_intersects(&a, &b));
 }
 
 

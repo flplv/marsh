@@ -174,7 +174,7 @@ void text_delete(text_t* obj)
 {
 	PTR_CHECK(obj, "text");
 
-	widget_delete_instance(obj->glyph);
+	widget_delete_instance_only(obj->glyph);
 
 	slot_delete(obj->string_update_slot);
 	my_string_delete(obj->string);

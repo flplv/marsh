@@ -80,10 +80,10 @@ TEST(widget_event, consume)
 
 	event_t * event = event_new(event_code_interaction_click, &event_data, NULL);
 
-	bool result = widget_event_commit(wid, event);
+	bool result = widget_event_emit(wid, event);
 	CHECK_TRUE(result);
 
-	widget_delete(wid);
+	widget_tree_delete(wid);
 }
 
 widget_t * widgets[100];
@@ -132,11 +132,11 @@ TEST(widget_event, tree)
 	for (int i = 0; i < total_widgets; i++)
 		CHECK_FALSE(widgets_called[i]);
 
-	widget_event_commit(widgets[0], event);
+	widget_event_emit(widgets[0], event);
 
 	for (int i = 0; i < total_widgets; i++)
 		CHECK_TRUE(widgets_called[i]);
 
-	widget_delete(widgets[0]);
+	widget_tree_delete(widgets[0]);
 }
 

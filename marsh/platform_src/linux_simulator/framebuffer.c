@@ -20,6 +20,7 @@
  */
 
 #include "framebuffer.h"
+#include "area.h"
 
 extern char * pVirtFb;
 
@@ -50,6 +51,15 @@ size_t framebuffer_width()
 size_t framebuffer_height()
 {
 	return FRAMEBUFFER_HEIGHT;
+}
+
+const area_t * framebuffer_area()
+{
+	static area_t ret;
+
+	area_set(&ret, 0, 0, FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT);
+
+	return &ret;
 }
 
 pixel_t* framebuffer_at(pixel_t x, pixel_t y)

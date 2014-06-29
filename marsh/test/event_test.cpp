@@ -53,7 +53,8 @@ TEST(event, linked_list_default_events)
 	CHECK_TRUE(event_list_root->head.next->next);
 	CHECK_TRUE(event_list_root->head.next->next->next);
 	CHECK_TRUE(event_list_root->head.next->next->next->next);
-	CHECK_FALSE(event_list_root->head.next->next->next->next->next);
+	CHECK_TRUE(event_list_root->head.next->next->next->next->next);
+	CHECK_FALSE(event_list_root->head.next->next->next->next->next->next);
 }
 
 TEST(event, reservation)
@@ -61,6 +62,7 @@ TEST(event, reservation)
 	LONGS_EQUAL(10, event_pool_new_code(event_prop_default, "test_event"));
 
 	LONGS_EQUAL(10, event_pool_code_from_name("test_event"));
+	LONGS_EQUAL(event_code_refresh_dim, event_pool_code_from_name("default_refresh_dim"));
 	LONGS_EQUAL(event_code_delete, event_pool_code_from_name("default_delete"));
 	LONGS_EQUAL(event_code_draw, event_pool_code_from_name("default_draw"));
 	LONGS_EQUAL(event_code_interaction_click, event_pool_code_from_name("default_click"));

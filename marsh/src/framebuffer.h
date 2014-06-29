@@ -34,6 +34,8 @@ pixel_t *framebuffer_at(pixel_t x, pixel_t y);
 size_t framebuffer_width(void);
 size_t framebuffer_height(void);
 
+const area_t * framebuffer_area(void);
+
 void framebuffer_inform_written_area(size_t x, size_t y, size_t width, size_t height);
 
 #endif /* FRAMEBUFFER_H_ */

@@ -26,6 +26,7 @@ extern "C" {
 #include "framebuffer.h"
 #include "event.h"
 #include "widget.h"
+#include "widget_tree.h"
 #include "widget_private.h"
 #include "rectangle.h"
 #include "rectangle.c"
@@ -75,7 +76,7 @@ TEST(WidgetRectangle, DestroyOwner)
 {
 	rectangle_t * cut2;
 	cut2 = rectangle_new(NULL);
-	widget_virtual_delete(rectangle_get_widget(cut2));
+	widget_delete(rectangle_get_widget(cut2));
 //	rectangle_delete(cut2);
 //	STRCMP_CONTAINS("rectangle", intercepted_output[2]);
 //	STRCMP_CONTAINS("Invalid Instance", intercepted_output[0]);
@@ -90,7 +91,7 @@ TEST(WidgetRectangle, Draw)
 	rectangle_set_position(cut, 0, 0);
 	rectangle_set_size(cut, 10, 10);
 	rectangle_set_fill_color_html(cut, "#FFFFFF");
-	widget_draw(rectangle_get_widget(cut));
+	widget_tree_draw(rectangle_get_widget(cut));
 	CHECK_EQUAL(0xFFFF, *framebuffer_at(5, 5));
 }
 
@@ -115,6 +116,6 @@ TEST(WidgetRectangle, position_end1)
 	rectangle_set_size(cut, 10, 20);
 	rectangle_set_position(cut, 50, 60);
 
-	CHECK_EQUAL(60-1, area_end_point(widget_area(cut->glyph)).x);
-	CHECK_EQUAL(80-1, area_end_point(widget_area(cut->glyph)).y);
+	CHECK_EQUAL(60, area_end_point(widget_area(cut->glyph)).x);
+	CHECK_EQUAL(80, area_end_point(widget_area(cut->glyph)).y);
 }

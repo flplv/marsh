@@ -30,6 +30,7 @@ extern "C"
 #include "framebuffer.h"
 #include "event.h"
 #include "widget.h"
+#include "widget_tree.h"
 #include "text.h"
 #include "rectangle.h"
 #include "icon.h"
@@ -166,27 +167,6 @@ void *marshmallow_thread::thread_handler(marshmallow_thread* self)
 	rectangle_set_rounded_corner_radius(rounded_frame, 13);
 	rectangle_set_border_tickness(rounded_frame, 5);
 
-
-	text_t *txt1 = text_new(screen);
-	text_set_color_html(txt1, "#C0C0C0");
-	text_set_font(txt1, ubuntu_monospace_16);
-	text_set_reference_position(txt1, 10, 400);
-	my_string_set(text_get_string(txt1), "Hello World!\nHow beautiful is it?");
-
-	text_t *txt2 = text_new(screen);
-	text_set_color_html(txt2, "#D0D0D0");
-	text_set_font(txt2, ubuntu_monospace_16);
-	text_set_justification(txt2, TEXT_CENTER_JUST);
-	text_set_reference_position(txt2, 400, 400);
-	my_string_set(text_get_string(txt2), "Hello World!\nHow beautiful is it?");
-
-	text_t *txt3 = text_new(screen);
-	text_set_color_html(txt3, "#E0E0E0");
-	text_set_font(txt3, ubuntu_monospace_16);
-	text_set_justification(txt3, TEXT_RIGHT_JUST);
-	text_set_reference_position(txt3, 790, 400);
-	my_string_set(text_get_string(txt3), "Hello World!\nHow beautiful is it?");
-
 	rectangle_t *icon_bg1 = rectangle_new(screen);
 	rectangle_set_position(icon_bg1, 0, 300);
 	rectangle_set_size(icon_bg1, 50, 50);
@@ -213,12 +193,32 @@ void *marshmallow_thread::thread_handler(marshmallow_thread* self)
 	image_set_bitmap(lena, lena_bitmap);
 	image_set_position(lena, 120, 205);
 
+	text_t *txt1 = text_new(screen);
+	text_set_color_html(txt1, "#C0C0C0");
+	text_set_font(txt1, ubuntu_monospace_16);
+	text_set_reference_position(txt1, 10, 400);
+	my_string_set(text_get_string(txt1), "Hello World!\nHow beautiful is it?");
+
+	text_t *txt2 = text_new(screen);
+	text_set_color_html(txt2, "#D0D0D0");
+	text_set_font(txt2, ubuntu_monospace_16);
+	text_set_justification(txt2, TEXT_CENTER_JUST);
+	text_set_reference_position(txt2, 400, 400);
+	my_string_set(text_get_string(txt2), "Hello World!\nHow beautiful is it?");
+
+	text_t *txt3 = text_new(screen);
+	text_set_color_html(txt3, "#E0E0E0");
+	text_set_font(txt3, ubuntu_monospace_16);
+	text_set_justification(txt3, TEXT_RIGHT_JUST);
+	text_set_reference_position(txt3, 790, 400);
+	my_string_set(text_get_string(txt3), "Hello World!\nHow beautiful is it?");
+
 	slot_t *lena_slot = slot_new();
 	slot_set(lena_slot, (slot_func)lena_onclick, NULL);
 
 	slot_connect(lena_slot, widget_click_signal(image_get_widget(lena)));
 
-	widget_draw(screen);
+	widget_tree_draw(screen);
 	framebuffer_inform_written_area(0, 0, framebuffer_width(), framebuffer_height());
 
 	self->main = screen;
@@ -231,10 +231,10 @@ void *marshmallow_thread::thread_handler(marshmallow_thread* self)
 		if (self->p->interaction.set)
 		{
 			if (self->p->interaction.type == self->p->interaction.PRESS)
-				widget_press(self->root_pointer,
+				widget_tree_press(self->root_pointer,
 						self->p->interaction.x, self->p->interaction.y);
 			else if (self->p->interaction.type == self->p->interaction.RELEASE)
-				widget_release(self->root_pointer,
+				widget_tree_release(self->root_pointer,
 						self->p->interaction.x, self->p->interaction.y);
 		}
 
@@ -259,11 +259,11 @@ void marshmallow_thread::lena_onclick()
 
 void marshmallow_thread::goto_popup(marshmallow_thread* self)
 {
-//	widget_draw(self->root_pointer);
+//	widget_tree_draw(self->root_pointer);
 }
 
 void marshmallow_thread::goto_main(marshmallow_thread* self)
 {
 	self->root_pointer = self->main;
-	widget_draw(self->root_pointer);
+	widget_tree_draw(self->root_pointer);
 }

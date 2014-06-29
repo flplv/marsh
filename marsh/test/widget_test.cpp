@@ -53,7 +53,7 @@ TEST_GROUP(Widget)
 	void teardown()
 	{
 		event_pool_deinit();
-		widget_delete_instance(cut);
+		widget_delete_instance_only(cut);
 		marshmallow_terminal_output = _stdout_output_impl;
 	}
 };
@@ -78,8 +78,8 @@ TEST(Widget, destroy)
 {
 	widget_t * cut2;
 	cut2 = widget_new(NULL, this, (void(*)(void*))2, call);
-	widget_virtual_delete(cut2);
-	widget_delete_instance(cut2);
+	widget_delete(cut2);
+	widget_delete_instance_only(cut2);
 	CHECK_TRUE(called);
 }
 
@@ -110,7 +110,45 @@ TEST(Widget, tree_deletion)
 	CHECK_EQUAL(3, widget_num_of_children(widget_child(cut2)));
 	CHECK_EQUAL(5, widget_num_of_children(widget_last_child(cut2)));
 
-	widget_delete(cut2);
+	widget_tree_delete(cut2);
 
 	CHECK_TRUE(cut->tree.child == NULL);
 }
+
+TEST(Widget, dimension)
+{
+	widget_t * parent;
+	widget_t * child;
+	widget_t * child2;
+
+	parent = widget_new(NULL, NULL, NULL, NULL);
+	child = widget_new(parent, NULL, NULL, NULL);
+	child2 = widget_new(child, NULL, NULL, NULL);
+
+	widget_set_area(parent, 10, 10, 200, 200);
+	widget_set_area(child, 10, 10, 10, 10);
+	widget_set_area(child2, 10, 10, 10, 10);
+
+	CHECK_EQUAL(10, parent->absolute_dim.x);
+	CHECK_EQUAL(10, parent->absolute_dim.y);
+
+	CHECK_EQUAL(20, child->absolute_dim.x);
+	CHECK_EQUAL(20, child->absolute_dim.y);
+
+	CHECK_EQUAL(30, child2->absolute_dim.x);
+	CHECK_EQUAL(30, child2->absolute_dim.y);
+
+	widget_set_area(parent, 20, 20, 200, 200);
+
+	CHECK_EQUAL(20, parent->absolute_dim.x);
+	CHECK_EQUAL(20, parent->absolute_dim.y);
+
+	CHECK_EQUAL(30, child->absolute_dim.x);
+	CHECK_EQUAL(30, child->absolute_dim.y);
+
+	CHECK_EQUAL(40, child2->absolute_dim.x);
+	CHECK_EQUAL(40, child2->absolute_dim.y);
+
+	widget_tree_delete(parent);
+}
+

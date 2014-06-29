@@ -23,6 +23,7 @@
 #include "helper/number.h"
 
 #include "area.h"
+#include "helper/number.h"
 
 #include <string.h>
 
@@ -80,20 +81,82 @@ void area_set_size(area_t * area, dim_t width, dim_t height)
 	area->height = height;
 }
 
-point_t area_start_point(area_t * area)
+point_t area_start_point(const area_t * area)
 {
 	PTR_CHECK_RETURN(area, "area", ((point_t){0, }));
 	return (point_t){area->x, area->y};
 }
 
-point_t area_end_point(area_t * area)
+point_t area_end_point(const area_t * area)
 {
 	PTR_CHECK_RETURN(area, "area", ((point_t){0, }));
 
-	return (point_t){area->x + area->width - 1, area->y + area->height - 1};
+	return (point_t){area->x + area->width, area->y + area->height};
 }
 
-dim_t area_value(area_t * area)
+point_t area_start_point_abs(const area_t * area)
+{
+	point_t ret;
+
+	PTR_CHECK_RETURN(area, "area", ((point_t){0, }));
+
+	if (area->width < 0)
+		ret.x = area_end_point(area).x;
+	else
+		ret.x = area->x;
+
+	if (area->height < 0)
+		ret.y = area_end_point(area).y;
+	else
+		ret.y = area->y;
+
+	return ret;
+}
+
+point_t area_end_point_abs(const area_t * area)
+{
+	PTR_CHECK_RETURN(area, "area", ((point_t){0, }));
+
+	return (point_t){area->x + area->width, area->y + area->height};
+}
+
+bool area_intersects(const area_t * first, const area_t * second)
+{
+	PTR_CHECK_RETURN(first, "area", false);
+	PTR_CHECK_RETURN(second, "area", false);
+
+    if (area_end_point_abs(first).x <= area_start_point_abs(second).x
+    	|| area_end_point_abs(second).x <= area_start_point_abs(first).x)
+        return false;
+
+    if (area_end_point_abs(first).y <= area_start_point_abs(second).y
+        	|| area_end_point_abs(second).y <= area_start_point_abs(first).y)
+            return false;
+
+    return true;
+}
+
+void area_set_intersection(area_t *tgt, const area_t * first, const area_t * second)
+{
+	PTR_CHECK(tgt, "area");
+	PTR_CHECK(first, "area");
+	PTR_CHECK(second, "area");
+
+    if(area_intersects(first, second))
+    {
+        area_set(tgt,
+        		get_bigger(first->x, second->x),
+        		get_bigger(first->y, second->y),
+        		get_smaller(area_end_point(first).x, area_end_point(second).x),
+        		get_smaller(area_end_point(first).y, area_end_point(second).y));
+    }
+    else
+    {
+        area_set(tgt, 0, 0, 0, 0);
+    }
+}
+
+dim_t area_value(const area_t * area)
 {
 	PTR_CHECK_RETURN(area, "area", false);
 	return (get_abs(area->width) * get_abs(area->height));

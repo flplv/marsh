@@ -22,6 +22,8 @@
 #include "framebuffer.h"
 #include <string.h>
 
+#include "area.h"
+
 #define FRAMEBUFFER_WIDTH  800UL
 #define FRAMEBUFFER_HEIGHT 480UL
 
@@ -80,6 +82,15 @@ size_t framebuffer_width()
 size_t framebuffer_height()
 {
 	return FRAMEBUFFER_HEIGHT;
+}
+
+const area_t * framebuffer_area()
+{
+	static area_t ret;
+
+	area_set(&ret, 0, 0, FRAMEBUFFER_WIDTH, FRAMEBUFFER_HEIGHT);
+
+	return &ret;
 }
 
 void framebuffer_inform_written_area(size_t x, size_t y, size_t width, size_t height)

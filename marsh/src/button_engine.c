@@ -56,7 +56,7 @@
 //		return;
 //	}
 //
-//	widget_draw(*obj->current_state);
+//	widget_tree_draw(*obj->current_state);
 //}
 //
 //static bool valid_interaction(button_engine_t * obj, size_t x, size_t y)

@@ -24,8 +24,8 @@
 #include "helper/log.h"
 #include "helper/checks.h"
 
+#include "framebuffer.h"
 #include "signalslot.h"
-#include "event.h"
 #include "widget_private.h"
 #include "widget.h"
 #include "widget_tree.h"
@@ -36,7 +36,8 @@ widget_t * widget_new(widget_t * parent, void * report_instance, void (*report_d
 	widget_t * obj = (widget_t *)calloc(1, sizeof(struct s_widget));
 	MEMORY_ALLOC_CHECK_RETURN(obj, NULL);
 
-	area_clear(&obj->dim);
+	area_clear(&obj->configured_dim);
+	area_clear(&obj->absolute_dim);
 
 	obj->creator_instance = report_instance;
 	obj->creator_draw = report_draw;
@@ -54,13 +55,14 @@ widget_t * widget_new(widget_t * parent, void * report_instance, void (*report_d
 	widget_event_install_handler(obj, event_code_interaction_press, default_interaction_event_handler);
 	widget_event_install_handler(obj, event_code_draw, default_draw_event_handler);
 	widget_event_install_handler(obj, event_code_delete, default_delete_event_handler);
+	widget_event_install_handler(obj, event_code_refresh_dim, default_refresh_dim_event_handler);
 
 	obj->pressed = false;
 
 	return obj;
 }
 
-void widget_delete_instance(widget_t * obj)
+void widget_delete_instance_only(widget_t * obj)
 {
 	PTR_CHECK(obj, "widget");
 
@@ -74,7 +76,7 @@ void widget_delete_instance(widget_t * obj)
 	free(obj);
 }
 
-void widget_virtual_delete(widget_t * obj)
+void widget_delete(widget_t * obj)
 {
 	PTR_CHECK(obj, "widget");
 
@@ -84,95 +86,72 @@ void widget_virtual_delete(widget_t * obj)
 	}
 	else
 	{
-		widget_delete_instance(obj);
+		widget_delete_instance_only(obj);
 	}
 }
 
-void widget_delete(widget_t * obj)
-{
-	event_t * deletion_event;
-
-	PTR_CHECK(obj, "widget");
-
-	deletion_event = event_new(event_code_delete, NULL, NULL);
-	PTR_CHECK(deletion_event, "widget");
-
-	widget_event_commit(obj, deletion_event);
-}
-
-void widget_draw(widget_t * obj)
-{
-	event_t * draw_event;
-
-	PTR_CHECK(obj, "widget");
-
-	draw_event = event_new(event_code_draw, NULL, NULL);
-	PTR_CHECK(draw_event, "widget");
-
-	widget_event_commit(obj, draw_event);
-}
-
-void widget_click(widget_t * obj, int x, int y)
-{
-	event_t * interaction_event;
-	interaction_event_data_t data;
-
-	data.interaction_point.x = x;
-	data.interaction_point.y = y;
-
-	PTR_CHECK(obj, "widget");
-
-	interaction_event = event_new(event_code_interaction_click, &data, NULL);
-	PTR_CHECK(interaction_event, "widget");
-
-	widget_event_commit(obj, interaction_event);
-}
-
-void widget_press(widget_t * obj, int x, int y)
-{
-	event_t * interaction_event;
-	interaction_event_data_t data;
-
-	data.interaction_point.x = x;
-	data.interaction_point.y = y;
-
-	PTR_CHECK(obj, "widget");
-
-	interaction_event = event_new(event_code_interaction_press, &data, NULL);
-	PTR_CHECK(interaction_event, "widget");
-
-	widget_event_commit(obj, interaction_event);
-}
-
-void widget_release(widget_t * obj, int x, int y)
-{
-	event_t * interaction_event;
-	interaction_event_data_t data;
-
-	data.interaction_point.x = x;
-	data.interaction_point.y = y;
-
-	PTR_CHECK(obj, "widget");
-
-	interaction_event = event_new(event_code_interaction_release, &data, NULL);
-	PTR_CHECK(interaction_event, "widget");
-
-	widget_event_commit(obj, interaction_event);
-}
-
-area_t * widget_area(widget_t *obj)
+/*const*/ area_t * widget_area(widget_t *obj)
 {
 	PTR_CHECK_RETURN (obj, "widget", NULL);
-	return &obj->dim;
+	return &obj->configured_dim;
 }
 
-void widget_process_click(widget_t * obj)
+void widget_refresh_dim(widget_t * obj)
+{
+	obj->absolute_dim = obj->configured_dim;
+
+	if (widget_parent(obj))
+	{
+		obj->absolute_dim.x += widget_parent(obj)->absolute_dim.x;
+		obj->absolute_dim.y += widget_parent(obj)->absolute_dim.y;
+
+		area_set_intersection(&obj->canvas_dim, &widget_parent(obj)->absolute_dim, &obj->configured_dim);
+	}
+	else
+	{
+		area_set_intersection(&obj->canvas_dim, framebuffer_area(), &obj->configured_dim);
+	}
+}
+
+void widget_set_dim(widget_t *obj, dim_t width, dim_t height)
+{
+	PTR_CHECK(obj, "widget");
+
+	obj->configured_dim.width = width;
+	obj->configured_dim.height = height;
+	widget_refresh_dim(obj);
+	widget_tree_refresh_dimension(obj);
+}
+
+void widget_set_pos(widget_t *obj, dim_t x, dim_t y)
+{
+	PTR_CHECK(obj, "widget");
+
+	obj->configured_dim.x = x;
+	obj->configured_dim.y = y;
+	widget_refresh_dim(obj);
+	widget_tree_refresh_dimension(obj);
+}
+
+void widget_set_area(widget_t *obj, dim_t x, dim_t y, dim_t width, dim_t height)
+{
+	PTR_CHECK(obj, "widget");
+
+	obj->configured_dim.x = x;
+	obj->configured_dim.y = y;
+	obj->configured_dim.width = width;
+	obj->configured_dim.height = height;
+	widget_refresh_dim(obj);
+	widget_tree_refresh_dimension(obj);
+}
+
+void widget_click(widget_t * obj)
 {
 	PTR_CHECK(obj, "widget");
 	signal_emit(obj->click_signal);
 }
 
-void widget_process_release(widget_t * obj)
+void widget_release(widget_t * obj)
 {
 	bool shall_click = false;
 	PTR_CHECK(obj, "widget");
@@ -190,7 +169,7 @@ void widget_process_release(widget_t * obj)
 		signal_emit(obj->click_signal);
 }
 
-void widget_process_press(widget_t * obj)
+void widget_press(widget_t * obj)
 {
 	PTR_CHECK(obj, "widget");
 
@@ -199,7 +178,7 @@ void widget_process_press(widget_t * obj)
 	signal_emit(obj->press_signal);
 }
 
-void widget_process_draw(widget_t * obj)
+void widget_draw(widget_t * obj)
 {
 	PTR_CHECK(obj, "widget");
 

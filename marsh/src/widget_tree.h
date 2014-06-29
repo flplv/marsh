@@ -34,4 +34,15 @@ widget_t * widget_last(widget_t * sibling);
 widget_t * widget_last_child(widget_t * parent);
 size_t widget_num_of_children(const widget_t * parent);
 
+/* This method delete a widget, its creator, and all tree behind it, including the
+ * creator of each node. It creates and deletion event that propagates to obj and its
+ * children calling widget_delete for each. */
+void widget_tree_delete(widget_t * obj);
+
+void widget_tree_draw(widget_t *);
+void widget_tree_press(widget_t *, int x, int y);
+void widget_tree_release(widget_t *, int x, int y);
+void widget_tree_click(widget_t *, int x, int y);
+void widget_tree_refresh_dimension(widget_t *);
+
 #endif

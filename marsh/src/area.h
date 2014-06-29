@@ -34,10 +34,15 @@ void area_set_start_point(area_t * area, point_t point);
 void area_set_start_xy(area_t * area, dim_t x, dim_t y);
 void area_set_size(area_t * area, dim_t width, dim_t height);
 
-point_t area_start_point(area_t * area);
-point_t area_end_point(area_t * area);
+point_t area_start_point(const area_t * area);
+point_t area_end_point(const area_t * area);
+point_t area_start_point_abs(const area_t * area); //Always start point < end point, remove negative width or height impact.
+point_t area_end_point_abs(const area_t * area);   //Always start point < end point, remove negative width or height impact.
 
-dim_t area_value(area_t * area);
+bool area_intersects(const area_t * first, const area_t * second);
+void area_set_intersection(area_t *tgt, const area_t * first, const area_t * second);
+
+dim_t area_value(const area_t * area);
 
 bool area_contains_point(const area_t * area, point_t point);
 

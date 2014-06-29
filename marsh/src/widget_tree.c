@@ -21,6 +21,7 @@
 
 #include "widget_private.h"
 #include "widget_tree.h"
+#include "event.h"
 
 /*
  * TODO Add the non recursive widget_tree traversal system, to override
@@ -140,4 +141,89 @@ size_t widget_num_of_children(const widget_t * parent)
 	}
 
 	return n;
+}
+
+void widget_tree_delete(widget_t * obj)
+{
+	event_t * deletion_event;
+
+	PTR_CHECK(obj, "widget");
+
+	deletion_event = event_new(event_code_delete, NULL, NULL);
+	PTR_CHECK(deletion_event, "widget");
+
+	widget_event_emit(obj, deletion_event);
+}
+
+
+void widget_tree_draw(widget_t * obj)
+{
+	event_t * draw_event;
+
+	PTR_CHECK(obj, "widget");
+
+	draw_event = event_new(event_code_draw, NULL, NULL);
+	PTR_CHECK(draw_event, "widget");
+
+	widget_event_emit(obj, draw_event);
+}
+
+void widget_tree_click(widget_t * obj, int x, int y)
+{
+	event_t * interaction_event;
+	interaction_event_data_t data;
+
+	data.interaction_point.x = x;
+	data.interaction_point.y = y;
+
+	PTR_CHECK(obj, "widget");
+
+	interaction_event = event_new(event_code_interaction_click, &data, NULL);
+	PTR_CHECK(interaction_event, "widget");
+
+	widget_event_emit(obj, interaction_event);
+}
+
+void widget_tree_press(widget_t * obj, int x, int y)
+{
+	event_t * interaction_event;
+	interaction_event_data_t data;
+
+	data.interaction_point.x = x;
+	data.interaction_point.y = y;
+
+	PTR_CHECK(obj, "widget");
+
+	interaction_event = event_new(event_code_interaction_press, &data, NULL);
+	PTR_CHECK(interaction_event, "widget");
+
+	widget_event_emit(obj, interaction_event);
+}
+
+void widget_tree_release(widget_t * obj, int x, int y)
+{
+	event_t * interaction_event;
+	interaction_event_data_t data;
+
+	data.interaction_point.x = x;
+	data.interaction_point.y = y;
+
+	PTR_CHECK(obj, "widget");
+
+	interaction_event = event_new(event_code_interaction_release, &data, NULL);
+	PTR_CHECK(interaction_event, "widget");
+
+	widget_event_emit(obj, interaction_event);
+}
+
+void widget_tree_refresh_dimension(widget_t * obj)
+{
+	event_t * event;
+
+	PTR_CHECK(obj, "widget");
+
+	event = event_new(event_code_refresh_dim, NULL, NULL);
+	PTR_CHECK(event, "widget");
+
+	widget_event_emit(obj, event);
 }

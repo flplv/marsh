@@ -29,12 +29,13 @@
 
 /* TODO: Stopped here: recreate the interaction engine inside widget
  * Redesign of the event propagation and the position system is necessary.
- *  1) It is not smart to propagate point_t events to child of widgets that doesn't contain the point;
- *  1.1) On the event system, maybe instead press, push, pull, use a generic event called interaction.
- *  1.2) Each event shall have a propagation check function plus the handler function.
+ *  1) It is not smart to propagate point_t events to child of widgets that doesn't contain the point; -DONE
+ *  1.1) On the event system, maybe instead press, push, pull, use a generic event called interaction. -DONE
+ *  1.2) Each event shall have a propagation check function plus the handler function. -DONE
  *
- *  2) The positioning system has to be redone using parent's position as reference.
- *  2.1) A parent's widget area must contain its children's
+ *  2) The positioning system has to be redone using parent's position as reference. - DONE
+ *  2.1) A parent's widget area must contain its children's                                       XXX <--
+ *       - The relative positioning system is done, now it must be used by the drawing functions. XXX <--
  */
 
 static bool code_is_interaction(event_code_t code)
@@ -82,11 +83,11 @@ static void default_interaction_event_consume(widget_t * widget, event_t * event
 	code = event_code(event);
 
 	if (code == event_code_interaction_click)
-		widget_process_click(widget);
+		widget_click(widget);
 	else if (code == event_code_interaction_press)
-		widget_process_press(widget);
+		widget_press(widget);
 	else if (code == event_code_interaction_release)
-		widget_process_release(widget);
+		widget_release(widget);
 }
 
 enum e_widget_event_handler_result
@@ -139,7 +140,7 @@ default_delete_event_handler(widget_t * widget, event_t * event)
 		return widget_event_not_consumed;
 	}
 
-	widget_virtual_delete(widget);
+	widget_delete(widget);
 
 	return widget_event_consumed;
 }
@@ -158,7 +159,24 @@ default_draw_event_handler(widget_t * widget, event_t * event)
 		return widget_event_not_consumed;
 	}
 
-	widget_process_draw(widget);
+	widget_draw(widget);
+
+	return widget_event_consumed;
+}
+
+enum e_widget_event_handler_result
+default_refresh_dim_event_handler(widget_t * widget, event_t * event)
+{
+	PTR_CHECK_RETURN(widget, __FUNCTION__, widget_event_not_consumed);
+	PTR_CHECK_RETURN(event, __FUNCTION__, widget_event_not_consumed);
+
+	if (event_code(event) != event_code_refresh_dim)
+	{
+		LOG_ERROR(__FUNCTION__, "Received invalid event.");
+		return widget_event_not_consumed;
+	}
+
+	widget_refresh_dim(widget);
 
 	return widget_event_consumed;
 }

@@ -140,7 +140,7 @@ void rectangle_delete(rectangle_t * const obj)
 	PTR_CHECK(obj, "rectangle");
 
 	my_log_delete(obj->log);
-	widget_delete_instance(obj->glyph);
+	widget_delete_instance_only(obj->glyph);
 
 	free(obj);
 }
