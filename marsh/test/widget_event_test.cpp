@@ -67,10 +67,8 @@ TEST(widget_event, consume)
 	widget_t * wid = widget_new(NULL, NULL, NULL, NULL);
 	widget_new(wid, NULL, NULL, NULL);
 
-	widget_area(wid)->width = 10;
-	widget_area(wid)->height = 10;
-	widget_area(widget_child(wid))->width = 10;
-	widget_area(widget_child(wid))->height = 10;
+	widget_set_dim(wid, 10, 10);
+	widget_set_dim(widget_child(wid), 10, 10);
 
 	widget_event_install_handler(widget_child(wid), event_code_interaction_click, consume_handler);
 

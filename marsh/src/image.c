@@ -61,7 +61,7 @@ static void draw(image_t * obj)
 		return;
 	}
 
-	canvas_t *canv = canvas_new(widget_area(obj->glyph));
+	canvas_t *canv = canvas_new(widget_canvas_area(obj->glyph));
 
 	if (obj->bitmap->bitmap_data_width == BITMAP_BUFFER_16BPP)
 	{
@@ -101,7 +101,7 @@ static void set_size(image_t * obj, dim_t width, dim_t height)
 {
 	PTR_CHECK(obj, "image");
 
-	area_set_size(widget_area(obj->glyph), width, height);
+	widget_set_dim(obj->glyph, width, height);
 }
 
 static bool is_bitmap_image(bitmap_t* bitmap)
@@ -130,7 +130,7 @@ void image_set_position(image_t * obj, dim_t x, dim_t y)
 {
 	PTR_CHECK(obj, "image");
 
-	area_set_start_xy(widget_area(obj->glyph), x, y);
+	widget_set_pos(obj->glyph, x, y);
 }
 
 widget_t *image_get_widget(image_t * const obj)

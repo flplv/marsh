@@ -27,6 +27,14 @@
 #include "canvas_private.h"
 #include "color.h"
 
+#define CANVAS_START_RECT(__canvas, __x, __y, __to) pixel_t *__to = __canvas->tgt_memory_start + __x + __y * __canvas->line_incrementation_width
+#define CANVAS_START_BITMAP(__canvas, __x, __y, __to) pixel_t *__to = __canvas->tgt_memory_start + __x + __y * __canvas->line_incrementation_width
+#define CANVAS_START_CIRC_CENTER_RADIUS(__canvas, __xc, __yc, __r, __to) \
+	pixel_t *__to = __canvas->tgt_memory_start + __xc-__r + (__yc-__r) * __canvas->width
+#define CANVAS_TO(__canvas, __x, __y) ((__canvas)->tgt_memory_start + (__x) + ((__y) * (__canvas)->line_incrementation_width))
+#define CANVAS_GO_DOWN(__canvas, __to, __amount) to += (__amount) * __canvas->line_incrementation_width
+#define CANVAS_GO_LEFT(__canvas, __to, __amount) to -= __amount
+
 enum circle_arcs
 {
 	CIRCLE_NONE = 0,

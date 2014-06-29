@@ -25,10 +25,13 @@
 #include "types.h"
 
 canvas_t * canvas_new_fullscreen(void);
-canvas_t * canvas_new(area_t *);
+canvas_t * canvas_new_scratchpad(void);
+canvas_t * canvas_new(const area_t *);
 
 size_t canvas_get_width(const canvas_t *canv);
+bool canvas_scratchpad(const canvas_t *canv);
 
 void canvas_delete(canvas_t *);
+void canvas_delete_scratchpad(void)  __attribute__((destructor));
 
 #endif /* CANVASLEGACY_H_ */

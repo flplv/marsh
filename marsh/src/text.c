@@ -87,7 +87,7 @@ static void update_position_and_size(text_t *obj)
 
 	width = font_string_width(obj->font, obj->string);
 	height = font_string_height(obj->font, obj->string);
-	area_set_size(widget_area(obj->glyph), width, height);
+	widget_set_dim(obj->glyph, width, height);
 
 	y = obj->ref_y;
 
@@ -108,7 +108,7 @@ static void update_position_and_size(text_t *obj)
 		LOG_ERROR("text", "Invalid Justification");
 	}
 
-	area_set_start_xy(widget_area(obj->glyph), x, y);
+	widget_set_pos(obj->glyph, x, y);
 }
 
 static void string_changed(text_t* obj)
@@ -137,7 +137,7 @@ static void text_draw(text_t * obj)
 		return;
 	}
 
-	canv = canvas_new(widget_area(obj->glyph));
+	canv = canvas_new(widget_canvas_area(obj->glyph));
 
 	if (obj->just == TEXT_LEFT_JUST)
 		font_draw_left_just(obj->font, obj->string, color_to_pixel(obj->color), canv);

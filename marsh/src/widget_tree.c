@@ -218,12 +218,19 @@ void widget_tree_release(widget_t * obj, int x, int y)
 
 void widget_tree_refresh_dimension(widget_t * obj)
 {
-	event_t * event;
-
 	PTR_CHECK(obj, "widget");
 
-	event = event_new(event_code_refresh_dim, NULL, NULL);
-	PTR_CHECK(event, "widget");
+	if (!widget_child(obj))
+	{
+		widget_refresh_dim(obj);
+	}
+	else
+	{
+		event_t * event;
 
-	widget_event_emit(obj, event);
+		event = event_new(event_code_refresh_dim, NULL, NULL);
+		PTR_CHECK(event, "widget");
+
+		widget_event_emit(obj, event);
+	}
 }

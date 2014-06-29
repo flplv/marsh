@@ -19,33 +19,33 @@
  *  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef AREA_H_
-#define AREA_H_
+extern "C" {
+#include <string.h>
+#include "canvas.h"
+#include "canvas_private.h"
+}
 
-#include "types.h"
+#include "mocks/terminal_intercepter.h"
 
-void point_clear(point_t *tgt);
-void point_set(point_t * tgt, dim_t x, dim_t y);
+#include "CppUTest/TestHarness.h"
+#include "CppUTest/MemoryLeakDetector.h"
 
-void area_clear(area_t *tgt);
-void area_clear(area_t* tgt);
-void area_set(area_t * area, dim_t x, dim_t y, dim_t width, dim_t height);
-void area_set_start_point(area_t * area, point_t point);
-void area_set_start_xy(area_t * area, dim_t x, dim_t y);
-void area_set_size(area_t * area, dim_t width, dim_t height);
+TEST_GROUP(canvas)
+{
+	void setup()
+	{
+	}
 
-point_t area_start_point(const area_t * area);
-point_t area_end_point(const area_t * area);
-point_t area_start_point_abs(const area_t * area); //Always start point < end point, remove negative width or height impact.
-point_t area_end_point_abs(const area_t * area);   //Always start point < end point, remove negative width or height impact.
+	void teardown()
+	{
+	}
+};
 
-bool area_intersects(const area_t * first, const area_t * second);
-void area_set_intersection(area_t *tgt, const area_t * first, const area_t * second);
+TEST(canvas, scratchpad)
+{
+	canvas_t * canv;
+	canv = canvas_new_scratchpad();
 
-dim_t area_value(const area_t * area);
-
-bool area_contains_point(const area_t * area, point_t point);
-
-bool area_same(const area_t * first, const area_t * second);
-
-#endif /* AREA_H_ */
+	canvas_delete(canv);
+	canvas_delete_scratchpad();
+}

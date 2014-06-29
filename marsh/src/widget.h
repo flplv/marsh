@@ -64,7 +64,10 @@ void widget_delete(widget_t * obj);
 void widget_set_dim(widget_t *, dim_t width, dim_t height);
 void widget_set_pos(widget_t *, dim_t x, dim_t y);
 void widget_set_area(widget_t *, dim_t x, dim_t y, dim_t width, dim_t height);
-/*const */area_t * widget_area(widget_t *);
+const area_t * widget_area(const widget_t *);
+const area_t * widget_canvas_area(const widget_t *);
+bool widget_canvas_cropped(const widget_t * obj);
+
 void widget_refresh_dim(widget_t * obj);
 
 void widget_click(widget_t * obj);

@@ -71,7 +71,7 @@ static void abstract_delete(void * obj)
 
 static void decode_and_draw(rectangle_t* obj)
 {
-	canvas_t *canv = canvas_new(widget_area(obj->glyph));
+	canvas_t * canv = canvas_new(widget_canvas_area(obj->glyph));
 
 	if (obj->corner_radius)
 	{
@@ -149,14 +149,14 @@ void rectangle_set_size(rectangle_t * const obj, dim_t width, dim_t height)
 {
 	PTR_CHECK(obj, "rectangle");
 
-	area_set_size(widget_area(obj->glyph), width, height);
+	widget_set_dim(obj->glyph, width, height);
 }
 
 void rectangle_set_position(rectangle_t * const obj, dim_t x, dim_t y)
 {
 	PTR_CHECK(obj, "rectangle");
 
-	area_set_start_xy(widget_area(obj->glyph), x, y);
+	widget_set_pos(obj->glyph, x, y);
 }
 
 void rectangle_set_fill_color_html(rectangle_t * const obj, const char *html_color_code)

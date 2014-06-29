@@ -29,13 +29,37 @@
 #include "types.h"
 #include <math.h>
 
+/* TODO: Add/fix the negative position or dimension on the canvas, drawing function and widget system.
+ *       1. Canvas should hide the scratch_pad from client, and manage if it uses the fb directly or a scratch pad.
+ *       2. Clients writes (or use a writing function) to write to the canvas memory transparently.
+ *       3. At the end, client inform canvas it has finished writing and canvas copies the scratch to the fb if necessary.
+ *
+ *       Issue to be resolved:
+ *        - a writing function will be need to set a single pixel instead of writing the pixel right to the memory, this is not optimized,
+ *          a better memory writing scheme must be designed, with the same cost as writing directly to memory and transparent to client,
+ *          allowing canvas to change the pixel writing order (top-down, bot-up, etc.) accordingly to negative dimensions.
+ *
+ *          Solution 1.:
+ *            Clients always write to the scratch pad without line breaks, canvas copy the scratch pad to the fb considering line breaks and painting directions.
+ *            Pros: simple interface
+ *            Cons: double copy to set a pixel on the screen.
+ */
 
-canvas_t* canvas_new_fullscreen()
+static pixel_t * scratch_pad = NULL;
+
+void canvas_delete_scratchpad()
 {
-	canvas_t * canv = (canvas_t*)calloc(1, sizeof(struct s_canvas));
+	if (scratch_pad)
+		free(scratch_pad);
+	scratch_pad = NULL;
+}
+
+canvas_t * canvas_new_fullscreen()
+{
+	canvas_t * canv = (canvas_t *)calloc(1, sizeof(struct s_canvas));
 	MEMORY_ALLOC_CHECK_RETURN(canv, NULL);
 
-	canv->memory_start = framebuffer_start();
+	canv->tgt_memory_start = framebuffer_start();
 	canv->height = framebuffer_height();
 	canv->width = framebuffer_width();
 	canv->line_incrementation_width = framebuffer_width();
@@ -43,12 +67,12 @@ canvas_t* canvas_new_fullscreen()
 	return canv;
 }
 
-canvas_t* canvas_new(area_t * area)
+canvas_t * canvas_new(const area_t * area)
 {
-	canvas_t * canv = (canvas_t*)calloc(1, sizeof(struct s_canvas));
+	canvas_t * canv = (canvas_t *)calloc(1, sizeof(struct s_canvas));
 	MEMORY_ALLOC_CHECK_RETURN(canv, NULL);
 
-	canv->memory_start = framebuffer_at(area->x, area->y);
+	canv->tgt_memory_start = framebuffer_at(area->x, area->y);
 	canv->height = area->height;
 	canv->width = area->width;
 	canv->line_incrementation_width = framebuffer_width();
@@ -56,15 +80,30 @@ canvas_t* canvas_new(area_t * area)
 	return canv;
 }
 
-canvas_t * canvas_new_sub_canvas(canvas_t* canv, size_t x, size_t y, size_t width, size_t height)
+canvas_t * canvas_new_scratchpad()
+{
+	canvas_t * canv = canvas_new_fullscreen();
+	PTR_CHECK_RETURN(canv, "canvas", NULL);
+
+	if (scratch_pad == NULL)
+	{
+		scratch_pad = (typeof(scratch_pad))malloc(framebuffer_width() * framebuffer_height() * sizeof(*scratch_pad));
+	}
+
+	canv->tgt_memory_start = scratch_pad;
+
+	return canv;
+}
+
+canvas_t * canvas_new_sub_canvas(canvas_t * canv, size_t x, size_t y, size_t width, size_t height)
 {
 	canvas_t *sub_canvas;
 	PTR_CHECK_RETURN(canv, "canvas", NULL);
 
-	sub_canvas = (canvas_t*)calloc(1, sizeof(struct s_canvas));
+	sub_canvas = (canvas_t *)calloc(1, sizeof(struct s_canvas));
 	MEMORY_ALLOC_CHECK_RETURN(sub_canvas, NULL);
 
-	sub_canvas->memory_start = canv->memory_start + x + y * canv->line_incrementation_width;
+	sub_canvas->tgt_memory_start = canv->tgt_memory_start + x + y * canv->line_incrementation_width;
 	sub_canvas->height = height;
 	sub_canvas->width = width;
 	sub_canvas->line_incrementation_width = canv->line_incrementation_width;
@@ -84,3 +123,13 @@ size_t canvas_get_width(const canvas_t *canv)
 	return canv->width;
 }
 
+bool canvas_scratchpad(const canvas_t *canv)
+{
+	if (scratch_pad == NULL)
+		return false;
+
+	if (scratch_pad != canv->tgt_memory_start)
+		return false;
+
+	return true;
+}

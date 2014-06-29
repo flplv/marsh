@@ -61,11 +61,13 @@ TEST(area, compare)
 	area_set(&b, 0, 0, 100, 100);
 
 	CHECK_TRUE(memcmp(&a, &b, sizeof(a)) == 0);
+	CHECK_TRUE(area_same(&a, &b));
 
 	area_set(&a, 0, 0, 100, 100);
 	area_set(&b, 10, 10, 80, 80);
 
 	CHECK_FALSE(memcmp(&a, &b, sizeof(a)) == 0);
+	CHECK_FALSE(area_same(&a, &b));
 }
 
 TEST(area, negative)

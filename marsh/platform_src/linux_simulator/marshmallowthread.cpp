@@ -108,8 +108,7 @@ void *marshmallow_thread::thread_handler(marshmallow_thread* self)
 
 	widget_t *screen;
 	screen = widget_new(NULL, NULL, NULL, NULL);
-	widget_area(screen)->width = 800;
-	widget_area(screen)->height = 480;
+	widget_set_area(screen, 0, 0, 800, 480);
 
 	rectangle_t *bg = rectangle_new(screen);
 	rectangle_set_fill_color_html(bg, "#004000");

@@ -62,7 +62,7 @@ static void draw(icon_t * obj)
 		return;
 	}
 
-	canvas_t *canv = canvas_new(widget_area(obj->glyph));
+	canvas_t *canv = canvas_new(widget_canvas_area(obj->glyph));
 
 	if (obj->bitmap->bitmap_data_width == BITMAP_BUFFER_8BPP)
 	{
@@ -103,7 +103,7 @@ static void set_size(icon_t * obj, dim_t width, dim_t height)
 {
 	PTR_CHECK(obj, "icon");
 
-	area_set_size(widget_area(obj->glyph), width, height);
+	widget_set_dim(obj->glyph, width, height);
 }
 
 static bool is_bitmap_icon(bitmap_t* bitmap)
@@ -135,7 +135,7 @@ void icon_set_position(icon_t * obj, dim_t x, dim_t y)
 {
 	PTR_CHECK(obj, "icon");
 
-	area_set_start_xy(widget_area(obj->glyph), x, y);
+	widget_set_pos(obj->glyph, x, y);
 }
 
 void icon_set_color_html(icon_t * obj, const char *html_color_code)

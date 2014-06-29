@@ -147,8 +147,8 @@ void area_set_intersection(area_t *tgt, const area_t * first, const area_t * sec
         area_set(tgt,
         		get_bigger(first->x, second->x),
         		get_bigger(first->y, second->y),
-        		get_smaller(area_end_point(first).x, area_end_point(second).x),
-        		get_smaller(area_end_point(first).y, area_end_point(second).y));
+        		get_smaller(area_end_point(first).x, area_end_point(second).x) - get_bigger(first->x, second->x),
+        		get_smaller(area_end_point(first).y, area_end_point(second).y) - get_bigger(first->y, second->y));
     }
     else
     {
@@ -179,4 +179,12 @@ bool area_contains_point(const area_t * area, point_t point)
 		return false;
 
 	return true;
+}
+
+bool area_same(const area_t * first, const area_t * second)
+{
+	if (memcmp(first, second, sizeof(*first)) == 0)
+		return true;
+
+	return false;
 }

@@ -36,8 +36,9 @@ widget_t * widget_new(widget_t * parent, void * report_instance, void (*report_d
 	widget_t * obj = (widget_t *)calloc(1, sizeof(struct s_widget));
 	MEMORY_ALLOC_CHECK_RETURN(obj, NULL);
 
-	area_clear(&obj->configured_dim);
+	area_clear(&obj->configured_area);
 	area_clear(&obj->absolute_dim);
+	area_clear(&obj->canvas_area);
 
 	obj->creator_instance = report_instance;
 	obj->creator_draw = report_draw;
@@ -90,26 +91,40 @@ void widget_delete(widget_t * obj)
 	}
 }
 
-/*const*/ area_t * widget_area(widget_t *obj)
+const area_t * widget_area(const widget_t *obj)
 {
 	PTR_CHECK_RETURN (obj, "widget", NULL);
-	return &obj->configured_dim;
+	return &obj->configured_area;
+}
+
+const area_t * widget_canvas_area(const widget_t *obj)
+{
+	PTR_CHECK_RETURN (obj, "widget", NULL);
+	return &obj->canvas_area;
+}
+
+bool widget_canvas_cropped(const widget_t * obj)
+{
+	if (area_same(&obj->absolute_dim, &obj->canvas_area))
+		return false;
+
+	return true;
 }
 
 void widget_refresh_dim(widget_t * obj)
 {
-	obj->absolute_dim = obj->configured_dim;
+	obj->absolute_dim = obj->configured_area;
 
 	if (widget_parent(obj))
 	{
 		obj->absolute_dim.x += widget_parent(obj)->absolute_dim.x;
 		obj->absolute_dim.y += widget_parent(obj)->absolute_dim.y;
 
-		area_set_intersection(&obj->canvas_dim, &widget_parent(obj)->absolute_dim, &obj->configured_dim);
+		area_set_intersection(&obj->canvas_area, &widget_parent(obj)->absolute_dim, &obj->absolute_dim);
 	}
 	else
 	{
-		area_set_intersection(&obj->canvas_dim, framebuffer_area(), &obj->configured_dim);
+		area_set_intersection(&obj->canvas_area, framebuffer_area(), &obj->configured_area);
 	}
 }
 
@@ -117,8 +132,8 @@ void widget_set_dim(widget_t *obj, dim_t width, dim_t height)
 {
 	PTR_CHECK(obj, "widget");
 
-	obj->configured_dim.width = width;
-	obj->configured_dim.height = height;
+	obj->configured_area.width = width;
+	obj->configured_area.height = height;
 	widget_refresh_dim(obj);
 	widget_tree_refresh_dimension(obj);
 }
@@ -127,8 +142,8 @@ void widget_set_pos(widget_t *obj, dim_t x, dim_t y)
 {
 	PTR_CHECK(obj, "widget");
 
-	obj->configured_dim.x = x;
-	obj->configured_dim.y = y;
+	obj->configured_area.x = x;
+	obj->configured_area.y = y;
 	widget_refresh_dim(obj);
 	widget_tree_refresh_dimension(obj);
 }
@@ -137,10 +152,10 @@ void widget_set_area(widget_t *obj, dim_t x, dim_t y, dim_t width, dim_t height)
 {
 	PTR_CHECK(obj, "widget");
 
-	obj->configured_dim.x = x;
-	obj->configured_dim.y = y;
-	obj->configured_dim.width = width;
-	obj->configured_dim.height = height;
+	obj->configured_area.x = x;
+	obj->configured_area.y = y;
+	obj->configured_area.width = width;
+	obj->configured_area.height = height;
 	widget_refresh_dim(obj);
 	widget_tree_refresh_dimension(obj);
 }

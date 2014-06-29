@@ -48,9 +48,9 @@ typedef struct s_widget_event_handler_node widget_event_handler_t;
 
 struct s_widget
 {
-	area_t configured_dim; // Client inputed dimension, relative to parent.
+	area_t configured_area; // Client inputed dimension, relative to parent.
 	area_t absolute_dim;   // Real absolute dimension, relative to the screen.
-	area_t canvas_dim;     // Canvas area used for drawing.
+	area_t canvas_area;     // Canvas area used for drawing.
 	signal_t * click_signal;
 	signal_t * press_signal;
 	signal_t * release_signal;
