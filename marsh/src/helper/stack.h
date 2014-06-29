@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2013 by Felipe Lavratti
+ *  Copyright (C) 2013 to 2014 by Felipe Lavratti
  *
  *  Permission is hereby granted, free of charge, to any person obtaining a copy of
  *  this software and associated documentation files (the "Software"), to deal in the
