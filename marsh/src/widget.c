@@ -179,7 +179,16 @@ void widget_release(widget_t * obj)
 
 	signal_emit(obj->release_signal);
 
-	/* TODO: Create advanced click algorithm, do deal with false releases. */
+	/* TODO: Create advanced click algorithm, do deal with false releases.
+	 * Design suggestion:
+	 *  Create a list of clicked widgets, those are reported when an release
+	 *  happens. It doesn't make sense to emit an event through the tree
+	 *  for a release, since only clicked widgets should respond to the release
+	 *  event.
+	 *  The linked list should be a separated module called widget_clicked_list.
+	 *    widtget_clicked_list is a singleton type module.
+	 *  */
+
 	if (shall_click)
 		signal_emit(obj->click_signal);
 }

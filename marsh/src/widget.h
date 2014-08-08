@@ -54,11 +54,10 @@ void widget_delete(widget_t * obj);
 
 
 /*
- * TODO: Change the widget pattern from polymorphism to decorator. This way all this deletion mass
- * will be gone.
+ * TODO: Change the widget pattern from polymorphism to decorator.
  * I.e.: instead a image class contain a widget, a widget will contain a decorator,
- * that is the image class itself.
- * Maybe decored is not the right pattern yet, further research in this subject is needed.
+ * the image class itself, that will decorate widget's behavior.
+ * Maybe decoration is not the right pattern yet, further research in this subject is needed.
  */
 
 void widget_set_dim(widget_t *, dim_t width, dim_t height);

@@ -25,7 +25,7 @@
 
 /*
  * TODO Add the non recursive widget_tree traversal system, to override
- * recursiveness found on widget deletion and event propagation.
+ * recursiveness found on event propagation.
  */
 
 void widget_tree_register(widget_t * self, widget_t * parent)

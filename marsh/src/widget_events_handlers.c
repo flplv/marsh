@@ -33,10 +33,12 @@
  *  1.1) On the event system, maybe instead press, push, pull, use a generic event called interaction. -DONE
  *  1.2) Each event shall have a propagation check function plus the handler function. -DONE
  *
- *  2) The positioning system has to be redone using parent's position as reference. - DONE
- *  2.1) A parent's widget area must contain its children's                                       XXX <--
- *       - The relative positioning system is done, now it must be used by the drawing functions. XXX <--
- *       - Check canvas.c TODO comments.
+ *  2) The positioning system has to be redone using parent's position as reference. -DONE
+ *  2.1) A parent's widget area must contain its children's                                       -DONE
+ *       - The relative positioning system is done, now it must be used by the drawing functions. -DONE
+ *       - Check canvas.c comments.
+ *
+ *  3) Test the interaction engine.
  */
 
 static bool code_is_interaction(event_code_t code)
