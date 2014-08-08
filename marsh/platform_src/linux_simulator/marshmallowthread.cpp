@@ -61,9 +61,14 @@ marshmallow_thread::marshmallow_thread()
 	p = new struct marshmallow_thread_private;
 	p->thread_running = true;
 
-    pthread_mutex_init(&p->thread_mutex, NULL);
+	pthread_mutexattr_t mutex_attr;
+
+	pthread_mutexattr_init(&mutex_attr);
+	pthread_mutexattr_settype(&mutex_attr, PTHREAD_MUTEX_ERRORCHECK);
+    pthread_mutex_init(&p->thread_mutex, &mutex_attr);
     pthread_cond_init(&p->thread_cond, NULL);
     pthread_create(&p->thread_id, NULL, (void*(*)(void*))marshmallow_thread::thread_handler, this);
+    pthread_mutexattr_destroy(&mutex_attr);
 }
 
 marshmallow_thread::~marshmallow_thread()
@@ -77,7 +82,8 @@ marshmallow_thread::~marshmallow_thread()
 
 void marshmallow_thread::press(int x, int y)
 {
-	pthread_mutex_lock(&p->thread_mutex);
+	if (pthread_mutex_lock(&p->thread_mutex) < 0)
+		perror("Deadlock at mutex?");
 
 	p->interaction.x = x;
 	p->interaction.y = y;
@@ -90,7 +96,8 @@ void marshmallow_thread::press(int x, int y)
 
 void marshmallow_thread::release(int x, int y)
 {
-	pthread_mutex_lock(&p->thread_mutex);
+	if (pthread_mutex_lock(&p->thread_mutex) < 0)
+		perror("Deadlock at mutex?");
 
 	p->interaction.x = x;
 	p->interaction.y = y;
