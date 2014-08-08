@@ -32,12 +32,12 @@ TEST_GROUP(Framebuffer)
 	pixel_t *fbPtr1, *fbPtr2;
 	void setup()
 	{
-		framebuffer_new();
+		framebuffer_init();
 	}
 
 	void teardown()
 	{
-		framebuffer_delete();
+		framebuffer_deinit();
 	}
 };
 

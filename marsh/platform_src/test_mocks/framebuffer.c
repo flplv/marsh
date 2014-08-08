@@ -40,7 +40,7 @@ static bool _fb_not_initd(void)
 		return false;
 }
 
-void framebuffer_new()
+void framebuffer_init()
 {
 	if (!_fb_not_initd())
 		free(pFb);
@@ -48,7 +48,7 @@ void framebuffer_new()
 	pFb = (pixel_t *) calloc(FRAMEBUFFER_HEIGHT * FRAMEBUFFER_WIDTH, sizeof(pixel_t));
 }
 
-void framebuffer_delete()
+void framebuffer_deinit()
 {
 	if (_fb_not_initd())
 		return;

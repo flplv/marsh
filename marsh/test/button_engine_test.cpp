@@ -74,13 +74,13 @@ extern "C" {
 //	button_engine_set_action_normal_state(cut, rectangle_get_widget(normal));
 //	button_engine_set_action_onpress_state(cut, rectangle_get_widget(onpress));
 //
-//	framebuffer_new();
+//	framebuffer_init();
 //
 //	ENABLE_INTERCEPTION;
 //	widget_tree_draw(button_engine_get_widget(cut));
 //	STRCMP_CONTAINS("No Logic selected", intercepted_output[0]);
 //
-//	framebuffer_delete();
+//	framebuffer_deinit();
 //
 //	rectangle_delete(normal);
 //	rectangle_delete(onpress);
@@ -113,7 +113,7 @@ extern "C" {
 //	button_engine_set_action_normal_state(cut, rectangle_get_widget(normal));
 //	button_engine_set_action_onpress_state(cut, rectangle_get_widget(onpress));
 //
-//	framebuffer_new();
+//	framebuffer_init();
 //
 //	CHECK_EQUAL(0x0000, *framebuffer_at(10, 10));
 //	button_engine_select_action_logic(cut);
@@ -128,7 +128,7 @@ extern "C" {
 ////	interaction_engine_click(widget_get_interaction_engine(button_engine_get_widget(cut)));
 //	CHECK_TRUE(action_called);
 //
-//	framebuffer_delete();
+//	framebuffer_deinit();
 //
 //	rectangle_delete(normal);
 //	rectangle_delete(onpress);
@@ -166,7 +166,7 @@ extern "C" {
 //
 //	button_engine_select_toggle_logic(cut);
 //
-//	framebuffer_new();
+//	framebuffer_init();
 //	CHECK_EQUAL(0x0000, *framebuffer_at(10, 10));
 //
 //	widget_tree_draw(button_engine_get_widget(cut));
@@ -191,7 +191,7 @@ extern "C" {
 //	CHECK_EQUAL(color_to_pixel(color_html("#800000")), *framebuffer_at(10, 10));
 //
 //
-//	framebuffer_delete();
+//	framebuffer_deinit();
 //
 //	rectangle_delete(on);
 //	rectangle_delete(off);

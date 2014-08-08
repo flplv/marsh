@@ -103,7 +103,7 @@ void marshmallow_thread::release(int x, int y)
 
 void *marshmallow_thread::thread_handler(marshmallow_thread* self)
 {
-	framebuffer_new();
+	framebuffer_init();
 	event_pool_init();
 
 	widget_t *screen;
@@ -130,7 +130,6 @@ void *marshmallow_thread::thread_handler(marshmallow_thread* self)
 	rectangle_set_position(obj3, 100, 100);
 	rectangle_set_size(obj3, 100, 100);
 	rectangle_set_fill_color_html(obj3, "#000080");
-
 
 	rectangle_t *rounded, *square_border, *rounded_border, *frame, *rounded_frame;
 	rounded = rectangle_new(rectangle_get_widget(bg));
@@ -246,7 +245,7 @@ void *marshmallow_thread::thread_handler(marshmallow_thread* self)
 	text_delete(txt3);
 
 	event_pool_deinit();
-	framebuffer_delete();
+	framebuffer_deinit();
 
 	return NULL;
 }

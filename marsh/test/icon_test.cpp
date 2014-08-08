@@ -43,7 +43,7 @@ TEST_GROUP(icon)
 	void setup()
 	{
 		marshmallow_terminal_output = output_intercepter;
-		framebuffer_new();
+		framebuffer_init();
 		event_pool_init();
 		cut = icon_new(NULL);
 	}
@@ -52,7 +52,7 @@ TEST_GROUP(icon)
 	{
 		icon_delete(cut);
 		event_pool_deinit();
-		framebuffer_delete();
+		framebuffer_deinit();
 		marshmallow_terminal_output = _stdout_output_impl;
 	}
 };

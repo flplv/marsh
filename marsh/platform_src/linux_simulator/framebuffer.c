@@ -30,11 +30,11 @@ extern char * pVirtFb;
 #define PIXEL_PTR_LINE_INCREMENT_VAL   FRAMEBUFFER_WIDTH
 #define PIXEL_PTR_PIXEL_INCREMENT_VAL  1UL
 
-void framebuffer_new()
+void framebuffer_init()
 {
 }
 
-void framebuffer_delete()
+void framebuffer_deinit()
 {
 }
 
