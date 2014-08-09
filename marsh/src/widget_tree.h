@@ -45,4 +45,6 @@ void widget_tree_release(widget_t *, int x, int y);
 void widget_tree_click(widget_t *, int x, int y);
 void widget_tree_refresh_dimension(widget_t *);
 
+bool widget_tree_ancestors_visible(widget_t * obj);
+
 #endif

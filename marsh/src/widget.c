@@ -59,6 +59,7 @@ widget_t * widget_new(widget_t * parent, void * report_instance, void (*report_d
 	widget_event_install_handler(obj, event_code_refresh_dim, default_refresh_dim_event_handler);
 
 	obj->pressed = false;
+	obj->visible = true;
 
 	return obj;
 }
@@ -231,4 +232,25 @@ signal_t * widget_press_signal(widget_t * obj)
 	PTR_CHECK_RETURN(obj, "widget", NULL);
 
 	return obj->press_signal;
+}
+
+void widget_hide(widget_t * obj)
+{
+	PTR_CHECK(obj, "widget");
+
+	obj->visible = false;
+}
+
+void widget_show(widget_t * obj)
+{
+	PTR_CHECK(obj, "widget");
+
+	obj->visible = true;
+}
+
+bool widget_visible(widget_t * obj)
+{
+	PTR_CHECK_RETURN(obj, "widget", false);
+
+	return obj->visible;
 }

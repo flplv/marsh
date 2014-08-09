@@ -78,4 +78,8 @@ signal_t * widget_click_signal(widget_t * obj);
 signal_t * widget_release_signal(widget_t * obj);
 signal_t * widget_press_signal(widget_t * obj);
 
+void widget_hide(widget_t * obj);
+void widget_show(widget_t * obj);
+bool widget_visible(widget_t * obj);
+
 #endif /* widget_H_ */

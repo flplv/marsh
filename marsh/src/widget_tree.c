@@ -147,23 +147,42 @@ void widget_tree_delete(widget_t * obj)
 {
 	event_t * deletion_event;
 
-	PTR_CHECK(obj, "widget");
+	PTR_CHECK(obj, "widget_tree");
 
 	deletion_event = event_new(event_code_delete, NULL, NULL);
-	PTR_CHECK(deletion_event, "widget");
+	PTR_CHECK(deletion_event, "widget_tree");
 
 	widget_event_emit(obj, deletion_event);
 }
 
+bool widget_tree_ancestors_visible(widget_t * obj)
+{
+	PTR_CHECK_RETURN(obj, "widget_tree", false);
+
+	widget_t * parent = widget_parent(obj);
+
+	while (parent)
+	{
+		if (!widget_visible(parent))
+			return false;
+
+		parent = widget_parent(parent);
+	}
+
+	return true;
+}
 
 void widget_tree_draw(widget_t * obj)
 {
 	event_t * draw_event;
 
-	PTR_CHECK(obj, "widget");
+	PTR_CHECK(obj, "widget_tree");
+
+	if (!widget_tree_ancestors_visible(obj))
+		return;
 
 	draw_event = event_new(event_code_draw, NULL, NULL);
-	PTR_CHECK(draw_event, "widget");
+	PTR_CHECK(draw_event, "widget_tree");
 
 	widget_event_emit(obj, draw_event);
 }
@@ -176,10 +195,10 @@ void widget_tree_click(widget_t * obj, int x, int y)
 	data.interaction_point.x = x;
 	data.interaction_point.y = y;
 
-	PTR_CHECK(obj, "widget");
+	PTR_CHECK(obj, "widget_tree");
 
 	interaction_event = event_new(event_code_interaction_click, &data, NULL);
-	PTR_CHECK(interaction_event, "widget");
+	PTR_CHECK(interaction_event, "widget_tree");
 
 	widget_event_emit(obj, interaction_event);
 }
@@ -192,10 +211,10 @@ void widget_tree_press(widget_t * obj, int x, int y)
 	data.interaction_point.x = x;
 	data.interaction_point.y = y;
 
-	PTR_CHECK(obj, "widget");
+	PTR_CHECK(obj, "widget_tree");
 
 	interaction_event = event_new(event_code_interaction_press, &data, NULL);
-	PTR_CHECK(interaction_event, "widget");
+	PTR_CHECK(interaction_event, "widget_tree");
 
 	widget_event_emit(obj, interaction_event);
 }
@@ -208,17 +227,20 @@ void widget_tree_release(widget_t * obj, int x, int y)
 	data.interaction_point.x = x;
 	data.interaction_point.y = y;
 
-	PTR_CHECK(obj, "widget");
+	PTR_CHECK(obj, "widget_tree");
 
 	interaction_event = event_new(event_code_interaction_release, &data, NULL);
-	PTR_CHECK(interaction_event, "widget");
+	PTR_CHECK(interaction_event, "widget_tree");
 
 	widget_event_emit(obj, interaction_event);
 }
 
+/* TODO: This is bad pattern, event to refresh a dimension is bad,
+ * the canvas dimension should be computed at the draw event handler.
+ */
 void widget_tree_refresh_dimension(widget_t * obj)
 {
-	PTR_CHECK(obj, "widget");
+	PTR_CHECK(obj, "widget_tree");
 
 	if (!widget_child(obj))
 	{
@@ -229,7 +251,7 @@ void widget_tree_refresh_dimension(widget_t * obj)
 		event_t * event;
 
 		event = event_new(event_code_refresh_dim, NULL, NULL);
-		PTR_CHECK(event, "widget");
+		PTR_CHECK(event, "widget_tree");
 
 		widget_event_emit(obj, event);
 	}

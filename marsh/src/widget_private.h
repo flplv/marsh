@@ -48,21 +48,34 @@ typedef struct s_widget_event_handler_node widget_event_handler_t;
 
 struct s_widget
 {
+	/* Dimensions */
 	area_t configured_area; // Client inputed dimension, relative to parent.
-	area_t absolute_dim;   // Real absolute dimension, relative to the screen.
+	/* TODO Wrong design here.
+	 *   canvas_area is created from absolute_dim, and absolute_dim consults
+	 *   parent absolute_dim to crop itself, this is bad design.
+	 *   Cropped canvas area should be computed from receiving parent's canvas
+	 *   carried out by the event propagation only at drawing time.
+	 */
+	area_t absolute_dim;    // Real absolute dimension, relative to the framebuffer.
 	area_t canvas_area;     // Canvas area used for drawing.
+
+	/* Signaling */
 	signal_t * click_signal;
 	signal_t * press_signal;
 	signal_t * release_signal;
 
+	/* Polimorphism state - to be replaced by decoration pattern */
 	void * creator_instance;
 	void (*creator_draw)(void *);
 	void (*creator_delete)(void *);
 
+	/* Tree and event */
 	struct s_widget_tree tree;
 	widget_event_handler_t * event_handler_list;
 
+	/* Visual state */
 	bool pressed;
+	bool visible;
 };
 
 void widget_event_init(widget_event_handler_t ** widget_event_lists_root_ptr);

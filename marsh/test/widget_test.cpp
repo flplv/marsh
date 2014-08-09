@@ -166,3 +166,34 @@ TEST(Widget, dimension)
 	widget_tree_delete(parent);
 }
 
+
+TEST(Widget, visibility)
+{
+	widget_t * parent;
+	widget_t * child;
+	widget_t * child2;
+
+	parent = widget_new(NULL, NULL, NULL, NULL);
+	child = widget_new(parent, NULL, NULL, NULL);
+	child2 = widget_new(child, NULL, NULL, NULL);
+
+	CHECK_TRUE(widget_tree_ancestors_visible(child2));
+	CHECK_TRUE(widget_visible(child2));
+
+	CHECK_TRUE(widget_visible(parent));
+	widget_hide(parent);
+	CHECK_FALSE(widget_visible(parent));
+
+	CHECK_FALSE(widget_tree_ancestors_visible(child2));
+
+	widget_show(parent);
+	CHECK_TRUE(widget_visible(parent));
+
+	CHECK_TRUE(widget_tree_ancestors_visible(child2));
+
+	widget_hide(child);
+	CHECK_FALSE(widget_tree_ancestors_visible(child2));
+
+	widget_tree_delete(parent);
+}
+
