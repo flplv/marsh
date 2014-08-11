@@ -27,6 +27,8 @@
 void point_clear(point_t *tgt);
 void point_set(point_t * tgt, dim_t x, dim_t y);
 
+area_t * area_alloc(void);
+
 void area_clear(area_t *tgt);
 void area_clear(area_t* tgt);
 void area_set(area_t * area, dim_t x, dim_t y, dim_t width, dim_t height);

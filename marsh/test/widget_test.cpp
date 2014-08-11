@@ -61,7 +61,7 @@ TEST_GROUP(Widget)
 TEST(Widget, instance)
 {
 	CHECK_EQUAL((void*)0, cut->creator_instance);
-	CHECK_EQUAL((void(*)(void*))0, cut->creator_draw);
+	CHECK_EQUAL((void(*)(void*, const area_t *))0, cut->creator_draw);
 	CHECK_EQUAL((void(*)(void*))0, cut->creator_delete);
 	CHECK_TRUE((void*)cut->click_signal);
 	CHECK_TRUE((void*)cut->press_signal);
@@ -77,7 +77,7 @@ TEST(Widget, instance)
 TEST(Widget, destroy)
 {
 	widget_t * cut2;
-	cut2 = widget_new(NULL, this, (void(*)(void*))2, call);
+	cut2 = widget_new(NULL, this, (void(*)(void*, const area_t *))2, call);
 	widget_delete(cut2);
 	widget_delete_instance_only(cut2);
 	CHECK_TRUE(called);
@@ -113,57 +113,6 @@ TEST(Widget, tree_deletion)
 	widget_tree_delete(cut2);
 
 	CHECK_TRUE(cut->tree.child == NULL);
-}
-
-TEST(Widget, dimension)
-{
-	widget_t * parent;
-	widget_t * child;
-	widget_t * child2;
-
-	parent = widget_new(NULL, NULL, NULL, NULL);
-	child = widget_new(parent, NULL, NULL, NULL);
-	child2 = widget_new(child, NULL, NULL, NULL);
-
-	widget_set_area(parent, 10, 10, 200, 200);
-	widget_set_area(child, 10, 10, 10, 10);
-	widget_set_area(child2, 10, 10, 10, 10);
-
-	CHECK_EQUAL(10, parent->absolute_dim.x);
-	CHECK_EQUAL(10, parent->absolute_dim.y);
-
-	CHECK_EQUAL(20, child->absolute_dim.x);
-	CHECK_EQUAL(20, child->absolute_dim.y);
-
-	CHECK_EQUAL(30, child2->absolute_dim.x);
-	CHECK_EQUAL(30, child2->absolute_dim.y);
-
-	CHECK_FALSE(widget_canvas_cropped(parent));
-	CHECK_FALSE(widget_canvas_cropped(child));
-	CHECK_TRUE(widget_canvas_cropped(child2));
-
-	widget_set_area(parent, 20, 20, 200, 200);
-
-	CHECK_EQUAL(20, parent->absolute_dim.x);
-	CHECK_EQUAL(20, parent->absolute_dim.y);
-
-	CHECK_EQUAL(30, child->absolute_dim.x);
-	CHECK_EQUAL(30, child->absolute_dim.y);
-
-	CHECK_EQUAL(40, child2->absolute_dim.x);
-	CHECK_EQUAL(40, child2->absolute_dim.y);
-
-	CHECK_FALSE(widget_canvas_cropped(parent));
-	CHECK_FALSE(widget_canvas_cropped(child));
-	CHECK_TRUE(widget_canvas_cropped(child2));
-
-	widget_set_area(child, 10, 10, 20, 20);
-
-	CHECK_FALSE(widget_canvas_cropped(parent));
-	CHECK_FALSE(widget_canvas_cropped(child));
-	CHECK_FALSE(widget_canvas_cropped(child2));
-
-	widget_tree_delete(parent);
 }
 
 

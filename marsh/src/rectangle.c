@@ -69,9 +69,10 @@ static void abstract_delete(void * obj)
 	rectangle_delete((rectangle_t *)obj);
 }
 
-static void decode_and_draw(rectangle_t* obj)
+static void decode_and_draw(rectangle_t* obj, const area_t * limiting_canvas_area)
 {
-	canvas_t * canv = canvas_new(widget_canvas_area(obj->glyph));
+	area_t canvas_area = widget_compute_canvas_area(obj->glyph, limiting_canvas_area);
+	canvas_t *canv = canvas_new(&canvas_area);
 
 	if (obj->corner_radius)
 	{
@@ -95,7 +96,7 @@ static void decode_and_draw(rectangle_t* obj)
 	canvas_delete(canv);
 }
 
-static void draw(rectangle_t * obj)
+static void draw(rectangle_t * obj, const area_t * limiting_canvas_area)
 {
 	dim_t least_dim;;
 
@@ -115,7 +116,7 @@ static void draw(rectangle_t * obj)
 		obj->corner_radius = least_dim / 2;
 	}
 
-	decode_and_draw(obj);
+	decode_and_draw(obj, limiting_canvas_area);
 }
 
 rectangle_t * rectangle_new(widget_t * parent)
@@ -124,7 +125,7 @@ rectangle_t * rectangle_new(widget_t * parent)
 	MEMORY_ALLOC_CHECK_RETURN(obj, NULL);
 
 	obj->log = my_log_new("Rectangle", MESSAGE);
-	obj->glyph = widget_new(parent, obj, (void(*)(void *))draw, abstract_delete);
+	obj->glyph = widget_new(parent, obj, (void (*)(void *, const area_t *))draw, (void(*)(void *))abstract_delete);
 	obj->fill_color = color(0,0,0);
 	obj->is_filled = false;
 	obj->border_color = color(0,0,0);

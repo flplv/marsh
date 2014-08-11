@@ -51,7 +51,7 @@ static bool ready_to_draw(image_t * obj)
 	return true;
 }
 
-static void draw(image_t * obj)
+static void draw(image_t * obj, const area_t * limiting_canvas_area)
 {
 	PTR_CHECK(obj, "image");
 
@@ -61,7 +61,9 @@ static void draw(image_t * obj)
 		return;
 	}
 
-	canvas_t *canv = canvas_new(widget_canvas_area(obj->glyph));
+	area_t canvas_area = widget_compute_canvas_area(obj->glyph, limiting_canvas_area);
+	canvas_t *canv = canvas_new(&canvas_area);
+
 
 	if (obj->bitmap->bitmap_data_width == BITMAP_BUFFER_16BPP)
 	{
@@ -81,7 +83,7 @@ image_t * image_new(widget_t * parent)
 	MEMORY_ALLOC_CHECK_RETURN(obj, NULL);
 
 	obj->log = my_log_new("image", MESSAGE);
-	obj->glyph = widget_new(parent, obj, (void(*)(void *))draw, (void(*)(void *))image_delete);
+	obj->glyph = widget_new(parent, obj, (void(*)(void *, const area_t *))draw, (void(*)(void *))image_delete);
 	obj->bitmap = NULL;
 
 	return obj;

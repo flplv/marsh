@@ -31,14 +31,12 @@
 #include "widget_tree.h"
 #include "widget_event.h"
 
-widget_t * widget_new(widget_t * parent, void * report_instance, void (*report_draw)(void *), void (*report_delete)(void *))
+widget_t * widget_new(widget_t * parent, void * report_instance, void (*report_draw)(void *, const area_t *), void (*report_delete)(void *))
 {
 	widget_t * obj = (widget_t *)calloc(1, sizeof(struct s_widget));
 	MEMORY_ALLOC_CHECK_RETURN(obj, NULL);
 
-	area_clear(&obj->configured_area);
-	area_clear(&obj->absolute_dim);
-	area_clear(&obj->canvas_area);
+	area_clear(&obj->area);
 
 	obj->creator_instance = report_instance;
 	obj->creator_draw = report_draw;
@@ -56,7 +54,6 @@ widget_t * widget_new(widget_t * parent, void * report_instance, void (*report_d
 	widget_event_install_handler(obj, event_code_interaction_press, default_interaction_event_handler);
 	widget_event_install_handler(obj, event_code_draw, default_draw_event_handler);
 	widget_event_install_handler(obj, event_code_delete, default_delete_event_handler);
-	widget_event_install_handler(obj, event_code_refresh_dim, default_refresh_dim_event_handler);
 
 	obj->pressed = false;
 	obj->visible = true;
@@ -95,70 +92,47 @@ void widget_delete(widget_t * obj)
 const area_t * widget_area(const widget_t *obj)
 {
 	PTR_CHECK_RETURN (obj, "widget", NULL);
-	return &obj->configured_area;
+	return &obj->area;
 }
 
-const area_t * widget_canvas_area(const widget_t *obj)
+area_t widget_compute_canvas_area(const widget_t *obj, const area_t * limiting_canvas_area)
 {
-	PTR_CHECK_RETURN (obj, "widget", NULL);
-	return &obj->canvas_area;
-}
+	PTR_CHECK_RETURN(obj, "widget", ((area_t){0,}));
 
-bool widget_canvas_cropped(const widget_t * obj)
-{
-	if (area_same(&obj->absolute_dim, &obj->canvas_area))
-		return false;
+	area_t result_canvas;
 
-	return true;
-}
-
-void widget_refresh_dim(widget_t * obj)
-{
-	obj->absolute_dim = obj->configured_area;
-
-	if (widget_parent(obj))
-	{
-		obj->absolute_dim.x += widget_parent(obj)->absolute_dim.x;
-		obj->absolute_dim.y += widget_parent(obj)->absolute_dim.y;
-
-		area_set_intersection(&obj->canvas_area, &widget_parent(obj)->absolute_dim, &obj->absolute_dim);
-	}
+	if (limiting_canvas_area)
+		area_set_intersection(&result_canvas, limiting_canvas_area, &obj->area);
 	else
-	{
-		area_set_intersection(&obj->canvas_area, framebuffer_area(), &obj->configured_area);
-	}
+		result_canvas = obj->area;
+
+	return result_canvas;
 }
 
 void widget_set_dim(widget_t *obj, dim_t width, dim_t height)
 {
 	PTR_CHECK(obj, "widget");
 
-	obj->configured_area.width = width;
-	obj->configured_area.height = height;
-	widget_refresh_dim(obj);
-	widget_tree_refresh_dimension(obj);
+	obj->area.width = width;
+	obj->area.height = height;
 }
 
 void widget_set_pos(widget_t *obj, dim_t x, dim_t y)
 {
 	PTR_CHECK(obj, "widget");
 
-	obj->configured_area.x = x;
-	obj->configured_area.y = y;
-	widget_refresh_dim(obj);
-	widget_tree_refresh_dimension(obj);
+	obj->area.x = x;
+	obj->area.y = y;
 }
 
 void widget_set_area(widget_t *obj, dim_t x, dim_t y, dim_t width, dim_t height)
 {
 	PTR_CHECK(obj, "widget");
 
-	obj->configured_area.x = x;
-	obj->configured_area.y = y;
-	obj->configured_area.width = width;
-	obj->configured_area.height = height;
-	widget_refresh_dim(obj);
-	widget_tree_refresh_dimension(obj);
+	obj->area.x = x;
+	obj->area.y = y;
+	obj->area.width = width;
+	obj->area.height = height;
 }
 
 void widget_click(widget_t * obj)
@@ -203,13 +177,13 @@ void widget_press(widget_t * obj)
 	signal_emit(obj->press_signal);
 }
 
-void widget_draw(widget_t * obj)
+void widget_draw(widget_t * obj, const area_t * limiting_canvas_area)
 {
 	PTR_CHECK(obj, "widget");
 
 	if (obj->creator_draw && obj->creator_instance)
 	{
-		obj->creator_draw(obj->creator_instance);
+		obj->creator_draw(obj->creator_instance, limiting_canvas_area);
 	}
 }
 

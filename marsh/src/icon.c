@@ -52,7 +52,7 @@ static bool ready_to_draw(icon_t * obj)
 	return true;
 }
 
-static void draw(icon_t * obj)
+static void draw(icon_t * obj, const area_t * limiting_canvas_area)
 {
 	PTR_CHECK(obj, "icon");
 
@@ -62,7 +62,8 @@ static void draw(icon_t * obj)
 		return;
 	}
 
-	canvas_t *canv = canvas_new(widget_canvas_area(obj->glyph));
+	area_t canvas_area = widget_compute_canvas_area(obj->glyph, limiting_canvas_area);
+	canvas_t *canv = canvas_new(&canvas_area);
 
 	if (obj->bitmap->bitmap_data_width == BITMAP_BUFFER_8BPP)
 	{
@@ -82,7 +83,7 @@ icon_t * icon_new(widget_t * parent)
 	MEMORY_ALLOC_CHECK_RETURN(obj, NULL);
 
 	obj->log = my_log_new("Icon", MESSAGE);
-	obj->glyph = widget_new(parent, obj, (void(*)(void *))draw, (void(*)(void *))icon_delete);
+	obj->glyph = widget_new(parent, obj, (void(*)(void *, const area_t *))draw, (void(*)(void *))icon_delete);
 	obj->color = color(255,255,255);
 	obj->bitmap = NULL;
 

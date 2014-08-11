@@ -128,16 +128,15 @@ static bool ready_to_draw(text_t * obj)
 	return true;
 }
 
-static void text_draw(text_t * obj)
+static void text_draw(text_t * obj, const area_t * limiting_canvas_area)
 {
-	canvas_t *canv;
-
 	if (!ready_to_draw(obj)) {
 		LOG_ERROR("text", "unable to draw");
 		return;
 	}
 
-	canv = canvas_new(widget_canvas_area(obj->glyph));
+	area_t canvas_area = widget_compute_canvas_area(obj->glyph, limiting_canvas_area);
+	canvas_t *canv = canvas_new(&canvas_area);
 
 	if (obj->just == TEXT_LEFT_JUST)
 		font_draw_left_just(obj->font, obj->string, color_to_pixel(obj->color), canv);
@@ -161,7 +160,7 @@ text_t* text_new(widget_t * parent)
 	slot_set(obj->string_update_slot, (slot_func)string_changed, (slot_arg)obj);
 	slot_connect(obj->string_update_slot, my_string_get_update_signal(obj->string));
 
-	obj->glyph = widget_new(parent, obj, (void(*)(void *))text_draw, (void(*)(void *))text_delete);
+	obj->glyph = widget_new(parent, obj, (void(*)(void *, const area_t *))text_draw, (void(*)(void *))text_delete);
 
 	obj->just = TEXT_LEFT_JUST;
 

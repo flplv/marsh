@@ -23,6 +23,7 @@
 #include "helper/number.h"
 
 #include "area.h"
+#include "framebuffer.h"
 #include "helper/number.h"
 
 #include <string.h>
@@ -45,6 +46,11 @@ void point_set(point_t * tgt, dim_t x, dim_t y)
 	PTR_CHECK(tgt, "area");
 	tgt->x = x;
 	tgt->y = y;
+}
+
+area_t * area_alloc(void)
+{
+	return (area_t *)calloc(1, sizeof(struct s_area));
 }
 
 void area_set(area_t * area, dim_t x, dim_t y, dim_t width, dim_t height)

@@ -31,7 +31,7 @@
  * Caution must be taken on the destruction of a widget, read the following comments.
  */
 
-widget_t * widget_new(widget_t * parent, void * creator_instance, void (*creator_draw)(void *), void (*creator_delete)(void *));
+widget_t * widget_new(widget_t * parent, void * creator_instance, void (*creator_draw)(void *, const area_t *), void (*creator_delete)(void *));
 
 /*
  * Widget destruction destroy the widget itself and all its children, as well its
@@ -64,15 +64,15 @@ void widget_set_dim(widget_t *, dim_t width, dim_t height);
 void widget_set_pos(widget_t *, dim_t x, dim_t y);
 void widget_set_area(widget_t *, dim_t x, dim_t y, dim_t width, dim_t height);
 const area_t * widget_area(const widget_t *);
-const area_t * widget_canvas_area(const widget_t *);
-bool widget_canvas_cropped(const widget_t * obj);
+
+area_t widget_compute_canvas_area(const widget_t *obj, const area_t * limiting_canvas_area);
 
 void widget_refresh_dim(widget_t * obj);
 
 void widget_click(widget_t * obj);
 void widget_release(widget_t * obj);
 void widget_press(widget_t * obj);
-void widget_draw(widget_t * obj);
+void widget_draw(widget_t * obj, const area_t * limiting_canvas_area);
 
 signal_t * widget_click_signal(widget_t * obj);
 signal_t * widget_release_signal(widget_t * obj);

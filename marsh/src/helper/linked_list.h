@@ -134,12 +134,44 @@ typedef struct s_linked_list_head linked_list_t;
 ({ \
         typeof(ptr_to_current) ___curr = ptr_to_current; \
         typeof(ptr_to_new) ___new = ptr_to_new; \
-        if (___curr && ___new) \
+        if (___curr) \
         { \
+        	if (___new) \
+			{ \
             ___new->field.next = ___curr->field.next; \
             ___new->field.prev = &___curr->field; \
             ___curr->field.next = &___new->field; \
+			} \
+		} \
+})
+
+/**
+ * Insert new at the end of the list.
+ *
+ * @param ptr_to_current
+ * @param ptr_to_new
+ */
+#define linked_list_insert_end(ptr_to_current, ptr_to_new, field) \
+({ \
+        typeof(ptr_to_current) ___curr = ptr_to_current; \
+        typeof(ptr_to_new) ___new = ptr_to_new; \
+        if (!__curr) \
+        { \
+        	ptr_to_current = __new; \
         } \
+        else \
+        { \
+        	if (__new) \
+			{ \
+            ___new->field.next = ___curr->field.next; \
+            ___new->field.prev = &___curr->field; \
+            ___curr->field.next = &___new->field; \
+			} \
+		} \
+		else \
+		{ \
+			ptr_to_current = ptr_to_new; \
+		} \
 })
 
 /**

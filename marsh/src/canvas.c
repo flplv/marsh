@@ -30,6 +30,7 @@
 #include <math.h>
 
 /* TODO: Add/fix the negative position or dimension on the canvas, drawing function and widget system.
+ *       also, fix the out of canvas printing that happens when parent size is smaller than child's.
  *       1. Canvas should hide the scratch_pad from client, and manage if it uses the fb directly or a scratch pad.
  *       2. Clients writes (or use a writing function) to write to the canvas memory transparently.
  *       3. At the end, client inform canvas it has finished writing and canvas copies the scratch to the fb if necessary.

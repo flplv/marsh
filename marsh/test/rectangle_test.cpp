@@ -66,10 +66,6 @@ TEST(WidgetRectangle, Instance)
 	CHECK_TRUE(cut->glyph->creator_instance != NULL);
 	CHECK_TRUE(cut->glyph->creator_draw  != NULL);
 	CHECK_TRUE(cut->glyph->creator_delete != NULL);
-//	rectangle_delete(cut);
-//	rectangle_delete(cut);
-//	STRCMP_CONTAINS("rectangle", intercepted_output[2]);
-//	STRCMP_CONTAINS("Invalid Instance", intercepted_output[0]);
 }
 
 TEST(WidgetRectangle, DestroyOwner)
@@ -77,14 +73,11 @@ TEST(WidgetRectangle, DestroyOwner)
 	rectangle_t * cut2;
 	cut2 = rectangle_new(NULL);
 	widget_delete(rectangle_get_widget(cut2));
-//	rectangle_delete(cut2);
-//	STRCMP_CONTAINS("rectangle", intercepted_output[2]);
-//	STRCMP_CONTAINS("Invalid Instance", intercepted_output[0]);
 }
 
 TEST(WidgetRectangle, Draw)
 {
-	cut->glyph->creator_draw(cut);
+	cut->glyph->creator_draw(cut, framebuffer_area());
 	STRCMP_CONTAINS("Object not initialized properly, can't draw.", intercepted_output[0]);
 
 	CHECK_EQUAL(0x0000, *framebuffer_at(5, 5));
@@ -93,6 +86,28 @@ TEST(WidgetRectangle, Draw)
 	rectangle_set_fill_color_html(cut, "#FFFFFF");
 	widget_tree_draw(rectangle_get_widget(cut));
 	CHECK_EQUAL(0xFFFF, *framebuffer_at(5, 5));
+}
+
+TEST(WidgetRectangle, cropping_draw)
+{
+	widget_t * parent = widget_new(NULL, NULL, NULL, NULL);
+	rectangle_t * rect = rectangle_new(parent);
+
+	widget_set_area(parent, 5, 5, 5, 5);
+
+	CHECK_EQUAL(0x0000, *framebuffer_at(5, 5));
+
+	rectangle_set_position(rect, 0, 0);
+	rectangle_set_size(rect, 100, 100);
+	rectangle_set_fill_color_html(rect, "#FFFFFF");
+
+	widget_tree_draw(parent);
+
+	CHECK_EQUAL(0x0000, *framebuffer_at(4, 4));
+	CHECK_EQUAL(0xFFFF, *framebuffer_at(5, 5));
+	CHECK_EQUAL(0x0000, *framebuffer_at(10, 10));
+
+	widget_tree_delete(parent);
 }
 
 TEST(WidgetRectangle, foreground_color)

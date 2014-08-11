@@ -24,22 +24,9 @@
 #include "widget.h"
 #include "widget_event.h"
 #include "widget_tree.h"
+#include "widget_private.h"
 #include "event.h"
 #include "area.h"
-
-/* TODO: Stopped here: recreate the interaction engine inside widget
- * Redesign of the event propagation and the position system is necessary.
- *  1) It is not smart to propagate point_t events to child of widgets that doesn't contain the point; -DONE
- *  1.1) On the event system, maybe instead press, push, pull, use a generic event called interaction. -DONE
- *  1.2) Each event shall have a propagation check function plus the handler function. -DONE
- *
- *  2) The positioning system has to be redone using parent's position as reference. -DONE
- *  2.1) A parent's widget area must contain its children's                                       -DONE
- *       - The relative positioning system is done, now it must be used by the drawing functions. -DONE
- *       - Check canvas.c comments.
- *
- *  3) Test the interaction engine.
- */
 
 static bool code_is_interaction(event_code_t code)
 {
@@ -154,7 +141,7 @@ default_draw_event_handler(widget_t * widget, event_t * event)
 	PTR_CHECK_RETURN(widget, __FUNCTION__, widget_event_not_consumed);
 	PTR_CHECK_RETURN(event, __FUNCTION__, widget_event_not_consumed);
 
-	//TODO: Create a visible property on widgets to select if it draws or not.
+	area_t * limiting_area;
 
 	if (event_code(event) != event_code_draw)
 	{
@@ -162,24 +149,18 @@ default_draw_event_handler(widget_t * widget, event_t * event)
 		return widget_event_not_consumed;
 	}
 
-	widget_draw(widget);
+	if (!widget_visible(widget))
+		return widget_event_consumed;
+
+	if (widget_parent(widget))
+		limiting_area = &widget_parent(widget)->tmp_canvas_area;
+	else
+		limiting_area = NULL;
+
+	widget_draw(widget, limiting_area);
+
+	widget->tmp_canvas_area = widget_compute_canvas_area(widget, limiting_area);
 
 	return widget_event_consumed;
 }
 
-enum e_widget_event_handler_result
-default_refresh_dim_event_handler(widget_t * widget, event_t * event)
-{
-	PTR_CHECK_RETURN(widget, __FUNCTION__, widget_event_not_consumed);
-	PTR_CHECK_RETURN(event, __FUNCTION__, widget_event_not_consumed);
-
-	if (event_code(event) != event_code_refresh_dim)
-	{
-		LOG_ERROR(__FUNCTION__, "Received invalid event.");
-		return widget_event_not_consumed;
-	}
-
-	widget_refresh_dim(widget);
-
-	return widget_event_consumed;
-}

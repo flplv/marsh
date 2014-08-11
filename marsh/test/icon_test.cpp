@@ -77,7 +77,7 @@ TEST(icon, DestroyOwner)
 
 TEST(icon, Draw)
 {
-	cut->glyph->creator_draw(cut);
+	cut->glyph->creator_draw(cut, framebuffer_area());
 	STRCMP_CONTAINS("Object not initialized properly, can't draw.", intercepted_output[0]);
 
 	CHECK_EQUAL(0x0000, *framebuffer_at(1, 10));

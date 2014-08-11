@@ -59,80 +59,46 @@ static bool code_comparator (event_code_t seed, struct s_event_code_info * node)
 	return (seed == node->code_number);
 }
 
-static void create_default_events()
+static void create_default_events(void)
 {
-	struct s_event_code_info * press_event;
-	struct s_event_code_info * click_event;
-	struct s_event_code_info * release_event;
-	struct s_event_code_info * draw_event;
-	struct s_event_code_info * delete_event;
-	struct s_event_code_info * redim_event;
+	size_t i;
+	struct s_event_configuration
+	{
+		enum e_event_default_codes code;
+		const char * name;
+		int propagation_mask;
+	};
+	const struct s_event_configuration default_event_configuration[] = {
+		/* Caution! This code is order dependent. */
+		{ event_code_interaction_release, "default_release", event_prop_default    | event_prop_right_to_left },
+		{ event_code_interaction_click,   "default_click",   event_prop_default    | event_prop_right_to_left },
+		{ event_code_interaction_press,   "default_press",   event_prop_default    | event_prop_right_to_left },
+		{ event_code_draw,                "default_draw",    event_prop_default    | event_prop_persistent    },
+		{ event_code_delete,              "default_delete",  event_prop_persistent | event_prop_bottom_up     },
+	};
 
 
-	click_event = (typeof(click_event))calloc(1, sizeof(*click_event));
-	MEMORY_ALLOC_CHECK(click_event);
+	//TODO Replace with a gnu99 pointer safe array count macro
+	for (i = 0; i < (sizeof(default_event_configuration) / sizeof(default_event_configuration[0])); i++)
+	{
 
-	click_event->code_number = event_code_interaction_click;
-	linked_list_init(click_event,head);
-	strcpy(click_event->name, "default_click");
-	click_event->propagation_mask = event_prop_default | event_prop_right_to_left;
+		struct s_event_code_info * event;
 
+		event = (typeof(event))calloc(1, sizeof(*event));
+		MEMORY_ALLOC_CHECK(event);
+		linked_list_init(event,head);
 
+		event->code_number = default_event_configuration[i].code;
+		//TODO: Replace with a gnu99 pointer safe array size macro
+		strncpy(event->name, default_event_configuration[i].name, sizeof(event->name)/sizeof(event->name[0]));
+		event->name[sizeof(event->name)/sizeof(event->name[0]) - 1] = '\0';
+		event->propagation_mask = default_event_configuration[i].propagation_mask;
 
-	release_event = (typeof(release_event))calloc(1, sizeof(*release_event));
-	MEMORY_ALLOC_CHECK(release_event);
-
-	release_event->code_number = event_code_interaction_release;
-	linked_list_init(release_event,head);
-	strcpy(release_event->name, "default_release");
-	release_event->propagation_mask = event_prop_default | event_prop_right_to_left;
-
-
-
-	press_event = (typeof(press_event))calloc(1, sizeof(*press_event));
-	MEMORY_ALLOC_CHECK(press_event);
-
-	press_event->code_number = event_code_interaction_press;
-	linked_list_init(press_event,head);
-	strcpy(press_event->name, "default_press");
-	press_event->propagation_mask = event_prop_default | event_prop_right_to_left;
-
-
-
-	draw_event = (typeof(draw_event))calloc(1, sizeof(*draw_event));
-	MEMORY_ALLOC_CHECK(draw_event);
-
-	draw_event->code_number = event_code_draw;
-	linked_list_init(draw_event,head);
-	strcpy(draw_event->name, "default_draw");
-	draw_event->propagation_mask = event_prop_default | event_prop_persistent;
-
-
-
-	delete_event = (typeof(delete_event))calloc(1, sizeof(*delete_event));
-	MEMORY_ALLOC_CHECK(delete_event);
-
-	delete_event->code_number = event_code_delete;
-	linked_list_init(delete_event,head);
-	strcpy(delete_event->name, "default_delete");
-	delete_event->propagation_mask = event_prop_persistent | event_prop_bottom_up;
-
-
-	redim_event = (typeof(redim_event))calloc(1, sizeof(*redim_event));
-	MEMORY_ALLOC_CHECK(redim_event);
-
-	redim_event->code_number = event_code_refresh_dim;
-	linked_list_init(redim_event,head);
-	strcpy(redim_event->name, "default_refresh_dim");
-	redim_event->propagation_mask = event_prop_default | event_prop_persistent;
-
-	/* Caution! This code is order dependent. */
-	event_list_root = press_event;
-	linked_list_insert_after(linked_list_last(event_list_root, head), release_event, head);
-	linked_list_insert_after(linked_list_last(event_list_root, head), click_event, head);
-	linked_list_insert_after(linked_list_last(event_list_root, head), draw_event, head);
-	linked_list_insert_after(linked_list_last(event_list_root, head), delete_event, head);
-	linked_list_insert_after(linked_list_last(event_list_root, head), redim_event, head);
+		if (!event_list_root)
+			event_list_root = event;
+		else
+			linked_list_insert_after(linked_list_last(event_list_root, head), event, head);
+	}
 }
 
 void event_pool_init(void)

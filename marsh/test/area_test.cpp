@@ -42,6 +42,11 @@ TEST_GROUP(area)
 	}
 };
 
+TEST(area, allocation)
+{
+	free(area_alloc());
+}
+
 TEST(area, contains)
 {
 	area_set_size(&dim, 10, 10);

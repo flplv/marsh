@@ -172,6 +172,24 @@ bool widget_tree_ancestors_visible(widget_t * obj)
 	return true;
 }
 
+area_t widget_tree_ancestors_intersection_canvas_area(widget_t * obj)
+{
+	PTR_CHECK_RETURN(obj, "widget_tree", ((area_t){0,}));
+
+	area_t ancestors_area;
+	widget_t * parent = widget_parent(obj);
+
+	ancestors_area = widget_compute_canvas_area(obj, NULL);
+
+	while (parent)
+	{
+		ancestors_area = widget_compute_canvas_area(obj, &ancestors_area);
+		parent = widget_parent(parent);
+	}
+
+	return ancestors_area;
+}
+
 void widget_tree_draw(widget_t * obj)
 {
 	event_t * draw_event;
@@ -235,24 +253,3 @@ void widget_tree_release(widget_t * obj, int x, int y)
 	widget_event_emit(obj, interaction_event);
 }
 
-/* TODO: This is bad pattern, event to refresh a dimension is bad,
- * the canvas dimension should be computed at the draw event handler.
- */
-void widget_tree_refresh_dimension(widget_t * obj)
-{
-	PTR_CHECK(obj, "widget_tree");
-
-	if (!widget_child(obj))
-	{
-		widget_refresh_dim(obj);
-	}
-	else
-	{
-		event_t * event;
-
-		event = event_new(event_code_refresh_dim, NULL, NULL);
-		PTR_CHECK(event, "widget_tree");
-
-		widget_event_emit(obj, event);
-	}
-}
