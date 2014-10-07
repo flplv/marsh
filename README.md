@@ -1,8 +1,9 @@
 marsh
 =====
 
-Pure C Graphic Library 
+Pure C Graphic Library
 Platform Independent
+With a widget tree able to propagate custom events and install custom event handlers to widgets.
 
 
 You need to build cpputest (not install) in order to build and run
